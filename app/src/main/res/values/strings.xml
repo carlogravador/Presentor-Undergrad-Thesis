@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Presentor</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_create_lobby">Sign in</string>
+
+
+    //create lobby strings
+    <string name="screen_mirror_create_title_description">Create Lobby to Start Screen Mirroring</string>
+    <string name="screen_mirror_create_lobby_name">Lobby name</string>
+    <string name="screen_mirror_create_password">Password (Optional)</string>
+    <string name="screen_mirror_start_session">Start Screen Mirroring</string>
+
+
+
+
+</resources>
