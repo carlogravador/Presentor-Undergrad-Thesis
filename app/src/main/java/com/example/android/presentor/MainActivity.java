@@ -29,15 +29,15 @@ public class MainActivity extends AppCompatActivity
 
 
 
-        Button screenMirroringButton = (Button) findViewById(R.id.btn_share);
-
-        screenMirroringButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, CreateLobby.class);
-                startActivity(intent);
-            }
-        });
+//        Button screenMirroringButton = (Button) findViewById(R.id.btn_share);
+//
+//        screenMirroringButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(MainActivity.this, CreateLobby.class);
+//                startActivity(intent);
+//            }
+//        });
 
 //        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 //        fab.setOnClickListener(new View.OnClickListener() {
