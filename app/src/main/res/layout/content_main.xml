@@ -13,19 +13,100 @@
 
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:cardCornerRadius="2dp">
+            android:layout_height="0dp"
+            app:cardCornerRadius="2dp"
+            android:layout_weight="1"
+            android:layout_margin="16dp">
+
+                <RelativeLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    >
+                        <ImageView
+                            android:id="@+id/share_image_view"
+                            android:layout_width="100dp"
+                            android:layout_height="100dp"
+                            android:src="@drawable/ic_menu_share"
+                            android:scaleType="centerCrop"
+                            android:layout_marginStart="16dp"
+                            android:layout_centerVertical="true"
+                            />
+                        <TextView
+                            android:id="@+id/share_title_text_view"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/screen_mirror_create_title_description"
+                            android:textStyle="bold"
+                            android:layout_toEndOf="@+id/share_image_view"
+                            android:layout_marginBottom="16dp"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="60dp"
+                            />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/screen_mirror_create_title_description"
+                            android:textStyle="bold"
+                            android:layout_toEndOf="@+id/share_image_view"
+                            android:layout_below="@+id/share_title_text_view"
+                            android:layout_marginStart="16dp"
+                            />
+
+
+                </RelativeLayout>
+
+
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:cardCornerRadius="2dp"
+            android:layout_weight="1"
+            android:layout_marginBottom="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp">
 
                 <LinearLayout
-                    android:orientation="vertical"
+                    android:orientation="horizontal"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+
+                    >
 
                         <ImageView
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:src="@drawable/ic_menu_share"
-                            android:scaleType="centerCrop"/>
+                            android:id="@+id/access_image_view"
+                            android:layout_width="100dp"
+                            android:layout_height="100dp"
+                            android:src="@drawable/ic_bluetooth_black_24dp"
+                            android:scaleType="centerCrop"
+                            android:layout_marginStart="16dp"
+                            android:layout_centerVertical="true"
+                            />
+
+                        <TextView
+                            android:id="@+id/access_title_text_view"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/screen_mirror_create_title_description"
+                            android:textStyle="bold"
+                            android:layout_toEndOf="@+id/ic_bluetooth_black_24dp"
+                            android:layout_marginBottom="16dp"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="60dp"
+                            />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/screen_mirror_create_title_description"
+                            android:textStyle="bold"
+                            android:layout_toRightOf="@+id/share_image_view"
+                            android:layout_below="@+id/access_title_text_view"
+                            android:layout_marginLeft="16dp"/>
+
+
+
 
                 </LinearLayout>
 
