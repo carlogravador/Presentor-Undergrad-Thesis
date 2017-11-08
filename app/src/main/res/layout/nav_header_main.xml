@@ -12,12 +12,11 @@
     android:theme="@style/ThemeOverlay.AppCompat.Dark"
     android:orientation="vertical"
     android:gravity="bottom">
-
     <ImageView
         android:layout_width="72dp"
         android:layout_height="72dp"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
-        app:srcCompat="@drawable/presentorlogo"
+        app:srcCompat="@mipmap/ic_logo"
         android:id="@+id/imageView" />
 
     <TextView

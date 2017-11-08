@@ -11,26 +11,24 @@
     tools:context="com.example.android.presentor.MainActivity">
 
 
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:cardCornerRadius="2dp">
 
-        <Button
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
-            android:id="@+id/btn_share"
-            android:layout_gravity="center"
-            android:layout_width="300dp"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="8dp" />
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:src="@drawable/ic_menu_share"
+                            android:scaleType="centerCrop"/>
 
-        <Button
-
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="16dp"
-            android:id="@+id/btn_join"
-            android:layout_width="300dp"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:layout_gravity="center" />
+                </LinearLayout>
 
 
+        </android.support.v7.widget.CardView>
 </LinearLayout>

@@ -39,7 +39,9 @@
             android:drawableStart="@drawable/ic_people_outline"
             android:hint="@string/screen_mirror_create_lobby_name"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:maxLength="10"
+            android:maxLines="1"/>
 
 
 
@@ -49,7 +51,9 @@
             android:drawableStart="@drawable/ic_lock_outline"
             android:hint="@string/screen_mirror_create_password"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:maxLength="10"
+            android:maxLines="1" />
         <Button
             android:textColor="#FFF"
             android:background="@drawable/rec_gradient"
