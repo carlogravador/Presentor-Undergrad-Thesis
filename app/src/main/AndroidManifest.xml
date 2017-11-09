@@ -25,7 +25,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".CreateLobby" />
-        <activity android:name=".AccessActivity"></activity>
+        <activity android:name=".AccessActivity" />
+        <activity android:name=".DomoticsActivity"></activity>
     </application>
 
 </manifest>

@@ -15,6 +15,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.ListView;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -34,6 +35,16 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(MainActivity.this, CreateLobby.class);
+                startActivity(i);
+            }
+        });
+
+        ListView listItemDomotics = (ListView)findViewById(R.id.list_view_connected_devices);
+
+        shareCardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(MainActivity.this, DomoticsActivity.class);
                 startActivity(i);
             }
         });

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:minHeight="70dp"
+    app:cardCornerRadius="5dp"
+    app:cardElevation="5dp"
+    app:cardPreventCornerOverlap="false">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp"
+        android:orientation="horizontal">
+
+        <ToggleButton
+            android:id="@+id/domotics_toggle_button_all"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableTop="@drawable/ic_toggle_bg"
+            android:gravity="center"
+            android:textOff=""
+            android:textOn=""
+            android:textSize="16sp"
+            />
+
+
+        <TextView
+            android:textSize="16sp"
+            android:layout_marginLeft="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Appliance name"/>
+
+
+    </LinearLayout>
+
+
+</android.support.v7.widget.CardView>
