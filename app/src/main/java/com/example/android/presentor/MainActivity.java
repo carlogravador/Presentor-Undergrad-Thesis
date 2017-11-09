@@ -39,15 +39,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        ListView listItemDomotics = (ListView)findViewById(R.id.list_view_connected_devices);
 
-        shareCardView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(MainActivity.this, DomoticsActivity.class);
-                startActivity(i);
-            }
-        });
 
 
 //        Button screenMirroringButton = (Button) findViewById(R.id.btn_share);
