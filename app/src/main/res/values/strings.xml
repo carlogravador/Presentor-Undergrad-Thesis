@@ -16,6 +16,12 @@
     <string name="screen_mirror_create_password">Password (Optional)</string>
     <string name="screen_mirror_start_session">Start Screen Mirroring</string>
 
+    //content main strings
+    <string name="title_screen_mirror">Share</string>
+    <string name="screen_mirror_description">Start a group presentation by creating a new lobby.</string>
+    <string name="title_access_lobby">Access</string>
+    <string name="access_lobby_description">Join a group presentation.</string>
+
 
 
 </resources>
