@@ -20,16 +20,39 @@
 
         <ImageView
             android:id="@+id/list_item_icon"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="52dp"
+            android:layout_height="62dp"
             android:src="@drawable/ic_phone_android"
             />
 
         <TextView
+            android:id="@+id/client_service_number"
+            android:textSize="16sp"
+            android:layout_toRightOf="@+id/list_item_icon"
+            android:layout_marginStart="16dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/screen_mirror_create_title_description"
-            android:layout_toEndOf="@id/list_item_icon"/>
+            android:text="@str"/>
+
+        <TextView
+            android:id="@+id/client_IP_address"
+            android:textSize="16sp"
+            android:layout_toRightOf="@+id/list_item_icon"
+            android:layout_below="@+id/client_service_number"
+            android:layout_marginStart="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="IP Address"/>
+
+        <TextView
+            android:id="@+id/client_port_number"
+            android:textSize="16sp"
+            android:layout_toRightOf="@+id/list_item_icon"
+            android:layout_below="@+id/client_IP_address"
+            android:layout_marginStart="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="PORT"/>
 
 
     </RelativeLayout>

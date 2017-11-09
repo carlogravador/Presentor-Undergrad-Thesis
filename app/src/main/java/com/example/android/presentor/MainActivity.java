@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+
         CardView shareCardView = (CardView)findViewById(R.id.card_view_share);
 
         shareCardView.setOnClickListener(new View.OnClickListener() {

@@ -12,14 +12,14 @@
     app:cardElevation="5dp"
     app:cardPreventCornerOverlap="false">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="16dp"
         android:orientation="horizontal">
 
         <ToggleButton
-            android:id="@+id/domotics_toggle_button_all"
+            android:id="@+id/domotics_toggle_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:drawableTop="@drawable/ic_toggle_bg"
@@ -31,14 +31,16 @@
 
 
         <TextView
-            android:textSize="16sp"
-            android:layout_marginLeft="16dp"
+            android:textSize="20sp"
+            android:layout_toRightOf="@+id/domotics_toggle_button"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Appliance name"/>
 
 
-    </LinearLayout>
+    </RelativeLayout>
 
 
 </android.support.v7.widget.CardView>

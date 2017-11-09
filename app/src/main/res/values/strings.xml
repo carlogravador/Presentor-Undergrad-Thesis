@@ -23,5 +23,12 @@
     <string name="access_lobby_description">Join a group presentation.</string>
 
 
+    //domotics strings
+    <string name="appliance_name">Appliance name</string>
+
+    //clients connected strings
+    <string name="client_service">Service</string>
+    <string name="client_IP_address">IP Address</string>
+    <string name="client_port">PORT</string>
 
 </resources>
