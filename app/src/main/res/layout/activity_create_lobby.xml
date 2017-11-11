@@ -36,6 +36,7 @@
 
         <EditText
             android:drawablePadding="10dp"
+            android:inputType=""
             android:drawableStart="@drawable/ic_people_outline"
             android:hint="@string/screen_mirror_create_lobby_name"
             android:layout_width="match_parent"
