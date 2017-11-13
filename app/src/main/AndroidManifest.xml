@@ -24,7 +24,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".CreateLobby" />
+        <activity android:name=".CreateLobby"
+            android:parentActivityName=".MainActivity"/>
         <activity android:name=".AccessActivity" />
         <activity android:name=".DomoticsActivity"/>
     </application>

@@ -7,17 +7,8 @@
     android:orientation="vertical"
     tools:context="com.example.android.presentor.AccessActivity">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
 
-        <ImageView
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:src="@drawable/ic_menu_slideshow"
-            android:layout_margin="16dp"
-            android:textAlignment="center"/>
+
 
         <ListView
             android:id="@+id/list_view_connected_devices"
@@ -26,5 +17,5 @@
 
         </ListView>
 
-    </LinearLayout>
+
 </RelativeLayout>

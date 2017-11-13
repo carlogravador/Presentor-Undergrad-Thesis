@@ -36,7 +36,8 @@
 
         <EditText
             android:drawablePadding="10dp"
-            android:inputType=""
+            android:inputType="text"
+            android:imeOptions="actionNext"
             android:drawableStart="@drawable/ic_people_outline"
             android:hint="@string/screen_mirror_create_lobby_name"
             android:layout_width="match_parent"
@@ -49,6 +50,8 @@
         <EditText
             android:layout_marginTop="20dp"
             android:drawablePadding="10dp"
+            android:inputType="text"
+            android:imeOptions="actionDone"
             android:drawableStart="@drawable/ic_lock_outline"
             android:hint="@string/screen_mirror_create_password"
             android:layout_width="match_parent"
