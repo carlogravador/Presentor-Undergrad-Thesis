@@ -11,7 +11,7 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_logo"
+        android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
@@ -27,7 +27,7 @@
         <activity android:name=".CreateLobby"
             android:parentActivityName=".MainActivity"/>
         <activity android:name=".AccessActivity" />
-        <activity android:name=".DomoticsActivity"/>
+        <activity android:name=".Domotics.DomoticsActivity" />
     </application>
 
 </manifest>

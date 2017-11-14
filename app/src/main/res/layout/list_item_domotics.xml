@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/domotics_list_item"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
@@ -15,29 +17,36 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="16dp"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:padding="16dp">
 
-        <ToggleButton
-            android:id="@+id/domotics_toggle_button"
+        <RelativeLayout
+            android:id="@id/domotics_toggle_button"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:drawableTop="@drawable/ic_toggle_bg"
-            android:gravity="center"
-            android:textOff=""
-            android:textOn=""
-            android:textSize="16sp"
-            />
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/ic_toggle_bg" />
+
+            <ImageView
+                android:layout_centerInParent="true"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@drawable/ic_toggle_bg"
+                android:src="@drawable/ic_toggle" />
+        </RelativeLayout>
 
 
         <TextView
-            android:textSize="20sp"
-            android:layout_toRightOf="@+id/domotics_toggle_button"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Appliance name"/>
+            android:layout_marginStart="16dp"
+            android:layout_centerHorizontal="true"
+            android:layout_toRightOf="@+id/domotics_toggle_button"
+            android:textSize="20sp"
+            tools:text="Appliance Name" />
 
 
     </RelativeLayout>

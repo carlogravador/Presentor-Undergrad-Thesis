@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.android.presentor.DomoticsActivity">
+    tools:context="com.example.android.presentor.Domotics.DomoticsActivity">
 
     <ListView
         android:id="@+id/list_view_connected_devices"

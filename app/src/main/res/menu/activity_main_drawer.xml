@@ -3,12 +3,12 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_share"
+            android:id="@+id/nav_screen_mirroring"
             android:icon="@drawable/ic_menu_share"
             android:title="Screen Mirroring" />
 
         <item
-            android:id="@+id/nav_send"
+            android:id="@+id/nav_domotics"
             android:icon="@drawable/ic_bluetooth_black_24dp"
             android:title="Domotics" />
 

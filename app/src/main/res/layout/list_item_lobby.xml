@@ -32,7 +32,7 @@
             android:layout_marginStart="16dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="SERVICE"/>
+            tools:text="Service"/>
 
         <TextView
             android:id="@+id/client_IP_address"
@@ -42,7 +42,7 @@
             android:layout_marginStart="16dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="IP Address"/>
+            tools:text="IP Address"/>
 
         <TextView
             android:id="@+id/client_port_number"
@@ -52,7 +52,7 @@
             android:layout_marginStart="16dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="PORT"/>
+            tools:text="PORT"/>
 
 
     </RelativeLayout>
