@@ -10,24 +10,37 @@
     <string name="title_activity_create_lobby">Sign in</string>
 
 
-    //create lobby strings
+    <!--create lobby strings-->
     <string name="screen_mirror_create_title_description">Create Lobby to Start Screen Mirroring</string>
     <string name="screen_mirror_create_lobby_name">Lobby name</string>
     <string name="screen_mirror_create_password">Password (Optional)</string>
     <string name="screen_mirror_start_session">Start Screen Mirroring</string>
 
-    //content main strings
+    <!--content main strings-->
     <string name="title_screen_mirror">Share</string>
     <string name="screen_mirror_description">Start a group presentation by creating a new lobby.</string>
     <string name="title_access_lobby">Access</string>
     <string name="access_lobby_description">Join a group presentation.</string>
 
 
-    //domotics strings
-    <string name="appliance_name">Appliance name</string>
+    <!--domotics strings-->
+    <string name="master_switch">Master Switch</string>
 
+    <string-array name="appliance_name">
 
+        <item>Appliance 1</item>
+        <item>Appliance 2</item>
+        <item>Appliance 3</item>
+        <item>Appliance 4</item>
+        <item>Appliance 5</item>
+        <item>Appliance 6</item>
+        <item>Appliance 7</item>
+        <item>Appliance 8</item>
 
+    </string-array>
+
+    <string name="appliance_status_on">On</string>
+    <string name="appliance_status_off">Off</string>
 
 
 </resources>

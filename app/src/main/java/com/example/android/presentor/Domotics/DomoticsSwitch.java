@@ -1,33 +1,38 @@
 package com.example.android.presentor.Domotics;
 
+
 /**
  * Created by villa on 13/11/2017.
  */
 
 public class DomoticsSwitch {
+
     private final static String LOG_TAG = DomoticsSwitch.class.getSimpleName();
 
-    private boolean mIsSwitchOn;
-    private String mSwitchName;
+    private boolean switchStatus;
+    private String switchName;
 
-    public boolean ismIsSwitchOn() {
-        return mIsSwitchOn;
+
+    public boolean getSwitchStatus() {
+        return switchStatus;
     }
 
-    public void setmIsSwitchOn(boolean mIsSwitchOn) {
-        this.mIsSwitchOn = mIsSwitchOn;
+    public void setSwitchStatus(boolean switchStatus) {
+        this.switchStatus = switchStatus;
     }
 
-    public String getmSwitchName() {
-        return mSwitchName;
+    public String getSwitchName() {
+        return switchName;
     }
 
-    public void setmSwitchName(String mSwitchName) {
-        this.mSwitchName = mSwitchName;
+    public void setSwitchName(String switchName) {
+        this.switchName = switchName;
     }
 
-    public DomoticsSwitch(boolean mIsSwitchOn, String mSwitchName) {
-        this.mIsSwitchOn = mIsSwitchOn;
-        this.mSwitchName = mSwitchName;
+    public DomoticsSwitch(String switchName, boolean switchStatus) {
+        setSwitchName(switchName);
+        setSwitchStatus(switchStatus);
     }
+
+
 }

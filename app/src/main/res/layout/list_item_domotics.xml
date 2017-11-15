@@ -1,55 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/domotics_list_item"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    android:clickable="true"
-    android:focusable="true"
-    android:foreground="?android:attr/selectableItemBackground"
-    android:minHeight="70dp"
-    app:cardCornerRadius="5dp"
-    app:cardElevation="5dp"
-    app:cardPreventCornerOverlap="false">
+    android:layout_height="wrap_content">
 
-    <RelativeLayout
+    <android.support.v7.widget.CardView
+        android:id="@+id/card_view_domotics"
+        style="@style/MyCardView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal"
-        android:padding="16dp">
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp">
 
-        <RelativeLayout
-            android:id="@id/domotics_toggle_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="10dp">
 
-            <ImageView
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:background="@drawable/ic_toggle_bg" />
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical">
 
-            <ImageView
-                android:layout_centerInParent="true"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:background="@drawable/ic_toggle_bg"
-                android:src="@drawable/ic_toggle" />
-        </RelativeLayout>
+                <ImageView
+                    android:id="@+id/image_view_appliance_status"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/ic_power_bg_off"/>
 
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_centerInParent="true"
+                    android:src="@drawable/ic_power_status_fg"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_centerHorizontal="true"
-            android:layout_toRightOf="@+id/domotics_toggle_button"
-            android:textSize="20sp"
-            tools:text="Appliance Name" />
+            </RelativeLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="2"
+                android:orientation="vertical">
 
-    </RelativeLayout>
+                <TextView
+                    android:id="@+id/text_view_appliance_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:textColor="@color/colorBlack"
+                    android:textSize="18sp"
+                    android:layout_marginBottom="4dp"
+                    tools:text="Appliance Name"/>
 
+                <TextView
+                    android:id="@+id/text_view_appliance_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:textSize="14sp"
+                    tools:text="Status"/>
 
-</android.support.v7.widget.CardView>
+            </LinearLayout>
+
+            <Switch
+                android:id="@+id/switch_appliance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"/>
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+
+</FrameLayout>
