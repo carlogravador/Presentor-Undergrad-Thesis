@@ -5,4 +5,14 @@
     <color name="colorAccent">#009688</color>
 
     <color name="colorBlack">#000000</color>
+
+    //color theme for client
+    <color name="colorRed">#F44336</color>
+    <color name="colorOrange">#FF9800</color>
+    <color name="colorYellow">#FFEB3B</color>
+    <color name="colorGreen">#4CAF50</color>
+    <color name="colorBlue">#2196F3</color>
+    <color name="colorIndigo">#3F51B5</color>
+    <color name="colorViolet">#673AB7</color>
+
 </resources>

@@ -4,8 +4,8 @@ android {
     compileSdkVersion 26
     buildToolsVersion '26.0.2'
     defaultConfig {
-        applicationId "com.example.android.presentor"
-        minSdkVersion 19
+        applicationId 'com.kaboomskie.android.presentor'
+        minSdkVersion 21
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
@@ -17,10 +17,12 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    productFlavors {
+    }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
@@ -30,6 +32,5 @@ dependencies {
     compile 'com.android.support:cardview-v7:26.+'
     implementation 'pl.bclogic:pulsator4droid:1.0.3'
     implementation 'com.android.support:recyclerview-v7:26.+'
-
     testCompile 'junit:junit:4.12'
 }

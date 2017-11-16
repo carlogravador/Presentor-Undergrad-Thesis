@@ -17,7 +17,6 @@ import android.widget.TextView;
 
 import com.example.android.presentor.R;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -33,7 +32,7 @@ public class DomoticsSwitchAdapter extends ArrayAdapter<DomoticsSwitch> {
 
     @NonNull
     @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+    public View getView(final int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         View itemView = convertView;
         if (itemView == null) {
             itemView = LayoutInflater.from(getContext()).inflate(R.layout.list_item_domotics, parent, false);
@@ -41,17 +40,17 @@ public class DomoticsSwitchAdapter extends ArrayAdapter<DomoticsSwitch> {
 
         final DomoticsSwitch ds = getItem(position);
 
-        CardView cardView = (CardView)itemView.findViewById(R.id.card_view_domotics);
+        CardView cardView = (CardView) itemView.findViewById(R.id.card_view_domotics);
         final TextView applianceName = (TextView) itemView.findViewById(R.id.text_view_appliance_name);
         final TextView applianceStatusTextView = (TextView) itemView.findViewById(R.id.text_view_appliance_status);
         final ImageView applianceStatusImageView = (ImageView) itemView.findViewById(R.id.image_view_appliance_status);
         final Switch applianceStatusSwitch = (Switch) itemView.findViewById(R.id.switch_appliance);
 
         applianceName.setText(ds.getSwitchName());
-        if(ds.getSwitchStatus()){
+        if (ds.getSwitchStatus()) {
             applianceStatusTextView.setText(getContext().getResources().
                     getString(R.string.appliance_status_on));
-        }else{
+        } else {
             applianceStatusTextView.setText(getContext().getResources().
                     getString(R.string.appliance_status_off));
         }
@@ -61,18 +60,30 @@ public class DomoticsSwitchAdapter extends ArrayAdapter<DomoticsSwitch> {
         applianceStatusSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                ds.setSwitchStatus(!ds.getSwitchStatus());
-                if(isChecked){
-                    Drawable d =  getContext().getResources().getDrawable(R.drawable.ic_power_bg_on);
-                    applianceStatusImageView.setBackground(d);
+                Drawable d;
+                if (isChecked) {
+                    ds.setSwitchStatus(true);
+                    if(!DomoticsActivity.sArduinoSwitchesState[position]) {
+                        DomoticsActivity.turnOnArduinoSwitch(position, true);
+                    }
+                    d = getContext().getResources().getDrawable(R.drawable.ic_power_bg_on);
                     applianceStatusTextView.setText(getContext().getResources().
                             getString(R.string.appliance_status_on));
-                }else{
-                    Drawable d =  getContext().getResources().getDrawable(R.drawable.ic_power_bg_off);
-                    applianceStatusImageView.setBackground(d);
+                    if (isAllSwitchOpen()) {
+                        DomoticsActivity.sMasterSwitch.setChecked(true);
+                    }
+                } else {
+                    ds.setSwitchStatus(false);
+                    if(DomoticsActivity.sArduinoSwitchesState[position]) {
+                        DomoticsActivity.turnOnArduinoSwitch(position, false);
+                    }
+                    d = getContext().getResources().getDrawable(R.drawable.ic_power_bg_off);
                     applianceStatusTextView.setText(getContext().getResources().
                             getString(R.string.appliance_status_off));
+                    DomoticsActivity.sIsAllSwitchOpen = false;
+                    DomoticsActivity.sMasterSwitch.setChecked(false);
                 }
+                applianceStatusImageView.setBackground(d);
             }
         });
 
@@ -86,12 +97,24 @@ public class DomoticsSwitchAdapter extends ArrayAdapter<DomoticsSwitch> {
         cardView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
+                //TODO by Dan add Dialogbox that has a textfield and Fix navigation bar
+
                 Log.d("DomoticsSwitchAdapter", "Long press click: " + applianceName);
                 return true;
             }
         });
 
         return itemView;
+    }
+
+    private boolean isAllSwitchOpen() {
+        for (int i = 0; i < 8; i++) {
+            boolean somethingIsOff = !getItem(i).getSwitchStatus();
+            if (somethingIsOff) {
+                return false;
+            }
+        }
+        return true;
     }
 
 }
