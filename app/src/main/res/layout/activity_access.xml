@@ -1,17 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context="com.example.android.presentor.AccessActivity">
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                tools:context="com.example.android.presentor.screenshare.AccessActivity">
 
-        <ListView
-            android:id="@+id/list_view_connected_devices"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-        </ListView>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <ListView
+        android:id="@+id/list_view_lobby"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:listitem="@layout/list_item_lobby">
+    </ListView>
+
+    <!--Empty View-->
+
+
+    <pl.bclogic.pulsator4droid.library.PulsatorLayout
+        android:id="@+id/pulsator"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:pulse_count="4"
+        app:pulse_duration="4000"
+        app:pulse_repeat="0"
+        app:pulse_color="@color/colorAccentLight"
+        app:pulse_startFromScratch="true"
+        app:pulse_interpolator="Linear">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/center_background"
+            android:layout_marginBottom="150dp"
+            android:layout_centerHorizontal="true"
+            android:textSize="18sp"
+            android:text="@string/room_empty"/>
+
+        <ImageView
+            android:id="@+id/center_background"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_centerInParent="true"
+            android:background="@drawable/ic_circle"
+            android:backgroundTint="@color/colorCircle"
+            />
+
+        <ImageView
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_centerInParent="true"
+            android:background="@drawable/ic_phone_android"/>
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/center_background"
+            android:layout_marginTop="150dp"
+            android:layout_centerHorizontal="true"
+            android:textSize="18sp"
+            android:text="@string/searching"/>
+        
+    </pl.bclogic.pulsator4droid.library.PulsatorLayout>
 
 
 </RelativeLayout>

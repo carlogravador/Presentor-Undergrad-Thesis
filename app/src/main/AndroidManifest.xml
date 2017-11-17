@@ -23,10 +23,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".CreateLobby"
+        <activity android:name=".screenshare.CreateActivity"
             android:parentActivityName=".MainActivity"/>
-        <activity android:name=".AccessActivity" />
-        <activity android:name=".Domotics.DomoticsActivity" />
+        <activity android:name=".screenshare.AccessActivity"
+            android:parentActivityName=".MainActivity"/>
+        <activity android:name=".domotics.DomoticsActivity"
+            android:parentActivityName=".MainActivity"/>
     </application>
 
 </manifest>

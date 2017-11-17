@@ -13,7 +13,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.example.android.presentor.Domotics.DomoticsActivity;
+import com.example.android.presentor.domotics.DomoticsActivity;
+import com.example.android.presentor.screenshare.AccessActivity;
+import com.example.android.presentor.screenshare.CreateActivity;
 
 
 public class MainActivity extends AppCompatActivity
@@ -42,7 +44,7 @@ public class MainActivity extends AppCompatActivity
         shareCardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(MainActivity.this, CreateLobby.class);
+                Intent i = new Intent(MainActivity.this, CreateActivity.class);
                 startActivity(i);
             }
         });

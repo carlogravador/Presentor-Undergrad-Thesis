@@ -42,5 +42,10 @@
     <string name="appliance_status_on">On</string>
     <string name="appliance_status_off">Off</string>
 
+    <!--screen share string-->
+
+    <string name="searching">Searching for rooms...</string>
+    <string name="room_empty">No available rooms as of now.</string>
+
 
 </resources>
