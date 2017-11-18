@@ -19,6 +19,10 @@ import com.example.android.presentor.Domotics.DomoticsActivity;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    NavigationView mNavigationView;
+    DrawerLayout mDrawer;
+
+    Intent mIntent;
 
 
     @Override
@@ -48,21 +52,34 @@ public class MainActivity extends AppCompatActivity
         });
 
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawer.addDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override public void onDrawerSlide(View drawerView, float slideOffset) {}
+            @Override public void onDrawerOpened(View drawerView) {}
+            @Override public void onDrawerStateChanged(int newState) {}
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                //Set your new fragment here
+                if (mIntent != null) {
+                    startActivity(mIntent);
+                }
+            }
+        });
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-            this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
+            this, mDrawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        mDrawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        mNavigationView = (NavigationView) findViewById(R.id.nav_view);
+        mNavigationView.setNavigationItemSelectedListener(this);
     }
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
+        mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (mDrawer.isDrawerOpen(GravityCompat.START)) {
+            mDrawer.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
         }
@@ -97,17 +114,24 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_screen_mirroring) {
-
+            mIntent = null;
 
         } else if (id == R.id.nav_domotics) {
 
-            Intent i = new Intent(MainActivity.this, DomoticsActivity.class);
-            startActivity(i);
+            mIntent = new Intent(MainActivity.this, DomoticsActivity.class);
 
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
+        mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+        mDrawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    protected void onResume() {
+        mNavigationView.setCheckedItem(R.id.nav_screen_mirroring);
+        super.onResume();
+
     }
 }

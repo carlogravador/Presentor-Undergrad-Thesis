@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <group android:checkableBehavior="single">
+    <group
+        android:id="@+id/main_menu"
+        android:checkableBehavior="single">
         <item
             android:id="@+id/nav_screen_mirroring"
             android:icon="@drawable/ic_menu_share"
@@ -12,28 +15,23 @@
             android:icon="@drawable/ic_bluetooth_black_24dp"
             android:title="Domotics" />
 
+
     </group>
 
-    <item android:title="Communicate">
+
+    <group
+        android:id="@+id/communication"
+        android:checkableBehavior="single">
         <menu>
             <item
                 android:id="@+id/nav_camera"
-                android:icon="@drawable/ic_menu_camera"
-                android:title="Selfie" />
+                android:icon="@drawable/ic_settings_black_24dp"
+                android:title="Settings" />
             <item
                 android:id="@+id/nav_gallery"
-                android:icon="@drawable/ic_menu_gallery"
-                android:title="Gallery" />
-            <item
-                android:id="@+id/nav_slideshow"
-                android:icon="@drawable/ic_menu_slideshow"
-                android:title="Slideshow" />
-            <item
-                android:id="@+id/nav_manage"
-                android:icon="@drawable/ic_menu_manage"
-                android:title="Tools" />
+                android:icon="@drawable/ic_info_outline"
+                android:title="About" />
 
         </menu>
-    </item>
-
+    </group>
 </menu>

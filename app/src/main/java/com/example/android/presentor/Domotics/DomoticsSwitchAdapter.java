@@ -1,6 +1,8 @@
 package com.example.android.presentor.Domotics;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -11,9 +13,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.android.presentor.R;
 
@@ -98,6 +102,8 @@ public class DomoticsSwitchAdapter extends ArrayAdapter<DomoticsSwitch> {
             @Override
             public boolean onLongClick(View view) {
                 //TODO by Dan add Dialogbox that has a textfield and Fix navigation bar
+                AlertDialog ad = builder.create();
+                ad.show();
 
                 Log.d("DomoticsSwitchAdapter", "Long press click: " + applianceName);
                 return true;
@@ -116,5 +122,47 @@ public class DomoticsSwitchAdapter extends ArrayAdapter<DomoticsSwitch> {
         }
         return true;
     }
+
+    AlertDialog.Builder builder = new AlertDialog.Builder(getContext()){
+
+        EditText editText = new EditText(DomoticsSwitchAdapter.this.getContext());
+
+        @Override
+        public AlertDialog.Builder setView(View view) {
+            view = editText;
+            return super.setView(view);
+        }
+
+        DialogInterface.OnClickListener positiveListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Log.d("DomoticsSwitchAdapter", "Positive Button Click");
+            }
+        };
+
+        DialogInterface.OnClickListener negativeListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Log.d("DomoticsSwitchAdapter", "Negative Button CLick");
+            }
+        };
+
+        public AlertDialog.Builder setPositiveButton(CharSequence text, DialogInterface.OnClickListener listener) {
+            listener = positiveListener;
+            return super.setPositiveButton(text, listener);
+        }
+
+        @Override
+        public AlertDialog.Builder setNegativeButton(CharSequence text, DialogInterface.OnClickListener listener) {
+            listener = negativeListener;
+            return super.setNegativeButton(text, listener);
+        }
+
+        @Override
+        public AlertDialog.Builder setTitle(CharSequence title) {
+            title = "AWWWW";
+            return super.setTitle(title);
+        }
+    };
 
 }
