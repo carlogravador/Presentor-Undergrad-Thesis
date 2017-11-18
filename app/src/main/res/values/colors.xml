@@ -12,12 +12,12 @@
     <color name="colorAccentLight">#c811d1bf</color>
 
     //color theme for client
-    <color name="colorRed">#F44336</color>
-    <color name="colorOrange">#FF9800</color>
-    <color name="colorYellow">#FFEB3B</color>
+    <color name="colorRed">#c94036</color>
+    <color name="colorOrange">#c77a08</color>
+    <color name="colorGray">#898989</color>
     <color name="colorGreen">#4CAF50</color>
-    <color name="colorBlue">#2196F3</color>
+    <color name="colorBlue">#177ed1</color>
     <color name="colorIndigo">#3F51B5</color>
     <color name="colorViolet">#673AB7</color>
-
+    <color name="colorDefault">#d2205d</color>
 </resources>

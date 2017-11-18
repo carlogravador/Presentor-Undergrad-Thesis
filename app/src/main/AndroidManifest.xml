@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.android.presentor">
+          package="com.example.android.presentor">
 
-    
     <uses-permission android:name="android.permission.BLUETOOTH"/>
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission
+        android:name="android.permission.ACCESS_WIFI_STATE"
+        android:required="true"/>
+    <uses-permission
+        android:name="android.permission.CHANGE_WIFI_STATE"
+        android:required="true"/>
 
     <application
         android:allowBackup="true"
@@ -18,17 +24,28 @@
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".screenshare.CreateActivity"
+        <activity
+            android:name=".screenshare.CreateActivity"
             android:parentActivityName=".MainActivity"/>
-        <activity android:name=".screenshare.AccessActivity"
+        <activity
+            android:name=".screenshare.AccessActivity"
             android:parentActivityName=".MainActivity"/>
-        <activity android:name=".domotics.DomoticsActivity"
+        <activity
+            android:name=".domotics.DomoticsActivity"
             android:parentActivityName=".MainActivity"/>
+
+        <provider
+            android:name=".db.ServicesProvider"
+            android:authorities="com.example.android.presentor"
+            android:exported="false"/>
+
+        <activity android:name=".screenshare.ClientActivity">
+        </activity>
     </application>
 
 </manifest>

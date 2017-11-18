@@ -7,14 +7,13 @@
                 android:orientation="vertical"
                 tools:context="com.example.android.presentor.screenshare.AccessActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
 
     <ListView
         android:id="@+id/list_view_lobby"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:divider="@null"
+        android:dividerHeight="0dp"
         tools:listitem="@layout/list_item_lobby">
     </ListView>
 
@@ -25,21 +24,13 @@
         android:id="@+id/pulsator"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:pulse_count="4"
-        app:pulse_duration="4000"
-        app:pulse_repeat="0"
         app:pulse_color="@color/colorAccentLight"
-        app:pulse_startFromScratch="true"
-        app:pulse_interpolator="Linear">
+        app:pulse_count="4"
+        app:pulse_duration="2000"
+        app:pulse_interpolator="Linear"
+        app:pulse_repeat="0"
+        app:pulse_startFromScratch="true">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@id/center_background"
-            android:layout_marginBottom="150dp"
-            android:layout_centerHorizontal="true"
-            android:textSize="18sp"
-            android:text="@string/room_empty"/>
 
         <ImageView
             android:id="@+id/center_background"
@@ -61,11 +52,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/center_background"
-            android:layout_marginTop="150dp"
             android:layout_centerHorizontal="true"
-            android:textSize="18sp"
-            android:text="@string/searching"/>
-        
+            android:layout_marginTop="150dp"
+            android:text="@string/searching"
+            android:textSize="18sp"/>
+
     </pl.bclogic.pulsator4droid.library.PulsatorLayout>
 
 

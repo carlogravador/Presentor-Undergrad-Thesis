@@ -35,6 +35,7 @@
         android:layout_height="wrap_content">
 
         <EditText
+            android:id="@+id/edit_text_lobby"
             android:drawablePadding="10dp"
             android:inputType="text"
             android:imeOptions="actionNext"
@@ -48,6 +49,7 @@
 
 
         <EditText
+            android:id="@+id/edit_text_password"
             android:layout_marginTop="20dp"
             android:drawablePadding="10dp"
             android:inputType="text"
@@ -58,7 +60,9 @@
             android:layout_height="wrap_content"
             android:maxLength="10"
             android:maxLines="1" />
+
         <Button
+            android:id="@+id/button_start_sharing"
             android:textColor="#FFF"
             android:background="@drawable/rec_gradient"
             android:layout_marginTop="50dp"
