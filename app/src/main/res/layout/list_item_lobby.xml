@@ -1,76 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-                                    xmlns:app="http://schemas.android.com/apk/res-auto"
-                                    xmlns:tools="http://schemas.android.com/tools"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_margin="8dp"
-                                    android:clickable="true"
-                                    android:focusable="true"
-                                    android:foreground="?android:attr/selectableItemBackground"
-                                    android:minHeight="70dp"
-                                    app:cardCornerRadius="5dp"
-                                    app:cardElevation="5dp"
-                                    app:cardPreventCornerOverlap="false">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content">
 
-    <RelativeLayout
+    <android.support.v7.widget.CardView
+        android:id="@+id/card_view_lobby"
+        style="@style/MyCardView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:layout_margin="4dp">
 
-        <RelativeLayout
-            android:id="@+id/list_item_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-
-            <ImageView
-                android:id="@+id/list_item_background"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_centerInParent="true"
-                android:background="@drawable/ic_power_bg_off"
-                />
-
-            <ImageView
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_centerInParent="true"
-                android:src="@drawable/ic_phone_android"
-                />
-
-        </RelativeLayout>
-
-        <TextView
-            android:id="@+id/client_service_number"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_toRightOf="@+id/list_item_icon"
-            android:textSize="16sp"
-            tools:text="Service"/>
+            android:padding="8dp">
 
-        <TextView
-            android:id="@+id/client_IP_address"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/client_service_number"
-            android:layout_marginStart="16dp"
-            android:layout_toRightOf="@+id/list_item_icon"
-            android:textSize="16sp"
-            tools:text="IP Address"/>
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/client_port_number"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/client_IP_address"
-            android:layout_marginStart="16dp"
-            android:layout_toRightOf="@+id/list_item_icon"
-            android:textSize="16sp"
-            tools:text="PORT"/>
+                <ImageView
+                    android:id="@+id/list_item_background"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_centerInParent="true"
+                    android:background="@drawable/ic_circle"
+                    />
 
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_centerInParent="true"
+                    android:src="@drawable/ic_phone_android"
+                    />
 
-    </RelativeLayout>
+            </RelativeLayout>
 
-</android.support.v7.widget.CardView>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/text_view_lobby_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:maxLines="1"
+                    android:textColor="@color/colorBlack"
+                    android:textSize="18sp"
+                    android:layout_marginBottom="4dp"
+                    tools:text="Service name"/>
+
+                <TextView
+                    android:id="@+id/text_view_creator_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:textSize="14sp"
+                    tools:text="By: Carlo Gravador"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+
+</FrameLayout>

@@ -1,4 +1,4 @@
-package com.example.android.presentor.Domotics;
+package com.example.android.presentor.domotics;
 
 
 /**
