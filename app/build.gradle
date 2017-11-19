@@ -30,7 +30,7 @@ dependencies {
     compile 'com.android.support:design:26.+'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.android.support:cardview-v7:26.+'
-    implementation 'com.github.ahaverty:Pulsator4Droid:c31fb788db'
+    implementation 'pl.bclogic:pulsator4droid:1.0.3'
     implementation 'com.android.support:recyclerview-v7:26.+'
     testCompile 'junit:junit:4.12'
 }

@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        CardView accessCardView = (CardView)findViewById(R.id.card_view_access);
+        CardView accessCardView = (CardView) findViewById(R.id.card_view_access);
         accessCardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity
         });
 
 
-        CardView shareCardView = (CardView)findViewById(R.id.card_view_share);
+        CardView shareCardView = (CardView) findViewById(R.id.card_view_share);
         shareCardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -56,9 +56,17 @@ public class MainActivity extends AppCompatActivity
 
         mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawer.addDrawerListener(new DrawerLayout.DrawerListener() {
-            @Override public void onDrawerSlide(View drawerView, float slideOffset) {}
-            @Override public void onDrawerOpened(View drawerView) {}
-            @Override public void onDrawerStateChanged(int newState) {}
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+            }
 
             @Override
             public void onDrawerClosed(View drawerView) {
@@ -69,7 +77,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-            this, mDrawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this, mDrawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         mDrawer.setDrawerListener(toggle);
         toggle.syncState();
 
@@ -115,14 +123,22 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_screen_mirroring) {
-            mIntent = null;
-
-        } else if (id == R.id.nav_domotics) {
-
-            mIntent = new Intent(MainActivity.this, DomoticsActivity.class);
-
+        switch (id) {
+            case R.id.nav_screen_mirroring:
+                mIntent = null;
+                break;
+            case R.id.nav_domotics:
+                mIntent = new Intent(MainActivity.this, DomoticsActivity.class);
+                break;
+            case R.id.nav_settings:
+                mIntent = null;
+                break;
+            case R.id.nav_about:
+                mIntent = null;
+                break;
         }
+
+
 
         mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
@@ -133,6 +149,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         mNavigationView.setCheckedItem(R.id.nav_screen_mirroring);
+        mIntent = null;
         super.onResume();
 
     }

@@ -6,12 +6,14 @@ import android.os.Handler;
 import android.util.Log;
 import android.widget.ImageView;
 
+import com.example.android.presentor.utils.ConnectionUtility;
+import com.example.android.presentor.utils.Utility;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -42,8 +44,8 @@ public class ShareService {
         hasClients = false;
     }
 
-    public void connect(InetAddress inetAddress, int port, Handler handler, ImageView imageView){
-        mClient = new Client(inetAddress, port, handler, imageView);
+    public void connect(String ip, int port, Handler handler, ImageView imageView){
+        mClient = new Client(ip, port, handler, imageView);
     }
 
     public void send(byte[] buffer){
@@ -82,14 +84,15 @@ public class ShareService {
                 mClient = new Client(socket);
             }
 
+            Log.d("ShareService", "Server Stop");
             mServerSocket.close();
             mServerSocket = null;
-
         }
 
         @Override
         public void run() {
             try {
+                Log.d("ShareService", "server start listening for connection");
                 listen(mPort);
             }catch (IOException e){
                 e.printStackTrace();
@@ -110,6 +113,8 @@ public class ShareService {
 
         long bitmapReceive;
 
+        //the client that is received by the server
+        //runs on server
         public Client (Socket socket){
             try {
                 mSocket = socket;
@@ -120,11 +125,13 @@ public class ShareService {
             }
         }
 
-        public Client(InetAddress inetAddress, int port, Handler handler, ImageView imageView){
+        //create a client to connect to server
+        //runs on client
+        public Client(String ip, int port, Handler handler, ImageView imageView){
             try {
                 updateUiHandler = handler;
                 mImageView = imageView;
-                mSocket = new Socket(inetAddress, port);
+                mSocket = new Socket(ip, port);
                 mInputStream = mSocket.getInputStream();
                 mOutputStream = mSocket.getOutputStream();
                 mDataInputStream = new DataInputStream(mInputStream);

@@ -2,13 +2,10 @@ package com.example.android.presentor.screenshare;
 
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.CursorLoader;
-import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.android.presentor.R;
@@ -23,9 +20,11 @@ import java.util.TimerTask;
 import pl.bclogic.pulsator4droid.library.PulsatorLayout;
 
 public class AccessActivity extends AppCompatActivity
-        implements LoaderCallbacks<Cursor>{
+        implements LoaderCallbacks<Cursor> {
 
     private final static int SERVICE_LOADER = 0;
+
+    PulsatorLayout mPulsator;
 
     private NsdHelper mNsdHelper;
     private ServiceCursorAdapter mServiceCursorAdapter;
@@ -35,12 +34,11 @@ public class AccessActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_access);
 
-        PulsatorLayout mPulsator;
-        mPulsator = (PulsatorLayout)findViewById(R.id.pulsator);
+
+        mPulsator = (PulsatorLayout) findViewById(R.id.pulsator);
         mPulsator.start();
 
-        //delete first existing database everytime activity is created
-        //DatabaseUtility.dbCheck();
+        //delete first existing database every time activity is created
         DatabaseUtility.clearServiceList(this);
         //create new database;
         mServiceCursorAdapter = new ServiceCursorAdapter(this, null);
@@ -48,23 +46,16 @@ public class AccessActivity extends AppCompatActivity
         initClientSide();
 
 
-        ListView lobbyListView = (ListView)findViewById(R.id.list_view_lobby);
+        ListView lobbyListView = (ListView) findViewById(R.id.list_view_lobby);
         lobbyListView.setAdapter(mServiceCursorAdapter);
         lobbyListView.setEmptyView(mPulsator);
 
-        lobbyListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-            Intent intent = new Intent(AccessActivity.this, ClientActivity.class);
-
-            }
-        });
 
         getLoaderManager().initLoader(SERVICE_LOADER, null, this);
 
     }
 
-    private void initClientSide(){
+    private void initClientSide() {
         new Timer().schedule(
                 new TimerTask() {
                     @Override
@@ -74,7 +65,6 @@ public class AccessActivity extends AppCompatActivity
                 }, 2000
         );
     }
-
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {

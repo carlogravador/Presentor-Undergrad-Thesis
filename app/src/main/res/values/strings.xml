@@ -47,5 +47,12 @@
     <string name="searching">Searching for rooms...</string>
     <string name="room_empty">No available rooms as of now.</string>
 
+    <!--Navigation drawer string-->
+    <string name="domotics">Screen Mirroring</string>
+    <string name="screen_mirroring">Domotics</string>
+    <string name="settings">Settings</string>
+    <string name="about">About</string>
+
+
 
 </resources>

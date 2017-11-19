@@ -3,7 +3,6 @@ package com.example.android.presentor.screenshare;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
@@ -14,7 +13,6 @@ import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -47,13 +45,11 @@ public class CreateActivity extends AppCompatActivity {
     private String creatorName = "Carlo Gravador";
 
     private static final int REQUEST_CODE = 1000;
-    private int mResultCode;
-    private Intent mProjectionIntent;
 
     private int mScreenDensity;
     private int mDisplayWidth;
     private int mDisplayHeight;
-    private int mImageProduced;
+    //private int mImageProduced;
 
     private ImageReader mImageReader;
     private MediaProjection mMediaProjection;
@@ -63,20 +59,6 @@ public class CreateActivity extends AppCompatActivity {
     private ShareService mShareService;
     private NsdHelper mNsdHelper;
 
-    private BroadcastReceiver localDashReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            switch (intent.getAction()) {
-                case NsdHelper.BROADCAST_REGISTER_SUCCESS:
-                    startProjection(mResultCode, mProjectionIntent);
-                    break;
-                case NsdHelper.BROADCAST_UNREGISTER_SUCCESS:
-                    LocalBroadcastManager.getInstance(CreateActivity.this).
-                            unregisterReceiver(localDashReceiver);
-                    break;
-            }
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,13 +72,14 @@ public class CreateActivity extends AppCompatActivity {
         mShareService = new ShareService();
         mNsdHelper = new NsdHelper(this);
 
-        mProjectionManager = (MediaProjectionManager) (MediaProjectionManager) getSystemService
+        mProjectionManager = (MediaProjectionManager) getSystemService
                 (Context.MEDIA_PROJECTION_SERVICE);
 
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (!mShareService.isServerOpen) {
+                    //start
                     startActivityForResult(mProjectionManager.createScreenCaptureIntent(), REQUEST_CODE);
                 } else {
                     //stop
@@ -116,15 +99,15 @@ public class CreateActivity extends AppCompatActivity {
 
     }
 
-    @Override
-    protected void onResume() {
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(NsdHelper.BROADCAST_REGISTER_SUCCESS);
-        filter.addAction(NsdHelper.BROADCAST_UNREGISTER_SUCCESS);
-        LocalBroadcastManager.getInstance(CreateActivity.this).registerReceiver(localDashReceiver,
-                filter);
-        super.onResume();
-    }
+//    @Override
+//    protected void onResume() {
+//        IntentFilter filter = new IntentFilter();
+//        filter.addAction(NsdHelper.BROADCAST_REGISTER_SUCCESS);
+//        filter.addAction(NsdHelper.BROADCAST_UNREGISTER_SUCCESS);
+//        LocalBroadcastManager.getInstance(CreateActivity.this).registerReceiver(localDashReceiver,
+//                filter);
+//        super.onResume();
+//    }
 
 
 
@@ -139,20 +122,18 @@ public class CreateActivity extends AppCompatActivity {
                     "Screen Cast Permission Denied", Toast.LENGTH_SHORT).show();
             return;
         }
-        mResultCode = resultCode;
-        mProjectionIntent = data;
-        startScreenSharing();
+        startScreenSharing(resultCode, data);
     }
 
 
     private void createVirtualDisplay() {
-        mMediaProjection.createVirtualDisplay("MainActivity", mDisplayWidth, mDisplayHeight,
+        mMediaProjection.createVirtualDisplay("ScreenCapture", mDisplayWidth, mDisplayHeight,
                 mScreenDensity, DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
                 mImageReader.getSurface(), null /*Callbacks*/, mImageHandler
                 /*Handler*/);
     }
 
-    private void startScreenSharing() {
+    private void startScreenSharing(int resultCode, Intent data) {
         mLobbyName = lobbyNameEditText.getText().toString().trim();
         //creatorName = ;
         mPort = ConnectionUtility.getPort(this);
@@ -163,9 +144,7 @@ public class CreateActivity extends AppCompatActivity {
         }
         mNsdHelper.setServiceName(mLobbyName, creatorName);
         mNsdHelper.registerService(mPort);
-    }
 
-    private void startProjection(int resultCode, Intent data){
         mMediaProjection = mProjectionManager.getMediaProjection(resultCode, data);
         DisplayMetrics metrics = getResources().getDisplayMetrics();
         mScreenDensity = metrics.densityDpi;
@@ -181,7 +160,10 @@ public class CreateActivity extends AppCompatActivity {
         mImageReader.setOnImageAvailableListener(new ImageAvailableListener(), mImageHandler);
     }
 
+
+
     private void stopScreenSharing() {
+        ConnectionUtility.clearPort(this);
         mShareService.stop();
         mNsdHelper.stopRegisterService();
         stopMediaProjection();
@@ -204,7 +186,7 @@ public class CreateActivity extends AppCompatActivity {
             Image image = null;
             Bitmap bitmap = null;
 
-            ByteArrayOutputStream byteArrayOutputStream = null;
+            ByteArrayOutputStream byteArrayOutputStream;
 
             try {
                 image = imageReader.acquireLatestImage();
@@ -225,8 +207,7 @@ public class CreateActivity extends AppCompatActivity {
                         bitmap.compress(Bitmap.CompressFormat.JPEG, 5, byteArrayOutputStream);
                         mShareService.send(byteArrayOutputStream.toByteArray());
                     }
-                    mImageProduced++;
-                    Log.d(TAG, "captured image: " + mImageProduced);
+
                 }
             } catch (Exception e) {
                 e.printStackTrace();

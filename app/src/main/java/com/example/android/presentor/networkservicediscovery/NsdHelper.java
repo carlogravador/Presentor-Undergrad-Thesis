@@ -12,6 +12,8 @@ import android.widget.Toast;
 import com.example.android.presentor.db.DatabaseUtility;
 import com.example.android.presentor.db.ServicesDbHelper;
 
+import pl.bclogic.pulsator4droid.library.PulsatorLayout;
+
 /**
  * Created by Carlo on 17/11/2017.
  */
@@ -20,16 +22,17 @@ public class NsdHelper {
 
     Context mContext;
 
-    private LocalBroadcastManager broadcaster;
+//    private LocalBroadcastManager broadcaster;
 
     NsdManager mNsdManager;
     NsdManager.ResolveListener mResolveListener;
     NsdManager.DiscoveryListener mDiscoveryListener;
     NsdManager.RegistrationListener mRegistrationListener;
 
+
     public static final String SERVICE_TYPE = "_http._tcp";
-    public static final String BROADCAST_REGISTER_SUCCESS = "RegisterBroadcast";
-    public static final String BROADCAST_UNREGISTER_SUCCESS = "UnregisterBroadcast";
+//    public static final String BROADCAST_REGISTER_SUCCESS = "RegisterBroadcast";
+//    public static final String BROADCAST_UNREGISTER_SUCCESS = "UnregisterBroadcast";
     //separator for service name and service host
     public static final String UNDERSCORE = "_";
 
@@ -147,23 +150,24 @@ public class NsdHelper {
                 mServiceName = NsdServiceInfo.getServiceName();
                 Log.d(TAG, "Service registered: " + NsdServiceInfo);
                 Toast.makeText(mContext, "Service Registered", Toast.LENGTH_LONG).show();
-                Intent intent = new Intent(BROADCAST_REGISTER_SUCCESS);
-                broadcaster.sendBroadcast(intent);
+//                Intent intent = new Intent(BROADCAST_REGISTER_SUCCESS);
+//                broadcaster.sendBroadcast(intent);
             }
 
             @Override
             public void onRegistrationFailed(NsdServiceInfo arg0, int arg1) {
                 Log.d(TAG, "Service registration failed: " + arg1);
                 Toast.makeText(mContext, "Service Failed", Toast.LENGTH_LONG).show();
-                Intent intent = new Intent(BROADCAST_UNREGISTER_SUCCESS);
-                broadcaster.sendBroadcast(intent);
+
             }
 
             @Override
             public void onServiceUnregistered(NsdServiceInfo arg0) {
                 Log.d(TAG, "Service unregistered: " + arg0.getServiceName());
                 Toast.makeText(mContext, "Service Unregistered", Toast.LENGTH_LONG).show();
-                //DatabaseUtility.clearConnectedDevice(mContext);
+//                Intent intent = new Intent(BROADCAST_UNREGISTER_SUCCESS);
+//                broadcaster.sendBroadcast(intent);
+//                //DatabaseUtility.clearConnectedDevice(mContext);
             }
 
             @Override
@@ -176,7 +180,7 @@ public class NsdHelper {
 
 
     public void registerService(int port) {
-        broadcaster = LocalBroadcastManager.getInstance(mContext);
+//        broadcaster = LocalBroadcastManager.getInstance(mContext);
         stopRegisterService();  // Cancel any previous registration request
         initializeRegistrationListener();
         NsdServiceInfo serviceInfo = new NsdServiceInfo();
@@ -199,7 +203,8 @@ public class NsdHelper {
         if (mDiscoveryListener != null) {
             try {
                 mNsdManager.stopServiceDiscovery(mDiscoveryListener);
-            } finally {
+            } catch (Exception e){
+                e.printStackTrace();
             }
             mDiscoveryListener = null;
         }

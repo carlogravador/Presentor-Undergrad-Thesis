@@ -42,6 +42,7 @@
             android:layout_height="wrap_content">
 
             <EditText
+                android:id="@+id/edit_text_lobby"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="30dp"
@@ -60,6 +61,7 @@
             android:layout_height="wrap_content">
 
             <EditText
+                android:id="@+id/edit_text_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="40dp"
@@ -73,6 +75,7 @@
         </android.support.design.widget.TextInputLayout>
 
         <Button
+            android:id="@+id/button_start_sharing"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="50dp"
