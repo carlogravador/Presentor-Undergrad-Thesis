@@ -8,91 +8,100 @@
     tools:ignore="contentDescription">
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
         <ImageView
-            android:background="@drawable/background_gradient"
-            android:layout_weight="1"
             android:layout_width="match_parent"
-            android:layout_height="0dp" />
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@drawable/background_gradient" />
+
         <ImageView
-            android:layout_weight="1"
             android:layout_width="match_parent"
-            android:layout_height="0dp" />
+            android:layout_height="0dp"
+            android:layout_weight="1" />
     </LinearLayout>
+
 
     <LinearLayout
-        android:layout_marginTop="120dp"
         android:id="@+id/layoutInput"
-        android:layout_marginRight="20dp"
-        android:layout_marginLeft="20dp"
-        android:layout_centerHorizontal="true"
-        android:background="@drawable/background_white"
-        android:padding="20dp"
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="155dp"
+        android:background="@drawable/background_white"
+        android:orientation="vertical"
+        android:padding="20dp">
 
-        <EditText
-            android:id="@+id/edit_text_lobby"
-            android:drawablePadding="10dp"
-            android:inputType="text"
-            android:imeOptions="actionNext"
-            android:drawableStart="@drawable/ic_people_outline"
-            android:hint="@string/screen_mirror_create_lobby_name"
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/text_input_layout1"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:maxLength="10"
-            android:maxLines="1"/>
+            android:layout_height="wrap_content">
 
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="30dp"
+                android:drawablePadding="10dp"
+                android:drawableStart="@drawable/ic_people_outline"
+                android:hint="@string/screen_mirror_create_lobby_name"
+                android:imeOptions="actionNext"
+                android:inputType="text"
+                android:maxLength="10"
+                android:maxLines="1" />
+        </android.support.design.widget.TextInputLayout>
 
-
-        <EditText
-            android:id="@+id/edit_text_password"
-            android:layout_marginTop="20dp"
-            android:drawablePadding="10dp"
-            android:inputType="text"
-            android:imeOptions="actionDone"
-            android:drawableStart="@drawable/ic_lock_outline"
-            android:hint="@string/screen_mirror_create_password"
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/text_input_layout3"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:maxLength="10"
-            android:maxLines="1" />
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:drawablePadding="10dp"
+                android:drawableStart="@drawable/ic_lock_outline"
+                android:hint="@string/screen_mirror_create_password"
+                android:imeOptions="actionDone"
+                android:inputType="text"
+                android:maxLength="10"
+                android:maxLines="1" />
+        </android.support.design.widget.TextInputLayout>
 
         <Button
-            android:id="@+id/button_start_sharing"
-            android:textColor="#FFF"
-            android:background="@drawable/rec_gradient"
-            android:layout_marginTop="50dp"
-            android:textAllCaps="false"
-            android:text="@string/screen_mirror_start_session"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:background="@drawable/rec_gradient"
+            android:text="@string/screen_mirror_start_session"
+            android:textAllCaps="false"
+            android:textColor="#FFF" />
     </LinearLayout>
+
 
     <ImageView
         android:id="@+id/imageVIew"
-        android:layout_marginTop="15dp"
-        android:layout_marginBottom="5dp"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
         android:layout_centerHorizontal="true"
-        android:src="@mipmap/ic_launcher"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="15dp"
         android:background="@drawable/background_white"
         android:padding="5dp"
-        android:layout_width="70dp"
-        android:layout_height="70dp" />
+        android:src="@mipmap/ic_launcher" />
 
     <TextView
-        android:textSize="20sp"
-        android:textColor="#FFF"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@id/imageVIew"
-        android:text="@string/screen_mirror_create_title_description"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
+        android:layout_height="wrap_content"
+        android:layout_below="@id/imageVIew"
+        android:layout_centerHorizontal="true"
+        android:text="@string/screen_mirror_create_title_description"
+        android:textColor="#FFF"
+        android:textSize="20sp" />
 
 
 </RelativeLayout>
