@@ -15,6 +15,7 @@
     <string name="screen_mirror_create_lobby_name">Lobby name</string>
     <string name="screen_mirror_create_password">Password (Optional)</string>
     <string name="screen_mirror_start_session">Start Screen Mirroring</string>
+    <string name="screen_mirror_stop_session">Stop Screen Mirroring</string>
 
     <!--content main strings-->
     <string name="title_screen_mirror">Share</string>
@@ -53,6 +54,19 @@
     <string name="settings">Settings</string>
     <string name="about">About</string>
 
+    <!--Alert Dialog-->
+    <string name="yes">YES</string>
+    <string name="no">NO</string>
 
+    <!--For Screen Share-->
+    <string name="screen_share_dialog_title">No network Connection</string>
+    <string name="screen_share_dialog_message">
+        Screen mirroring requires a network connection to your target network.\n\nDo you want to go to the Wi-Fi settings now?
+    </string>
+
+
+    <!--For Domotics-->
+    <string name="rename">Rename</string>
+    <string name="cancel">Cancel</string>
 
 </resources>

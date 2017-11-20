@@ -20,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.android.presentor.R;
+import com.example.android.presentor.utils.Utility;
 
 import java.util.List;
 
@@ -102,10 +103,7 @@ public class DomoticsSwitchAdapter extends ArrayAdapter<DomoticsSwitch> {
             @Override
             public boolean onLongClick(View view) {
                 //TODO by Dan add Dialogbox that has a textfield and Fix navigation bar
-                AlertDialog ad = builder.create();
-                ad.show();
-
-                Log.d("DomoticsSwitchAdapter", "Long press click: " + applianceName);
+                Utility.renameAppliance(getContext(), applianceName.getText().toString());
                 return true;
             }
         });

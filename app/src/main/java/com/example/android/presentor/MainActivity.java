@@ -1,7 +1,10 @@
 package com.example.android.presentor;
 
+import android.bluetooth.BluetoothAdapter;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v7.widget.CardView;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -16,43 +19,76 @@ import android.view.MenuItem;
 import com.example.android.presentor.domotics.DomoticsActivity;
 import com.example.android.presentor.screenshare.AccessActivity;
 import com.example.android.presentor.screenshare.CreateActivity;
+import com.example.android.presentor.utils.Utility;
 
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    public final static int BLUETOOTH_REQUEST_CODE = 1;
+
     NavigationView mNavigationView;
     DrawerLayout mDrawer;
-
     Intent mIntent;
 
+    boolean turnOnBluetooth = false;
 
-    @Override
+
+    DialogInterface.OnClickListener dialoagNetworkListener = new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialogInterface, int i) {
+            switch (i) {
+                case DialogInterface.BUTTON_POSITIVE:
+                    startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+                    break;
+            }
+        }
+    };
+
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        CardView accessCardView = (CardView) findViewById(R.id.card_view_access);
-        accessCardView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(MainActivity.this, AccessActivity.class);
-                startActivity(i);
-            }
-        });
-
-
         CardView shareCardView = (CardView) findViewById(R.id.card_view_share);
         shareCardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(MainActivity.this, CreateActivity.class);
-                startActivity(i);
+                if (Utility.isWifiConnected(MainActivity.this)) {
+                    Intent i = new Intent(MainActivity.this, CreateActivity.class);
+                    startActivity(i);
+                } else {
+                    //open dialog box
+                    String title = MainActivity.this.getResources()
+                            .getString(R.string.screen_share_dialog_title);
+                    String message = MainActivity.this.getResources()
+                            .getString(R.string.screen_share_dialog_message);
+                    Utility.showAlertDialog(MainActivity.this, title, message,
+                            dialoagNetworkListener);
+                }
             }
         });
 
+        CardView accessCardView = (CardView) findViewById(R.id.card_view_access);
+        accessCardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (Utility.isWifiConnected(MainActivity.this)) {
+                    Intent i = new Intent(MainActivity.this, AccessActivity.class);
+                    startActivity(i);
+                } else {
+                    //open dialog box
+                    String title = MainActivity.this.getResources()
+                            .getString(R.string.screen_share_dialog_title);
+                    String message = MainActivity.this.getResources()
+                            .getString(R.string.screen_share_dialog_message);
+                    Utility.showAlertDialog(MainActivity.this, title, message,
+                            dialoagNetworkListener);
+                }
+            }
+        });
 
         mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawer.addDrawerListener(new DrawerLayout.DrawerListener() {
@@ -73,6 +109,10 @@ public class MainActivity extends AppCompatActivity
                 //Set your new fragment here
                 if (mIntent != null) {
                     startActivity(mIntent);
+                }else if(turnOnBluetooth){
+                    mNavigationView.setCheckedItem(R.id.nav_screen_mirroring);
+                    Utility.turnOnBluetooth(MainActivity.this);
+                    turnOnBluetooth = false;
                 }
             }
         });
@@ -117,6 +157,7 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -128,7 +169,12 @@ public class MainActivity extends AppCompatActivity
                 mIntent = null;
                 break;
             case R.id.nav_domotics:
-                mIntent = new Intent(MainActivity.this, DomoticsActivity.class);
+                if(Utility.isBluetoothOn()){
+                    mIntent = new Intent(MainActivity.this, DomoticsActivity.class);
+                }
+                else{
+                    turnOnBluetooth = true;
+                }
                 break;
             case R.id.nav_settings:
                 mIntent = null;
@@ -137,7 +183,6 @@ public class MainActivity extends AppCompatActivity
                 mIntent = null;
                 break;
         }
-
 
 
         mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -150,6 +195,7 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         mNavigationView.setCheckedItem(R.id.nav_screen_mirroring);
         mIntent = null;
+        turnOnBluetooth = false;
         super.onResume();
 
     }

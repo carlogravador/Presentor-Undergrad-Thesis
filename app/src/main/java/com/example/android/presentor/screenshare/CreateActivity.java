@@ -99,16 +99,6 @@ public class CreateActivity extends AppCompatActivity {
 
     }
 
-//    @Override
-//    protected void onResume() {
-//        IntentFilter filter = new IntentFilter();
-//        filter.addAction(NsdHelper.BROADCAST_REGISTER_SUCCESS);
-//        filter.addAction(NsdHelper.BROADCAST_UNREGISTER_SUCCESS);
-//        LocalBroadcastManager.getInstance(CreateActivity.this).registerReceiver(localDashReceiver,
-//                filter);
-//        super.onResume();
-//    }
-
 
 
     @Override
@@ -134,6 +124,7 @@ public class CreateActivity extends AppCompatActivity {
     }
 
     private void startScreenSharing(int resultCode, Intent data) {
+        startButton.setText(this.getResources().getString(R.string.screen_mirror_stop_session));
         mLobbyName = lobbyNameEditText.getText().toString().trim();
         //creatorName = ;
         mPort = ConnectionUtility.getPort(this);
@@ -163,6 +154,7 @@ public class CreateActivity extends AppCompatActivity {
 
 
     private void stopScreenSharing() {
+        startButton.setText(this.getResources().getString(R.string.screen_mirror_start_session));
         ConnectionUtility.clearPort(this);
         mShareService.stop();
         mNsdHelper.stopRegisterService();

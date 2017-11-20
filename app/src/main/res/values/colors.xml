@@ -7,6 +7,7 @@
     <color name="colorBlack">#000000</color>
     <color name="colorWhite">#ffffff</color>
     <color name="colorOffWhite">#b9ffffff</color>
+    <color name="colorLightGray">#e2e2e2</color>
 
     <color name="colorCircle">#11d1bf</color>
     <color name="colorAccentLight">#c811d1bf</color>

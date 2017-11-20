@@ -3,7 +3,6 @@
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:background="#efefefef"
               android:orientation="vertical"
               tools:context="com.example.android.presentor.domotics.DomoticsActivity">
 
@@ -52,7 +51,6 @@
                     android:layout_height="0dp"
                     android:layout_weight="1"
                     android:text="@string/master_switch"
-                    android:layout_marginBottom="4dp"
                     android:textColor="@color/colorBlack"
                     android:textSize="18sp"/>
 

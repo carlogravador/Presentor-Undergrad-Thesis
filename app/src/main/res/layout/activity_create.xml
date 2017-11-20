@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context="com.example.android.presentor.screenshare.CreateActivity"
-    tools:ignore="contentDescription">
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                tools:context="com.example.android.presentor.screenshare.CreateActivity"
+                tools:ignore="contentDescription">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -16,75 +17,86 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:background="@drawable/background_gradient" />
+            android:background="@drawable/background_gradient"/>
 
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1" />
+            android:layout_weight="1"/>
+
     </LinearLayout>
 
-
-    <LinearLayout
-        android:id="@+id/layoutInput"
+    <android.support.v7.widget.CardView
+        android:layout_centerInParent="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginTop="155dp"
-        android:background="@drawable/background_white"
-        android:orientation="vertical"
-        android:padding="20dp">
+        android:layout_margin="16dp"
+        app:cardCornerRadius="5dp"
+        app:cardElevation="5dp"
+        app:cardPreventCornerOverlap="false">
 
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/text_input_layout1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <EditText
-                android:id="@+id/edit_text_lobby"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="30dp"
-                android:drawablePadding="10dp"
-                android:drawableStart="@drawable/ic_people_outline"
-                android:hint="@string/screen_mirror_create_lobby_name"
-                android:imeOptions="actionNext"
-                android:inputType="text"
-                android:maxLength="10"
-                android:maxLines="1" />
-        </android.support.design.widget.TextInputLayout>
-
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/text_input_layout3"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <EditText
-                android:id="@+id/edit_text_password"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="40dp"
-                android:drawablePadding="10dp"
-                android:drawableStart="@drawable/ic_lock_outline"
-                android:hint="@string/screen_mirror_create_password"
-                android:imeOptions="actionDone"
-                android:inputType="text"
-                android:maxLength="10"
-                android:maxLines="1" />
-        </android.support.design.widget.TextInputLayout>
-
-        <Button
-            android:id="@+id/button_start_sharing"
+        <LinearLayout
+            android:id="@+id/layoutInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="50dp"
-            android:background="@drawable/rec_gradient"
-            android:text="@string/screen_mirror_start_session"
-            android:textAllCaps="false"
-            android:textColor="#FFF" />
-    </LinearLayout>
+            android:orientation="vertical"
+            android:paddingLeft="16dp"
+            android:paddingTop="16dp"
+            android:paddingRight="16dp"
+            >
 
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/text_input_layout1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/edit_text_lobby"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="30dp"
+                    android:drawablePadding="10dp"
+                    android:drawableStart="@drawable/ic_people_outline"
+                    android:hint="@string/screen_mirror_create_lobby_name"
+                    android:imeOptions="actionNext"
+                    android:inputType="text"
+                    android:maxLength="10"
+                    android:maxLines="1"/>
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/text_input_layout3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/edit_text_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="40dp"
+                    android:drawablePadding="10dp"
+                    android:drawableStart="@drawable/ic_lock_outline"
+                    android:hint="@string/screen_mirror_create_password"
+                    android:imeOptions="actionDone"
+                    android:inputType="text"
+                    android:maxLength="10"
+                    android:maxLines="1"/>
+            </android.support.design.widget.TextInputLayout>
+
+            <Button
+                android:id="@+id/button_start_sharing"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:layout_marginTop="50dp"
+                android:background="@drawable/rec_gradient"
+                android:text="@string/screen_mirror_start_session"
+                android:textAllCaps="false"
+                android:textColor="#FFF"/>
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
 
     <ImageView
         android:id="@+id/imageVIew"
@@ -95,7 +107,7 @@
         android:layout_marginTop="15dp"
         android:background="@drawable/background_white"
         android:padding="5dp"
-        android:src="@mipmap/ic_launcher" />
+        android:src="@mipmap/ic_launcher"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -104,7 +116,7 @@
         android:layout_centerHorizontal="true"
         android:text="@string/screen_mirror_create_title_description"
         android:textColor="#FFF"
-        android:textSize="20sp" />
+        android:textSize="20sp"/>
 
 
 </RelativeLayout>

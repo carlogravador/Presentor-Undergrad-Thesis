@@ -29,7 +29,7 @@
         app:pulse_duration="2000"
         app:pulse_interpolator="Linear"
         app:pulse_repeat="0"
-        app:pulse_startFromScratch="false">
+        app:pulse_startFromScratch="true">
 
 
         <ImageView
