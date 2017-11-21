@@ -16,6 +16,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Hashtable;
 
 /**
  * Created by Carlo on 18/11/2017.
@@ -34,21 +37,21 @@ public class ShareService {
         //mHandler = handler;
     }
 
-    public void start(int port) throws IOException{
+    public void startServer(int port) throws IOException {
         isServerOpen = true;
         mServer = new Server(port);
     }
 
-    public void stop(){
+    public void stop() {
         isServerOpen = false;
         hasClients = false;
     }
 
-    public void connect(String ip, int port, Handler handler, ImageView imageView){
+    public void connect(String ip, int port, Handler handler, ImageView imageView) {
         mClient = new Client(ip, port, handler, imageView);
     }
 
-    public void send(byte[] buffer){
+    public void send(byte[] buffer) {
         Client client;
         synchronized (this) {
             client = mClient;
@@ -56,32 +59,63 @@ public class ShareService {
         client.send(buffer);
     }
 
+    public void sendToAll(byte[] buffer) {
+        try {
+            mServer.sendToAll(buffer);
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
 //    public void sendToClient(String message){
 //        mClient.sendToClient(message);
 //    }
 
-    public class Server extends Thread{
+    public class Server extends Thread {
 
         private ServerSocket mServerSocket;
+        private Hashtable mOutputStreamsHashtable = new Hashtable();
+
+        private Enumeration getOuputStreams() {
+            return mOutputStreamsHashtable.elements();
+        }
+
         int mPort;
 
-        public Server(int port) throws  IOException {
+        public Server(int port) throws IOException {
             mPort = port;
             start();
         }
 
-        private void listen(int port) throws IOException{
+
+        private void sendToAll(byte[] buffer) throws IOException {
+            synchronized (mOutputStreamsHashtable) {
+                for (Enumeration e = getOuputStreams(); e.hasMoreElements(); ) {
+                    DataOutputStream dout = (DataOutputStream) e.nextElement();
+                    dout.writeInt(buffer.length);
+                    dout.write(buffer, 0, buffer.length);
+                }
+            }
+        }
+
+        private void listen(int port) throws IOException {
 
             mServerSocket = new ServerSocket(port);
 
-            while(isServerOpen){
+            while (isServerOpen) {
                 //blocking statement
-                Socket socket = mServerSocket.accept();
+                Socket clientSocket = mServerSocket.accept();
                 hasClients = true;
-                Log.d("ShareService listen", "address: " + socket.getInetAddress() + ", port: " + socket.getPort() );
+                Log.d("ShareService listen", "address: " + clientSocket.getInetAddress() + ", port: " + clientSocket.getPort());
                 Log.d("ShareService listen", "somebody is connected");
+                //mClient = new Client(clientSocket);
+
                 //somebody is connected
-                mClient = new Client(socket);
+                //get outputstream so we can write to the client;
+
+                DataOutputStream dataOutputStream = new DataOutputStream(clientSocket.getOutputStream());
+                mOutputStreamsHashtable.put(clientSocket, dataOutputStream);
+
             }
 
             Log.d("ShareService", "Server Stop");
@@ -94,13 +128,14 @@ public class ShareService {
             try {
                 Log.d("ShareService", "server start listening for connection");
                 listen(mPort);
-            }catch (IOException e){
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+
     }
 
-    public class Client extends Thread{
+    public class Client extends Thread {
 
         Handler updateUiHandler;
         ImageView mImageView;
@@ -115,19 +150,19 @@ public class ShareService {
 
         //the client that is received by the server
         //runs on server
-        public Client (Socket socket){
+        public Client(Socket socket) {
             try {
                 mSocket = socket;
                 mInputStream = mSocket.getInputStream();
                 mOutputStream = mSocket.getOutputStream();
-            }catch (IOException e){
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
 
         //create a client to connect to server
         //runs on client
-        public Client(String ip, int port, Handler handler, ImageView imageView){
+        public Client(String ip, int port, Handler handler, ImageView imageView) {
             try {
                 updateUiHandler = handler;
                 mImageView = imageView;
@@ -148,29 +183,29 @@ public class ShareService {
             //update UI for the stream
             Log.d("ShareService", "client side started");
             try {
-                while(true){
+                while (true) {
                     byte[] bytes;
                     int len = mDataInputStream.readInt();
                     bytes = new byte[len];
-                    if(len > 0){
+                    if (len > 0) {
                         mDataInputStream.readFully(bytes, 0, bytes.length);
                     }
                     updateUiHandler.post(new updateUiThread(bytes, mImageView));
                     bitmapReceive++;
                     Log.d("Share Service", "Bitmap received: " + bitmapReceive);
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
         //the host sending screenshot
-        public void send(byte[] buffer){
+        public void send(byte[] buffer) {
             try {
                 mDataOutputStream = new DataOutputStream(mOutputStream);
                 mDataOutputStream.writeInt(buffer.length);
                 mDataOutputStream.write(buffer, 0, buffer.length);
-            }catch (IOException e){
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
@@ -185,10 +220,11 @@ public class ShareService {
 
     }
 
-    class updateUiThread implements Runnable{
+    class updateUiThread implements Runnable {
         private byte[] byteArray;
         private ImageView mImageView;
-        public updateUiThread(byte[] bytes, ImageView imageView){
+
+        public updateUiThread(byte[] bytes, ImageView imageView) {
             byteArray = bytes;
             mImageView = imageView;
         }

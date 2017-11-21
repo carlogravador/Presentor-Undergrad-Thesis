@@ -100,7 +100,6 @@ public class CreateActivity extends AppCompatActivity {
     }
 
 
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode != REQUEST_CODE) {
@@ -129,7 +128,7 @@ public class CreateActivity extends AppCompatActivity {
         //creatorName = ;
         mPort = ConnectionUtility.getPort(this);
         try {
-            mShareService.start(mPort);
+            mShareService.startServer(mPort);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -150,7 +149,6 @@ public class CreateActivity extends AppCompatActivity {
         createVirtualDisplay();
         mImageReader.setOnImageAvailableListener(new ImageAvailableListener(), mImageHandler);
     }
-
 
 
     private void stopScreenSharing() {
@@ -197,7 +195,8 @@ public class CreateActivity extends AppCompatActivity {
                     if (mShareService.hasClients) {
                         byteArrayOutputStream = new ByteArrayOutputStream();
                         bitmap.compress(Bitmap.CompressFormat.JPEG, 5, byteArrayOutputStream);
-                        mShareService.send(byteArrayOutputStream.toByteArray());
+//                        mShareService.send(byteArrayOutputStream.toByteArray());
+                        mShareService.sendToAll(byteArrayOutputStream.toByteArray());
                     }
 
                 }
