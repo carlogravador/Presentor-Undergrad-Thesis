@@ -24,8 +24,6 @@ public class AccessActivity extends AppCompatActivity
 
     private final static int SERVICE_LOADER = 0;
 
-    PulsatorLayout mPulsator;
-
     private NsdHelper mNsdHelper;
     private ServiceCursorAdapter mServiceCursorAdapter;
 
@@ -35,8 +33,8 @@ public class AccessActivity extends AppCompatActivity
         setContentView(R.layout.activity_access);
 
 
-        mPulsator = (PulsatorLayout) findViewById(R.id.pulsator);
-        mPulsator.start();
+        PulsatorLayout pulsator = (PulsatorLayout) findViewById(R.id.pulsator);
+        pulsator.start();
 
         //delete first existing database every time activity is created
         DatabaseUtility.clearServiceList(this);
@@ -48,7 +46,7 @@ public class AccessActivity extends AppCompatActivity
 
         ListView lobbyListView = (ListView) findViewById(R.id.list_view_lobby);
         lobbyListView.setAdapter(mServiceCursorAdapter);
-        lobbyListView.setEmptyView(mPulsator);
+        lobbyListView.setEmptyView(pulsator);
 
 
         getLoaderManager().initLoader(SERVICE_LOADER, null, this);

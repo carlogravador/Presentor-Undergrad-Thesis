@@ -76,7 +76,7 @@ public class ShareService {
         private ServerSocket mServerSocket;
         private Hashtable mOutputStreamsHashtable = new Hashtable();
 
-        private Enumeration getOuputStreams() {
+        private Enumeration getOutputStreams() {
             return mOutputStreamsHashtable.elements();
         }
 
@@ -90,7 +90,7 @@ public class ShareService {
 
         private void sendToAll(byte[] buffer) throws IOException {
             synchronized (mOutputStreamsHashtable) {
-                for (Enumeration e = getOuputStreams(); e.hasMoreElements(); ) {
+                for (Enumeration e = getOutputStreams(); e.hasMoreElements(); ) {
                     DataOutputStream dout = (DataOutputStream) e.nextElement();
                     dout.writeInt(buffer.length);
                     dout.write(buffer, 0, buffer.length);
