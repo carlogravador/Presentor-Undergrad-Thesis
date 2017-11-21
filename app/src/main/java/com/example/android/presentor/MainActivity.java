@@ -16,6 +16,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.example.android.presentor.domotics.BtConnectAsyncTask;
 import com.example.android.presentor.domotics.DomoticsActivity;
 import com.example.android.presentor.screenshare.AccessActivity;
 import com.example.android.presentor.screenshare.CreateActivity;
@@ -25,7 +26,6 @@ import com.example.android.presentor.utils.Utility;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    public final static int BLUETOOTH_REQUEST_CODE = 1;
 
     NavigationView mNavigationView;
     DrawerLayout mDrawer;
@@ -114,6 +114,11 @@ public class MainActivity extends AppCompatActivity
                     Utility.turnOnBluetooth(MainActivity.this);
                     turnOnBluetooth = false;
                 }
+//                if(turnOnBluetooth){
+//                    Utility.turnOnBluetooth(MainActivity.this);
+//                    turnOnBluetooth = false;
+//                }
+                mNavigationView.setCheckedItem(R.id.nav_screen_mirroring);
             }
         });
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -170,7 +175,8 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.nav_domotics:
                 if(Utility.isBluetoothOn()){
-                    mIntent = new Intent(MainActivity.this, DomoticsActivity.class);
+                   mIntent = new Intent(MainActivity.this, DomoticsActivity.class);
+//                    new BtConnectAsyncTask(this).execute();
                 }
                 else{
                     turnOnBluetooth = true;

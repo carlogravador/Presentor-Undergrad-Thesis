@@ -9,7 +9,6 @@ import android.content.SharedPreferences;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -17,6 +16,7 @@ import android.widget.FrameLayout;
 
 import com.example.android.presentor.R;
 import com.example.android.presentor.domotics.DomoticsActivity;
+import com.example.android.presentor.domotics.DomoticsSwitch;
 
 
 /**
@@ -37,34 +37,7 @@ public class Utility {
         alertDialog.show();
     }
 
-    public static void renameAppliance(Context context, String applianceName){
-        DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
 
-            }
-        };
-
-        AlertDialog.Builder adb = new AlertDialog.Builder(context);
-        adb.setTitle("Rename Appliance");
-        EditText et = new EditText(context);
-        FrameLayout container = new FrameLayout(context);
-        FrameLayout.LayoutParams params= new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT);
-        int margins = context.getResources().getDimensionPixelSize(R.dimen.dialog_margin);
-        params.setMargins(margins, margins, margins, 0);
-        et.setLayoutParams(params);
-        et.setText(applianceName);
-        et.setSelectAllOnFocus(true);
-        et.setSingleLine();
-        container.addView(et);
-        adb.setView(container);
-        adb.setPositiveButton(R.string.rename, listener);
-        adb.setNegativeButton(R.string.cancel, listener);
-
-        AlertDialog alertDialog = adb.create();
-        alertDialog.show();
-    }
 
     public static boolean isBluetoothOn(){
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -94,6 +67,7 @@ public class Utility {
                 }
             }
         };
+        //TODO add hard coded strings to string.xml
         AlertDialog.Builder adb = new AlertDialog.Builder(context);
         adb.setTitle("Bluetooth is off");
         adb.setMessage("Domotics requires bluetooth connection. \n\n" +
@@ -122,31 +96,33 @@ public class Utility {
 
 
     public static void clearKey(Context cxt, String key) {
-        SharedPreferences.Editor prefsEditor = cxt.getSharedPreferences("kkd", Context.MODE_PRIVATE).edit();
+        SharedPreferences.Editor prefsEditor = cxt.getSharedPreferences("presentor", Context.MODE_PRIVATE).edit();
         prefsEditor.remove(key);
         prefsEditor.commit();
     }
 
     public static void saveString(Context cxt, String key, String value) {
-        SharedPreferences.Editor prefsEditor = cxt.getSharedPreferences("kkd", Context.MODE_PRIVATE).edit();
+        SharedPreferences.Editor prefsEditor = cxt.getSharedPreferences("presentor", Context.MODE_PRIVATE).edit();
         prefsEditor.putString(key, value);
         prefsEditor.commit();
     }
 
+
+
     public static String getString(Context cxt, String key) {
-        SharedPreferences prefs = cxt.getSharedPreferences("kkd", Context.MODE_PRIVATE);
+        SharedPreferences prefs = cxt.getSharedPreferences("presentor", Context.MODE_PRIVATE);
         String val = prefs.getString(key, null);
         return val;
     }
 
     public static void saveInt(Context cxt, String key, int value) {
-        SharedPreferences.Editor prefsEditor = cxt.getSharedPreferences("kkd", Context.MODE_PRIVATE).edit();
+        SharedPreferences.Editor prefsEditor = cxt.getSharedPreferences("presentor", Context.MODE_PRIVATE).edit();
         prefsEditor.putInt(key, value);
         prefsEditor.commit();
     }
 
     public static int getInt(Context cxt, String key) {
-        SharedPreferences prefs = cxt.getSharedPreferences("kkd", Context.MODE_PRIVATE);
+        SharedPreferences prefs = cxt.getSharedPreferences("presentor", Context.MODE_PRIVATE);
         int val = prefs.getInt(key, -1);
         return val;
     }

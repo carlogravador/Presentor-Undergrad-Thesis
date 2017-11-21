@@ -3,6 +3,7 @@ package com.example.android.presentor.domotics;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -30,6 +32,7 @@ import java.util.List;
 
 public class DomoticsSwitchAdapter extends ArrayAdapter<DomoticsSwitch> {
 
+    String[] applianceNameKey = getContext().getResources().getStringArray(R.array.appliance_name);
 
     public DomoticsSwitchAdapter(@NonNull Context context, int resource, @NonNull List<DomoticsSwitch> domoticsSwitches) {
         super(context, 0, domoticsSwitches);
@@ -45,11 +48,11 @@ public class DomoticsSwitchAdapter extends ArrayAdapter<DomoticsSwitch> {
 
         final DomoticsSwitch ds = getItem(position);
 
-        CardView cardView = (CardView) itemView.findViewById(R.id.card_view_domotics);
-        final TextView applianceName = (TextView) itemView.findViewById(R.id.text_view_appliance_name);
-        final TextView applianceStatusTextView = (TextView) itemView.findViewById(R.id.text_view_appliance_status);
-        final ImageView applianceStatusImageView = (ImageView) itemView.findViewById(R.id.image_view_appliance_status);
-        final Switch applianceStatusSwitch = (Switch) itemView.findViewById(R.id.switch_appliance);
+        CardView cardView = itemView.findViewById(R.id.card_view_domotics);
+        final TextView applianceName = itemView.findViewById(R.id.text_view_appliance_name);
+        final TextView applianceStatusTextView = itemView.findViewById(R.id.text_view_appliance_status);
+        final ImageView applianceStatusImageView = itemView.findViewById(R.id.image_view_appliance_status);
+        final Switch applianceStatusSwitch = itemView.findViewById(R.id.switch_appliance);
 
         applianceName.setText(ds.getSwitchName());
         if (ds.getSwitchStatus()) {
@@ -102,13 +105,53 @@ public class DomoticsSwitchAdapter extends ArrayAdapter<DomoticsSwitch> {
         cardView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                //TODO by Dan add Dialogbox that has a textfield and Fix navigation bar
-                Utility.renameAppliance(getContext(), applianceName.getText().toString());
+                int i = (int)getItemId(getPosition(ds));
+                String key = applianceNameKey[i];
+                renameAppliance(getContext(), key, ds);
                 return true;
             }
         });
 
         return itemView;
+    }
+
+    public void renameAppliance(final Context context, final String key, final DomoticsSwitch ds){
+        AlertDialog.Builder adb = new AlertDialog.Builder(context);
+        adb.setTitle("Rename Switch");
+        final EditText et = new EditText(context);
+        FrameLayout container = new FrameLayout(context);
+        FrameLayout.LayoutParams params= new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        int margins = context.getResources().getDimensionPixelSize(R.dimen.dialog_margin);
+        params.setMargins(margins, margins, margins, 0);
+        String oldName = Utility.getString(context, key);
+        et.setLayoutParams(params);
+        et.setText(oldName);
+        et.setSelectAllOnFocus(true);
+        et.setSingleLine();
+        container.addView(et);
+        adb.setView(container);
+
+        DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                switch(i){
+                    case DialogInterface.BUTTON_POSITIVE:
+                        //rename appliance method;
+                        Utility.saveString(context, key, et.getText().toString().trim());
+                        ds.setSwitchName(Utility.getString(context, key));
+                        notifyDataSetChanged();
+
+                }
+            }
+        };
+
+
+        adb.setPositiveButton(R.string.rename, listener);
+        adb.setNegativeButton(R.string.cancel, listener);
+
+        AlertDialog alertDialog = adb.create();
+        alertDialog.show();
     }
 
     private boolean isAllSwitchOpen() {
@@ -121,46 +164,5 @@ public class DomoticsSwitchAdapter extends ArrayAdapter<DomoticsSwitch> {
         return true;
     }
 
-    AlertDialog.Builder builder = new AlertDialog.Builder(getContext()){
-
-        EditText editText = new EditText(DomoticsSwitchAdapter.this.getContext());
-
-        @Override
-        public AlertDialog.Builder setView(View view) {
-            view = editText;
-            return super.setView(view);
-        }
-
-        DialogInterface.OnClickListener positiveListener = new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                Log.d("DomoticsSwitchAdapter", "Positive Button Click");
-            }
-        };
-
-        DialogInterface.OnClickListener negativeListener = new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                Log.d("DomoticsSwitchAdapter", "Negative Button CLick");
-            }
-        };
-
-        public AlertDialog.Builder setPositiveButton(CharSequence text, DialogInterface.OnClickListener listener) {
-            listener = positiveListener;
-            return super.setPositiveButton(text, listener);
-        }
-
-        @Override
-        public AlertDialog.Builder setNegativeButton(CharSequence text, DialogInterface.OnClickListener listener) {
-            listener = negativeListener;
-            return super.setNegativeButton(text, listener);
-        }
-
-        @Override
-        public AlertDialog.Builder setTitle(CharSequence title) {
-            title = "AWWWW";
-            return super.setTitle(title);
-        }
-    };
 
 }

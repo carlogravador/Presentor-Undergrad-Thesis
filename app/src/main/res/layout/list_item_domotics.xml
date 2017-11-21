@@ -47,8 +47,7 @@
                 <TextView
                     android:id="@+id/text_view_appliance_name"
                     android:layout_width="wrap_content"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
                     android:textColor="@color/colorBlack"
                     android:textSize="18sp"
                     tools:text="Appliance Name"/>
@@ -56,8 +55,7 @@
                 <TextView
                     android:id="@+id/text_view_appliance_status"
                     android:layout_width="wrap_content"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
                     android:textSize="14sp"
                     tools:text="Status"/>
 

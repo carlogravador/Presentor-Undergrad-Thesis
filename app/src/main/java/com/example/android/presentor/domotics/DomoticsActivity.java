@@ -14,6 +14,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import com.example.android.presentor.R;
+import com.example.android.presentor.utils.Utility;
 
 import java.util.ArrayList;
 
@@ -35,21 +36,33 @@ public class DomoticsActivity extends AppCompatActivity {
 
         initMasterSwitch();
 
-        String[] applianceName = this.getResources().getStringArray(R.array.appliance_name);
+        String[] applianceNameKey = this.getResources().getStringArray(R.array.appliance_name);
 
         ListView listViewDomotics = (ListView) findViewById(R.id.list_view_domotics);
 
         mDomoticsSwitches = new ArrayList<>();
         for (int i = 0; i < 8; i++) {
-            String appliance = applianceName[i];
+            String applianceName = initDomoticsName(applianceNameKey, i);
+
             sArduinoSwitchesState[i] = false;
-            mDomoticsSwitches.add(new DomoticsSwitch(appliance, sArduinoSwitchesState[i]));
+            mDomoticsSwitches.add(new DomoticsSwitch(applianceName, sArduinoSwitchesState[i]));
         }
 
         mDsAdapter = new DomoticsSwitchAdapter(this, 0, mDomoticsSwitches);
         listViewDomotics.setAdapter(mDsAdapter);
 
     }
+
+    private String initDomoticsName(String[] applianceNameKey, int keyIndex){
+        String applianceKey = applianceNameKey[keyIndex];
+        String applianceName = Utility.getString(this, applianceKey);
+        if (applianceName  == null){
+            applianceName = applianceKey;
+            Utility.saveString(this, applianceKey, applianceName);
+        }
+        return applianceName;
+    }
+
 
     private void initMasterSwitch() {
         CardView masterSwitchCardView = (CardView) findViewById(R.id.card_view_master_switch);

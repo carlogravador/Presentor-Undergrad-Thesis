@@ -142,6 +142,7 @@ public class ShareService {
         }
 
         //keeps listening to the inputstream while connected
+
         @Override
         public void run() {
             //update UI for the stream
