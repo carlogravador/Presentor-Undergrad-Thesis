@@ -49,14 +49,15 @@ public class ServicesContract {
         public static final String COL_DEV_PLAYER = "player";
 
         
-
+        //DATABASE SERVICES COLUMNS
         public static final String TABLE_SERVICES = "services";
         
         public final static String COL_SERVICE_ID = BaseColumns._ID;
         public static final String COL_IP_ADDRESS = "ipaddress";
         public static final String COL_PORT_NUMBER = "portnumber";
         public static final String COL_SERVICE_NAME = "servicename";
-        public static final String COL_CREATOR_NAME = "creatorename";
+        public static final String COL_CREATOR_NAME = "creatorname";
+        public static final String COL_PASSWORD = "password";
 
 
 

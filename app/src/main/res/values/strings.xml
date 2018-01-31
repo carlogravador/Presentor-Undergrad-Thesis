@@ -48,6 +48,7 @@
     <string name="searching">Searching for rooms...</string>
     <string name="room_empty">No available rooms as of now.</string>
 
+
     <!--Navigation drawer string-->
     <string name="domotics">Screen Mirroring</string>
     <string name="screen_mirroring">Domotics</string>
@@ -65,8 +66,8 @@
     </string>
 
 
-    <!--For Domotics-->
+    <!--For Alert Dialogs-->
     <string name="rename">Rename</string>
     <string name="cancel">Cancel</string>
-
+    <string name="connect">Connect</string>
 </resources>

@@ -15,6 +15,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
@@ -26,6 +27,7 @@ import android.widget.Toast;
 import com.example.android.presentor.R;
 import com.example.android.presentor.networkservicediscovery.NsdHelper;
 import com.example.android.presentor.utils.ConnectionUtility;
+import com.example.android.presentor.utils.Utility;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -42,6 +44,7 @@ public class CreateActivity extends AppCompatActivity {
     private static int mPort;
 
     private String mLobbyName;
+    private String mLobbyPassword;
     private String creatorName = "Carlo Gravador";
 
     private static final int REQUEST_CODE = 1000;
@@ -78,9 +81,31 @@ public class CreateActivity extends AppCompatActivity {
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 if (!mShareService.isServerOpen) {
-                    //start
-                    startActivityForResult(mProjectionManager.createScreenCaptureIntent(), REQUEST_CODE);
+                    //check first if the lobbyname is not null
+                    boolean hasError = false;
+                    if(TextUtils.isEmpty(lobbyNameEditText.getText())) {
+                        lobbyNameEditText.setError("The lobby name cannot be empty");
+                        hasError = true;
+                    }
+                    //check lobbyName if it has special character
+                    if(Utility.checkForSpecialCharacter(lobbyNameEditText.getText().toString())){
+                        lobbyNameEditText.setError("The lobby name cannot have any special characters.");
+                        hasError = true;
+                    }
+                    //if password is not empty, check if it has special characters
+                    if(!TextUtils.isEmpty(passwordNameEditText.getText())){
+                        if(Utility.checkForSpecialCharacter(passwordNameEditText.getText()
+                                .toString())){
+                            passwordNameEditText.setError("The password cannot have any special characters.");
+                            hasError = true;
+                        }
+                    }
+                    if(hasError) return;
+                    //if it reach this line, no errors
+                    startActivityForResult(mProjectionManager.createScreenCaptureIntent(),
+                            REQUEST_CODE);
                 } else {
                     //stop
                     stopScreenSharing();
@@ -125,6 +150,7 @@ public class CreateActivity extends AppCompatActivity {
     private void startScreenSharing(int resultCode, Intent data) {
         startButton.setText(this.getResources().getString(R.string.screen_mirror_stop_session));
         mLobbyName = lobbyNameEditText.getText().toString().trim();
+        mLobbyPassword = passwordNameEditText.getText().toString().trim();
         //creatorName = ;
         mPort = ConnectionUtility.getPort(this);
         try {
@@ -132,7 +158,7 @@ public class CreateActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        mNsdHelper.setServiceName(mLobbyName, creatorName);
+        mNsdHelper.setServiceName(mLobbyName, creatorName, mLobbyPassword);
         mNsdHelper.registerService(mPort);
 
         mMediaProjection = mProjectionManager.getMediaProjection(resultCode, data);

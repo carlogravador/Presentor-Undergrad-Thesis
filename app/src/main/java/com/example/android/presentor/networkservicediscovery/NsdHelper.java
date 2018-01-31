@@ -62,8 +62,8 @@ public class NsdHelper {
 
 
 
-    public void setServiceName(String serviceName, String serviceCreator) {
-        this.mServiceName = serviceName + UNDERSCORE + serviceCreator;
+    public void setServiceName(String serviceName, String serviceCreator, String servicePassword) {
+        this.mServiceName = serviceName + UNDERSCORE + serviceCreator + UNDERSCORE + servicePassword;
     }
 
 

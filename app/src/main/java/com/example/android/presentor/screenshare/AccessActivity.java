@@ -70,7 +70,9 @@ public class AccessActivity extends AppCompatActivity
         String[] projection = {
                 ServiceEntry._ID,
                 ServiceEntry.COL_SERVICE_NAME,
-                ServiceEntry.COL_CREATOR_NAME
+                ServiceEntry.COL_CREATOR_NAME,
+                ServiceEntry.COL_PASSWORD,
+                ServiceEntry.COL_IP_ADDRESS
         };
 
         return new CursorLoader(this,

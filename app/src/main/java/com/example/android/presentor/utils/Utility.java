@@ -12,11 +12,16 @@ import android.net.wifi.WifiManager;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.example.android.presentor.R;
 import com.example.android.presentor.domotics.DomoticsActivity;
 import com.example.android.presentor.domotics.DomoticsSwitch;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -26,7 +31,7 @@ import com.example.android.presentor.domotics.DomoticsSwitch;
 public class Utility {
 
     public static void showAlertDialog(Context context, String title, String message,
-                                       DialogInterface.OnClickListener listener){
+                                       DialogInterface.OnClickListener listener) {
 
         AlertDialog.Builder adb = new AlertDialog.Builder(context);
         adb.setTitle(title);
@@ -39,27 +44,68 @@ public class Utility {
 
 
 
-    public static boolean isBluetoothOn(){
-        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if(bluetoothAdapter == null){
-            //Device does not support Bluetooth
-            //TODO show dialog that tells device does not support bluetooth
-            return false;
-        }else{
-            if(bluetoothAdapter.isEnabled()){
-                return true;
-            }
-            else{
-                return  false;
-            }
-        }
-    }
+    public static void showInputPassword(final Context context, final Intent intent, String lobbyName,
+                                         String creatorName, String ip, final String password){
+        AlertDialog.Builder adb = new AlertDialog.Builder(context);
+        adb.setTitle(lobbyName);
+        final EditText et = new EditText(context);
+        TextView tv = new TextView(context);
+        tv.setText(creatorName + " " + ip + " " + password);
+        FrameLayout container = new FrameLayout(context);
+        FrameLayout.LayoutParams params= new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        int margins = context.getResources().getDimensionPixelSize(R.dimen.dialog_margin);
+        params.setMargins(margins, margins, margins, 0);
+        et.setLayoutParams(params);
+        et.setSingleLine();
+        container.addView(tv);
+        container.addView(et);
+        adb.setView(container);
 
-    public static void turnOnBluetooth(final Context context){
+
         DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 switch(i){
+                    case DialogInterface.BUTTON_POSITIVE:
+                        if(et.getText().toString().equals(password)){
+                            context.startActivity(intent);
+                        }else{
+                            et.setError("Password is incorrect.");
+                        }
+                }
+            }
+        };
+
+        adb.setPositiveButton(R.string.connect, listener);
+        adb.setNegativeButton(R.string.cancel, listener);
+
+        AlertDialog alertDialog = adb.create();
+        alertDialog.show();
+    }
+
+
+
+    public static boolean isBluetoothOn() {
+        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (bluetoothAdapter == null) {
+            //Device does not support Bluetooth
+            //TODO show dialog that tells device does not support bluetooth
+            return false;
+        } else {
+            if (bluetoothAdapter.isEnabled()) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+
+    public static void turnOnBluetooth(final Context context) {
+        DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                switch (i) {
                     case DialogInterface.BUTTON_POSITIVE:
                         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
                         bluetoothAdapter.enable();
@@ -77,8 +123,6 @@ public class Utility {
         AlertDialog alertDialog = adb.create();
         alertDialog.show();
     }
-
-
 
 
     public static boolean isWifiConnected(Context context) {
@@ -108,7 +152,6 @@ public class Utility {
     }
 
 
-
     public static String getString(Context cxt, String key) {
         SharedPreferences prefs = cxt.getSharedPreferences("presentor", Context.MODE_PRIVATE);
         String val = prefs.getString(key, null);
@@ -127,7 +170,13 @@ public class Utility {
         return val;
     }
 
+    /***returns true if there is a special character on the String word***/
+    public static boolean checkForSpecialCharacter(String word) {
+        Pattern p = Pattern.compile("[^A-Za-z0-9]");
+        Matcher m = p.matcher(word);
 
+        return m.find();
+    }
 
 
 }

@@ -20,13 +20,24 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".SplashScreen"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Black.NoTitleBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
         <activity
@@ -38,14 +49,19 @@
         <activity
             android:name=".domotics.DomoticsActivity"
             android:parentActivityName=".MainActivity"/>
+        <activity
+            android:name=".screenshare.ClientActivity"
+            android:parentActivityName=".screenshare.AccessActivity">
+        </activity>
+        <activity
+            android:name=".AboutActivity"
+            android:parentActivityName=".MainActivity">
+        </activity>
 
         <provider
             android:name=".db.ServicesProvider"
             android:authorities="com.example.android.presentor"
             android:exported="false"/>
-
-        <activity android:name=".screenshare.ClientActivity">
-        </activity>
     </application>
 
 </manifest>

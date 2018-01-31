@@ -1,6 +1,5 @@
 package com.example.android.presentor;
 
-import android.bluetooth.BluetoothAdapter;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,7 +15,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.example.android.presentor.domotics.BtConnectAsyncTask;
 import com.example.android.presentor.domotics.DomoticsActivity;
 import com.example.android.presentor.screenshare.AccessActivity;
 import com.example.android.presentor.screenshare.CreateActivity;
@@ -109,6 +107,8 @@ public class MainActivity extends AppCompatActivity
                 //Set your new fragment here
                 if (mIntent != null) {
                     startActivity(mIntent);
+                    //added
+                    mIntent = null;
                 }else if(turnOnBluetooth){
                     mNavigationView.setCheckedItem(R.id.nav_screen_mirroring);
                     Utility.turnOnBluetooth(MainActivity.this);
@@ -186,7 +186,7 @@ public class MainActivity extends AppCompatActivity
                 mIntent = null;
                 break;
             case R.id.nav_about:
-                mIntent = null;
+                mIntent = new Intent(MainActivity.this, AboutActivity.class);
                 break;
         }
 

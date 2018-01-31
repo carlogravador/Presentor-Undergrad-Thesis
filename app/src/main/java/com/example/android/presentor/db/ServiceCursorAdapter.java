@@ -20,6 +20,7 @@ import com.example.android.presentor.R;
 import com.example.android.presentor.db.ServicesContract.ServiceEntry;
 import com.example.android.presentor.screenshare.AccessActivity;
 import com.example.android.presentor.screenshare.ClientActivity;
+import com.example.android.presentor.utils.Utility;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -43,7 +44,7 @@ public class ServiceCursorAdapter extends CursorAdapter {
     }
 
     @Override
-    public void bindView(View view, Context context, Cursor cursor) {
+    public void bindView(View view, final Context context, Cursor cursor) {
 
         CardView cardView = (CardView)view.findViewById(R.id.card_view_lobby);
         TextView textViewServiceName = (TextView) view.findViewById(R.id.text_view_lobby_name);
@@ -52,10 +53,15 @@ public class ServiceCursorAdapter extends CursorAdapter {
 
         int serviceNameIndex = cursor.getColumnIndex(ServiceEntry.COL_SERVICE_NAME);
         int serviceCreatorIndex = cursor.getColumnIndex(ServiceEntry.COL_CREATOR_NAME);
+        int servicePasswordIndex = cursor.getColumnIndex(ServiceEntry.COL_PASSWORD);
+        int ipIndex = cursor.getColumnIndex(ServiceEntry.COL_IP_ADDRESS);
 
         GradientDrawable backgroundCircle = (GradientDrawable)imageViewBackground.getBackground();
-        String serviceName = cursor.getString(serviceNameIndex);
-        String serviceCreator = cursor.getString(serviceCreatorIndex);
+        final String serviceName = cursor.getString(serviceNameIndex);
+        final String serviceCreator = cursor.getString(serviceCreatorIndex);
+        final String servicePassword = cursor.getString(servicePasswordIndex);
+        final String creatorIp = cursor.getString(ipIndex);
+
 
         final int position = cursor.getPosition();
 
@@ -70,7 +76,13 @@ public class ServiceCursorAdapter extends CursorAdapter {
                 Intent intent = new Intent(mContext, ClientActivity.class);
                 Uri uri = ContentUris.withAppendedId(ServiceEntry.CONTENT_URI_SERVICE, getItemId(position));
                 intent.setData(uri);
-                mContext.startActivity(intent);
+
+                if(servicePassword.length() != 0){
+                    Utility.showInputPassword(context, intent, serviceName, serviceCreator, creatorIp,
+                            servicePassword);
+                    return;
+                }
+               mContext.startActivity(intent);
             }
         });
 

@@ -27,9 +27,9 @@ public class ServicesDbHelper extends SQLiteOpenHelper {
                 + ServiceEntry.COL_SERVICE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + ServiceEntry.COL_PORT_NUMBER + "  INTEGER, "
                 + ServiceEntry.COL_SERVICE_NAME + " TEXT NOT NULL, "
-                + ServiceEntry.COL_CREATOR_NAME + " TEXT NOT NULL,"
+                + ServiceEntry.COL_CREATOR_NAME + " TEXT NOT NULL, "
+                + ServiceEntry.COL_PASSWORD + " TEXT, "
                 + ServiceEntry.COL_IP_ADDRESS + " TEXT NOT NULL );" ;
-
         db.execSQL(SQL_CREATE_SERVICE_TABLE);
     }
 

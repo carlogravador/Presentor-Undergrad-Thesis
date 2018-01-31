@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="16dp"
+    android:paddingTop="16dp"
+    tools:context="com.example.android.presentor.AboutActivity"
+    android:padding="16dp">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/Presentor"
+                android:layout_width="130dp"
+                android:layout_height="130dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="16dp"
+
+                android:src="@drawable/ic_splash_logo"/>
+
+            <TextView
+                android:id="@+id/title_about"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/Presentor"
+                android:layout_centerHorizontal="true"
+                android:text="@string/app_name"
+                android:textSize="32sp"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/title_below"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/title_about"
+                android:layout_centerHorizontal="true"
+                android:text="Beta version"
+                android:textAlignment="center"
+                android:textSize="22sp"
+                />
+
+            <TextView
+                android:id="@+id/title_team"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/title_below"
+                android:layout_centerHorizontal="true"
+                android:text="by Presentor development team"
+                android:textAlignment="center"
+                android:textSize="22sp"
+                />
+
+            <TextView
+                android:layout_marginTop="16dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/title_team"
+                android:layout_centerHorizontal="true"
+                android:text="An Android-based screen mirroring with face analysis and domotics application.Generally, this application is designed as an overall application package for presentations. It offers screen mirroring, face analysis and domotics features. However, it can also function using only one of the three (3) features. "
+                android:textAlignment="center"
+                android:textSize="20sp"
+
+                />
+
+        </RelativeLayout>
+    </ScrollView>
+
+</RelativeLayout>

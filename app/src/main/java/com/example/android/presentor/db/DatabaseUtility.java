@@ -31,6 +31,14 @@ public class DatabaseUtility {
     private static String getCreatorName(NsdServiceInfo serviceInfo) {
         String serviceName = serviceInfo.getServiceName();
         int startPosition = serviceName.indexOf(NsdHelper.UNDERSCORE) + 1;
+        int lastPosition = serviceName.lastIndexOf(NsdHelper.UNDERSCORE);
+
+        return serviceName.substring(startPosition, lastPosition);
+    }
+
+    private static String getServicePassword(NsdServiceInfo serviceInfo){
+        String serviceName = serviceInfo.getServiceName();
+        int startPosition = serviceName.lastIndexOf(NsdHelper.UNDERSCORE) + 1;
 
         return serviceName.substring(startPosition);
     }
@@ -41,6 +49,7 @@ public class DatabaseUtility {
         values.put(ServiceEntry.COL_PORT_NUMBER, serviceInfo.getPort());
         values.put(ServiceEntry.COL_SERVICE_NAME, getServiceName(serviceInfo));
         values.put(ServiceEntry.COL_CREATOR_NAME, getCreatorName(serviceInfo));
+        values.put(ServiceEntry.COL_PASSWORD, getServicePassword(serviceInfo));
 
         Uri newUri = context.getContentResolver().insert(ServiceEntry.CONTENT_URI_SERVICE, values);
 
