@@ -1,9 +1,15 @@
 package com.example.android.presentor;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.widget.CardView;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -51,6 +57,9 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        notification();
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -196,7 +205,7 @@ public class MainActivity extends AppCompatActivity
                 }
                 break;
             case R.id.nav_settings:
-                mIntent = null;
+                mIntent = new Intent(MainActivity.this, SettingsActivity.class);
                 break;
             case R.id.nav_about:
                 mIntent = new Intent(MainActivity.this, AboutActivity.class);
@@ -218,4 +227,43 @@ public class MainActivity extends AppCompatActivity
         super.onResume();
 
     }
+
+
+
+    //TODO : BUG: multiple instances of app opens when application is clicked followed by clicking the notification
+    NotificationCompat.Builder notification;
+    private static final int uniqueID = 45612;
+
+
+
+    public void notification(){
+        //Build the notification
+
+        notification = new NotificationCompat.Builder(this);
+
+        Bitmap logo = BitmapFactory.decodeResource(getResources(),R.drawable.ic_splash_logo);
+        notification.setLargeIcon(logo);
+        notification.setSmallIcon(R.drawable.ic_notif_icon);
+
+
+        //notification.setTicker("This is the ticker");
+        //notification.setWhen(System.currentTimeMillis());
+        notification.setContentTitle("Presentor is running");
+        notification.setContentText("Tap for more details.");
+        notification.setOngoing(true);
+        notification.setAutoCancel(false);
+
+        Intent intent = new Intent(this, MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        notification.setContentIntent(pendingIntent);
+
+        //Builds notification and issues it
+        NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        nm.notify(uniqueID, notification.build());
+
+    }
+
+
+
+
 }
