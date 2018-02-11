@@ -40,7 +40,7 @@ public class AccessActivity extends AppCompatActivity
         DatabaseUtility.clearServiceList(this);
         //create new database;
         mServiceCursorAdapter = new ServiceCursorAdapter(this, null);
-        mNsdHelper = new NsdHelper(this);
+        mNsdHelper = NsdHelper.getInstatnce();
         initClientSide();
 
 
@@ -51,6 +51,26 @@ public class AccessActivity extends AppCompatActivity
 
         getLoaderManager().initLoader(SERVICE_LOADER, null, this);
 
+    }
+
+    @Override
+    protected void onStop() {
+        DatabaseUtility.clearServiceList(this);
+        mNsdHelper.stopDiscovery();
+        super.onStop();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        new Timer().schedule(
+                new TimerTask() {
+                    @Override
+                    public void run() {
+                        mNsdHelper.discoverServices();
+                    }
+                }, 2000
+        );
     }
 
     private void initClientSide() {

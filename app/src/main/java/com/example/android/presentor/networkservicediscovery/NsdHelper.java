@@ -7,8 +7,10 @@ import android.net.nsd.NsdServiceInfo;
 import android.os.Build;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.android.presentor.R;
 import com.example.android.presentor.db.DatabaseUtility;
 import com.example.android.presentor.db.ServicesDbHelper;
 
@@ -20,9 +22,11 @@ import pl.bclogic.pulsator4droid.library.PulsatorLayout;
 
 public class NsdHelper {
 
-    Context mContext;
+    private Context mContext;
 
 //    private LocalBroadcastManager broadcaster;
+
+    private static final NsdHelper ourInstance = new NsdHelper();
 
     NsdManager mNsdManager;
     NsdManager.ResolveListener mResolveListener;
@@ -31,8 +35,8 @@ public class NsdHelper {
 
 
     public static final String SERVICE_TYPE = "_http._tcp";
-//    public static final String BROADCAST_REGISTER_SUCCESS = "RegisterBroadcast";
-//    public static final String BROADCAST_UNREGISTER_SUCCESS = "UnregisterBroadcast";
+    public static final String BROADCAST_REGISTER_SUCCESS = "RegisterBroadcast";
+    public static final String BROADCAST_UNREGISTER_SUCCESS = "UnregisterBroadcast";
     //separator for service name and service host
     public static final String UNDERSCORE = "_";
 
@@ -49,15 +53,24 @@ public class NsdHelper {
 
     NsdServiceInfo mService;
 
-    public NsdHelper(Context context) {
-        mContext = context;
-        mNsdManager = (NsdManager) context.getSystemService(Context.NSD_SERVICE);
+    private NsdHelper() {
+//        mContext = context;
+//        mNsdManager = (NsdManager) context.getSystemService(Context.NSD_SERVICE);
+    }
+
+    public static NsdHelper getInstatnce(){
+        return  ourInstance;
+    }
+
+    public void init(Context context){
+        this.mContext = context.getApplicationContext();
+        this.mNsdManager = (NsdManager) context.getSystemService(Context.NSD_SERVICE);
     }
 
     public void initClientSide(){
         mServicesDbHelper = new ServicesDbHelper(mContext);
         initializeResolveListener();
-        discoverServices();
+        //discoverServices();
     }
 
 
@@ -85,6 +98,10 @@ public class NsdHelper {
                         (SERVICE_TYPE_PLUS_DOT);
                 if (!isOurService) {
                     Log.d(TAG, "Unknown Service Type: " + service.getServiceType());
+                    return;
+                }
+                if(service.getServiceName().equals(mServiceName)){
+                    Log.d(TAG, "Same machine: " + mServiceName);
                     return;
                 }
                 mNsdManager.resolveService(service, mResolveListener);
@@ -193,7 +210,7 @@ public class NsdHelper {
     }
 
     public void discoverServices() {
-        stopDiscovery();  // Cancel any existing discovery request
+        //stopDiscovery();  // Cancel any existing discovery request
         initializeDiscoveryListener();
         mNsdManager.discoverServices(
                 SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD, mDiscoveryListener);

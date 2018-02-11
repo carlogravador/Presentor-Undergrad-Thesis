@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/rl"
                 xmlns:app="http://schemas.android.com/apk/res-auto"
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
@@ -19,18 +20,46 @@
             android:layout_weight="1"
             android:background="@drawable/background_gradient"/>
 
-        <ImageView
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:padding="16dp"
+            >
+
+
+        </RelativeLayout>
 
     </LinearLayout>
 
+    <ImageView
+        android:id="@+id/imageVIew"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/background_white"
+        android:padding="5dp"
+        android:src="@mipmap/ic_launcher"/>
+
+    <TextView
+        android:id="@+id/create_desc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/imageVIew"
+        android:layout_centerHorizontal="true"
+        android:text="@string/screen_mirror_create_title_description"
+        android:textColor="#FFF"
+        android:textSize="18sp"/>
+
     <android.support.v7.widget.CardView
-        android:layout_centerInParent="true"
+        android:id="@+id/create_center_panel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
         app:cardCornerRadius="5dp"
         app:cardElevation="5dp"
         app:cardPreventCornerOverlap="false">
@@ -41,8 +70,8 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingLeft="16dp"
-            android:paddingTop="16dp"
             android:paddingRight="16dp"
+            android:paddingTop="16dp"
             >
 
 
@@ -55,7 +84,7 @@
                     android:id="@+id/edit_text_lobby"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="30dp"
+                    android:layout_marginBottom="16dp"
                     android:drawablePadding="10dp"
                     android:drawableStart="@drawable/ic_people_outline"
                     android:hint="@string/screen_mirror_create_lobby_name"
@@ -74,22 +103,29 @@
                     android:id="@+id/edit_text_password"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="40dp"
+                    android:layout_marginTop="16dp"
                     android:drawablePadding="10dp"
                     android:drawableStart="@drawable/ic_lock_outline"
                     android:hint="@string/screen_mirror_create_password"
                     android:imeOptions="actionDone"
-                    android:inputType="text"
+                    android:inputType="textPassword"
                     android:maxLength="10"
                     android:maxLines="1"/>
             </android.support.design.widget.TextInputLayout>
+
+            <android.support.v7.widget.AppCompatCheckBox
+                android:id="@+id/cb_show_pass"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/screen_mirror_show_pass"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"/>
 
             <Button
                 android:id="@+id/button_start_sharing"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                android:layout_marginTop="50dp"
+                android:layout_marginTop="16dp"
                 android:background="@drawable/rec_gradient"
                 android:text="@string/screen_mirror_start_session"
                 android:textAllCaps="false"
@@ -98,25 +134,7 @@
 
     </android.support.v7.widget.CardView>
 
-    <ImageView
-        android:id="@+id/imageVIew"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="5dp"
-        android:layout_marginTop="15dp"
-        android:background="@drawable/background_white"
-        android:padding="5dp"
-        android:src="@mipmap/ic_launcher"/>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/imageVIew"
-        android:layout_centerHorizontal="true"
-        android:text="@string/screen_mirror_create_title_description"
-        android:textColor="#FFF"
-        android:textSize="20sp"/>
 
 
 </RelativeLayout>

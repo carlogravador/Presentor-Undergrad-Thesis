@@ -45,7 +45,7 @@ public class ClientActivity extends AppCompatActivity implements LoaderManager.L
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_client);
 
-        mShareService = new ShareService();
+        mShareService = ShareService.getInstance();
         mUiHandler = new Handler();
         mImageView = (ImageView) findViewById(R.id.image_view_screen_share);
 

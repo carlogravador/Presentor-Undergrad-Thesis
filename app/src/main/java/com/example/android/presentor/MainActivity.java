@@ -14,10 +14,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.example.android.presentor.domotics.DomoticsActivity;
+import com.example.android.presentor.networkservicediscovery.NsdHelper;
 import com.example.android.presentor.screenshare.AccessActivity;
 import com.example.android.presentor.screenshare.CreateActivity;
+import com.example.android.presentor.screenshare.ShareService;
 import com.example.android.presentor.utils.Utility;
 
 
@@ -31,6 +34,7 @@ public class MainActivity extends AppCompatActivity
 
     boolean turnOnBluetooth = false;
 
+    ShareService mShareSrvice;
 
     DialogInterface.OnClickListener dialoagNetworkListener = new DialogInterface.OnClickListener() {
         @Override
@@ -49,6 +53,10 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+
+        NsdHelper.getInstatnce().init(getApplicationContext());
+        mShareSrvice = ShareService.getInstance();
 
         CardView shareCardView = (CardView) findViewById(R.id.card_view_share);
         shareCardView.setOnClickListener(new View.OnClickListener() {
@@ -74,8 +82,14 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 if (Utility.isWifiConnected(MainActivity.this)) {
-                    Intent i = new Intent(MainActivity.this, AccessActivity.class);
-                    startActivity(i);
+                    if (!mShareSrvice.getServerStatus()) {
+                        Intent i = new Intent(MainActivity.this, AccessActivity.class);
+                        startActivity(i);
+                    } else {
+                        Toast.makeText(MainActivity.this,
+                                "Access is not available when Screen Mirroring is running.",
+                                Toast.LENGTH_SHORT).show();
+                    }
                 } else {
                     //open dialog box
                     String title = MainActivity.this.getResources()
@@ -109,7 +123,7 @@ public class MainActivity extends AppCompatActivity
                     startActivity(mIntent);
                     //added
                     mIntent = null;
-                }else if(turnOnBluetooth){
+                } else if (turnOnBluetooth) {
                     mNavigationView.setCheckedItem(R.id.nav_screen_mirroring);
                     Utility.turnOnBluetooth(MainActivity.this);
                     turnOnBluetooth = false;
@@ -174,11 +188,10 @@ public class MainActivity extends AppCompatActivity
                 mIntent = null;
                 break;
             case R.id.nav_domotics:
-                if(Utility.isBluetoothOn()){
-                   mIntent = new Intent(MainActivity.this, DomoticsActivity.class);
+                if (Utility.isBluetoothOn()) {
+                    mIntent = new Intent(MainActivity.this, DomoticsActivity.class);
 //                    new BtConnectAsyncTask(this).execute();
-                }
-                else{
+                } else {
                     turnOnBluetooth = true;
                 }
                 break;

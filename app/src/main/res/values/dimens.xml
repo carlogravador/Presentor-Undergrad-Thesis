@@ -6,4 +6,5 @@
     <dimen name="nav_header_height">160dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="dialog_margin">20dp</dimen>
+    <dimen name="top_margin">10dp</dimen>
 </resources>

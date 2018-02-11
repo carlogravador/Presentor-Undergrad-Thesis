@@ -16,6 +16,7 @@
     <string name="screen_mirror_create_password">Password (Optional)</string>
     <string name="screen_mirror_start_session">Start Screen Mirroring</string>
     <string name="screen_mirror_stop_session">Stop Screen Mirroring</string>
+    <string name="screen_mirror_show_pass">Show Password</string>
 
     <!--content main strings-->
     <string name="title_screen_mirror">Share</string>
@@ -70,4 +71,10 @@
     <string name="rename">Rename</string>
     <string name="cancel">Cancel</string>
     <string name="connect">Connect</string>
+
+
+    <!--Shared pref keys-->
+    <string name="lobby_status">status</string>
+    <string name="lobby_name">lobbyname</string>
+    <string name="lobby_pass">password</string>
 </resources>

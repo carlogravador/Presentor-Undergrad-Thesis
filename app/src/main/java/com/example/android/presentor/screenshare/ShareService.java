@@ -27,24 +27,45 @@ import java.util.Hashtable;
 public class ShareService {
 
     //private Handler mHandler;
+    private final static ShareService ourInstance = new ShareService();
     private Server mServer;
     private Client mClient;
 
-    public boolean isServerOpen = false;
-    public boolean hasClients = false;
+    private boolean isServerOpen = false;
+    private boolean hasClients = false;
 
-    public ShareService() {
+    public boolean getServerStatus() {
+        return isServerOpen;
+    }
+
+    public void setServerStatus(boolean status) {
+        this.isServerOpen = status;
+    }
+
+    public boolean getClientsStatus() {
+        return hasClients;
+    }
+
+    public void setClientsStatus(boolean status) {
+        this.hasClients = status;
+    }
+
+    private ShareService() {
         //mHandler = handler;
     }
 
+    public static ShareService getInstance(){
+        return ourInstance;
+    }
+
     public void startServer(int port) throws IOException {
-        isServerOpen = true;
+        setServerStatus(true);
         mServer = new Server(port);
     }
 
     public void stop() {
-        isServerOpen = false;
-        hasClients = false;
+        setServerStatus(false);
+        setClientsStatus(false);
     }
 
     public void connect(String ip, int port, Handler handler, ImageView imageView) {
@@ -75,7 +96,7 @@ public class ShareService {
     public class Server extends Thread {
 
         private ServerSocket mServerSocket;
-        private Hashtable mOutputStreamsHashtable = new Hashtable();
+        private Hashtable mOutputStreamsHashtable;// = new Hashtable();
 
         private Enumeration getOutputStreams() {
             return mOutputStreamsHashtable.elements();
@@ -102,6 +123,7 @@ public class ShareService {
         private void listen(int port) throws IOException {
 
             mServerSocket = new ServerSocket(port);
+            mOutputStreamsHashtable = new Hashtable();
 
             while (isServerOpen) {
                 //blocking statement
@@ -122,6 +144,8 @@ public class ShareService {
             Log.d("ShareService", "Server Stop");
             mServerSocket.close();
             mServerSocket = null;
+            mOutputStreamsHashtable.clear();
+            mOutputStreamsHashtable = null;
         }
 
         @Override

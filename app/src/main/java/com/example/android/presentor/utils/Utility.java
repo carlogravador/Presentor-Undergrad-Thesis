@@ -9,6 +9,8 @@ import android.content.SharedPreferences;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -42,8 +44,7 @@ public class Utility {
         alertDialog.show();
     }
 
-
-
+    //temp only
     public static void showInputPassword(final Context context, final Intent intent, String lobbyName,
                                          String creatorName, String ip, final String password){
         AlertDialog.Builder adb = new AlertDialog.Builder(context);
@@ -140,13 +141,15 @@ public class Utility {
 
 
     public static void clearKey(Context cxt, String key) {
-        SharedPreferences.Editor prefsEditor = cxt.getSharedPreferences("presentor", Context.MODE_PRIVATE).edit();
+        SharedPreferences.Editor prefsEditor = cxt.getSharedPreferences("presentor",
+                Context.MODE_PRIVATE).edit();
         prefsEditor.remove(key);
         prefsEditor.commit();
     }
 
     public static void saveString(Context cxt, String key, String value) {
-        SharedPreferences.Editor prefsEditor = cxt.getSharedPreferences("presentor", Context.MODE_PRIVATE).edit();
+        SharedPreferences.Editor prefsEditor = cxt.getSharedPreferences("presentor",
+                Context.MODE_PRIVATE).edit();
         prefsEditor.putString(key, value);
         prefsEditor.commit();
     }
@@ -159,7 +162,8 @@ public class Utility {
     }
 
     public static void saveInt(Context cxt, String key, int value) {
-        SharedPreferences.Editor prefsEditor = cxt.getSharedPreferences("presentor", Context.MODE_PRIVATE).edit();
+        SharedPreferences.Editor prefsEditor = cxt.getSharedPreferences("presentor",
+                Context.MODE_PRIVATE).edit();
         prefsEditor.putInt(key, value);
         prefsEditor.commit();
     }
@@ -167,6 +171,19 @@ public class Utility {
     public static int getInt(Context cxt, String key) {
         SharedPreferences prefs = cxt.getSharedPreferences("presentor", Context.MODE_PRIVATE);
         int val = prefs.getInt(key, -1);
+        return val;
+    }
+
+    public static void saveBoolean(Context cxt, String key, boolean value){
+        SharedPreferences.Editor prefsEditor = cxt.getSharedPreferences("presentor",
+                Context.MODE_PRIVATE).edit();
+        prefsEditor.putBoolean(key, value);
+        prefsEditor.commit();
+    }
+
+    public static boolean getBoolean(Context cxt, String key){
+        SharedPreferences prefs = cxt.getSharedPreferences("presentor", Context.MODE_PRIVATE);
+        boolean val = prefs.getBoolean(key, false);
         return val;
     }
 
