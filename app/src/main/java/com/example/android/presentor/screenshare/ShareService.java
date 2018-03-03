@@ -1,13 +1,22 @@
 package com.example.android.presentor.screenshare;
 
+import android.app.Activity;
+import android.app.ActivityManager;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
+import android.os.CountDownTimer;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
-import com.example.android.presentor.utils.ConnectionUtility;
-import com.example.android.presentor.utils.Utility;
+import com.example.android.presentor.R;
+import com.example.android.presentor.db.DatabaseUtility;
+import com.example.android.presentor.observer.ScreenPinningObservable;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -16,9 +25,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by Carlo on 18/11/2017.
@@ -26,13 +36,63 @@ import java.util.Hashtable;
 
 public class ShareService {
 
+    private Context mContext;
+
+    public static final int SCREEN_PIN_ON = -1;
+    public static final int SCREEN_PIN_OFF = -2;
+    public static final int FACE_ANALYSIS_ON = -3;
+    public static final int FACE_ANALYSIS_OFF = -4;
+
+
     //private Handler mHandler;
     private final static ShareService ourInstance = new ShareService();
-    private Server mServer;
-    private Client mClient;
 
+    private Server mServer;
+
+    //for server variables
     private boolean isServerOpen = false;
-    private boolean hasClients = false;
+    private boolean isPause = false;
+    private boolean isOnScreenPinningModeServer = false;
+
+    //for client variables
+    private boolean isClientConnected = false;
+
+
+    //for ShareService initialization
+    private ShareService() {
+        //mHandler = handler;
+    }
+
+    public static ShareService getInstance() {
+        return ourInstance;
+    }
+
+    public void init(Context context) {
+        mContext = context.getApplicationContext();
+    }
+
+    //for server methods
+    public void startServer(Activity act, int port) throws IOException {
+        setServerStatus(true);
+        mServer = new Server(act, port);
+    }
+
+    public void stopServer() {
+        setServerStatus(false);
+        mServer = null;
+    }
+
+    public void setServerActivity(Activity act){
+        mServer.serverActivity = act;
+    }
+
+    public void setScreenPinningModeServer(boolean b) {
+        this.isOnScreenPinningModeServer = b;
+    }
+
+    public boolean getScreenPinningModeServer() {
+        return this.isOnScreenPinningModeServer;
+    }
 
     public boolean getServerStatus() {
         return isServerOpen;
@@ -42,81 +102,122 @@ public class ShareService {
         this.isServerOpen = status;
     }
 
-    public boolean getClientsStatus() {
-        return hasClients;
-    }
-
-    public void setClientsStatus(boolean status) {
-        this.hasClients = status;
-    }
-
-    private ShareService() {
-        //mHandler = handler;
-    }
-
-    public static ShareService getInstance(){
-        return ourInstance;
-    }
-
-    public void startServer(int port) throws IOException {
-        setServerStatus(true);
-        mServer = new Server(port);
-    }
-
-    public void stop() {
-        setServerStatus(false);
-        setClientsStatus(false);
-    }
-
-    public void connect(String ip, int port, Handler handler, ImageView imageView) {
-        mClient = new Client(ip, port, handler, imageView);
-    }
-
-    public void send(byte[] buffer) {
-        Client client;
-        synchronized (this) {
-            client = mClient;
+    public boolean serverHasClients() {
+        //returns false if outputstreamshashtable is null;
+        //outputstreamhashtable is null if service is onstop;
+        boolean b = false;
+        if (mServer != null) {
+            b = !mServer.mOutputStreamsHashtable.isEmpty();
         }
-        client.send(buffer);
+
+        return b;
     }
 
-
-    public void sendToAll(byte[] buffer) {
-        try {
-            mServer.sendToAll(buffer);
-        }catch (IOException e){
-            e.printStackTrace();
-        }
+    public void pauseScreenMirroringServer() {
+        isPause = true;
     }
 
-//    public void sendToClient(String message){
-//        mClient.sendToClient(message);
-//    }
+    public void resumeScreenMirroringServer() {
+        isPause = false;
+    }
+
+    public boolean onPauseScreenMirroringServer() {
+        return isPause;
+    }
+
+    public void sendToAllClientsConnected(byte[] buffer) {
+        mServer.sendToAll(buffer);
+    }
+
+    public void sendCommandToAllClientsConnected(int commandCode) {
+        mServer.sendCommandToAll(commandCode);
+    }
+
+    //for client methods
+    public void setClientStatus(boolean status) {
+        this.isClientConnected = status;
+    }
+
+    public void connectClient(Activity act, String ip, int port) {
+        setClientStatus(true);
+        new Client(act, ip, port);
+    }
+
+    public void disconnectClient() {
+        setClientStatus(false);
+    }
 
     public class Server extends Thread {
 
+        private Activity serverActivity;
+
         private ServerSocket mServerSocket;
-        private Hashtable mOutputStreamsHashtable;// = new Hashtable();
+        private Hashtable mOutputStreamsHashtable;
 
-        private Enumeration getOutputStreams() {
-            return mOutputStreamsHashtable.elements();
-        }
+        private int mPort;
 
-        int mPort;
-
-        public Server(int port) throws IOException {
+        public Server(Activity act, int port) throws IOException {
+            serverActivity = act;
             mPort = port;
             start();
         }
 
+        private Enumeration getSockets() {
+            return mOutputStreamsHashtable.keys();
+        }
 
-        private void sendToAll(byte[] buffer) throws IOException {
+        private void sendToAll(byte[] buffer) {
             synchronized (mOutputStreamsHashtable) {
-                for (Enumeration e = getOutputStreams(); e.hasMoreElements(); ) {
-                    DataOutputStream dout = (DataOutputStream) e.nextElement();
-                    dout.writeInt(buffer.length);
-                    dout.write(buffer, 0, buffer.length);
+                for (Enumeration e = getSockets(); e.hasMoreElements(); ) {
+                    Socket s = (Socket) e.nextElement();
+                    DataOutputStream dout = (DataOutputStream) mOutputStreamsHashtable.get(s);
+                    //send the message
+                    try {
+                        dout.writeInt(buffer.length);
+                        dout.write(buffer, 0, buffer.length);
+                    } catch (IOException ie) {
+                        removeConnection(s);
+                    }
                 }
+            }
+        }
+
+        private void sendCommand(int command, DataOutputStream dout) {
+            try {
+                dout.writeInt(command);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+        private void sendCommandToAll(int commandCode) {
+            Log.d("ShareService", "sendCommandToAllClientsConnected() called");
+            synchronized (mOutputStreamsHashtable) {
+                for (Enumeration e = getSockets(); e.hasMoreElements(); ) {
+                    Socket s = (Socket) e.nextElement();
+                    DataOutputStream dout = (DataOutputStream) mOutputStreamsHashtable.get(s);
+                    //send the message
+                    try {
+                        dout.writeInt(commandCode);
+                    } catch (IOException er) {
+                        er.printStackTrace();
+                    }
+                }
+            }
+        }
+
+        private void removeConnection(Socket s) {
+            synchronized (mOutputStreamsHashtable) {
+                mOutputStreamsHashtable.remove(s);
+
+                try {
+                    s.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                DatabaseUtility.removeDeviceToList(mContext, serverActivity,
+                        s.getInetAddress().getHostAddress(), s.getPort());
             }
         }
 
@@ -128,7 +229,8 @@ public class ShareService {
             while (isServerOpen) {
                 //blocking statement
                 Socket clientSocket = mServerSocket.accept();
-                hasClients = true;
+                //to get the client's data
+                DataInputStream dataInputStream = new DataInputStream(clientSocket.getInputStream());
                 Log.d("ShareService listen", "address: " + clientSocket.getInetAddress() + ", port: " + clientSocket.getPort());
                 Log.d("ShareService listen", "somebody is connected");
                 //mClient = new Client(clientSocket);
@@ -137,15 +239,23 @@ public class ShareService {
                 //get outputstream so we can write to the client;
 
                 DataOutputStream dataOutputStream = new DataOutputStream(clientSocket.getOutputStream());
+                if (isOnScreenPinningModeServer) {
+                    sendCommand(SCREEN_PIN_ON, dataOutputStream);
+                }
                 mOutputStreamsHashtable.put(clientSocket, dataOutputStream);
 
-            }
+                //Add to connected device
+                DatabaseUtility.addDeviceToList(mContext, serverActivity,
+                        dataInputStream.readUTF(), clientSocket.getInetAddress().getHostAddress(),
+                        clientSocket.getPort());
 
+            }
             Log.d("ShareService", "Server Stop");
             mServerSocket.close();
             mServerSocket = null;
             mOutputStreamsHashtable.clear();
             mOutputStreamsHashtable = null;
+            isOnScreenPinningModeServer = false;
         }
 
         @Override
@@ -162,8 +272,8 @@ public class ShareService {
 
     public class Client extends Thread {
 
-        Handler updateUiHandler;
-        ImageView mImageView;
+        private Activity clientActivity;
+        private TextView tv;
 
         private Socket mSocket;
         private InputStream mInputStream;
@@ -171,93 +281,249 @@ public class ShareService {
         private DataOutputStream mDataOutputStream;
         private DataInputStream mDataInputStream;
 
-        long bitmapReceive;
+        private ScreenPinningObservable spo;
+        private CountDownTimer cdt;
 
-        //the client that is received by the server
-        //runs on server
-        public Client(Socket socket) {
-            try {
-                mSocket = socket;
-                mInputStream = mSocket.getInputStream();
-                mOutputStream = mSocket.getOutputStream();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        private boolean screenPinningRequest = false;
+        private boolean screenPinningEnabled = false;
+
+        private long bitmapReceive;
+        private String clientName = "Kaboomskie";
 
         //create a client to connect to server
-        //runs on client
-        public Client(String ip, int port, Handler handler, ImageView imageView) {
+        private Client(Activity act, String ip, int port) {
             try {
-                updateUiHandler = handler;
-                mImageView = imageView;
+                clientActivity = act;
+                tv = (TextView) clientActivity.findViewById(R.id.screen_pin_tv);
                 mSocket = new Socket(ip, port);
                 mInputStream = mSocket.getInputStream();
                 mOutputStream = mSocket.getOutputStream();
                 mDataInputStream = new DataInputStream(mInputStream);
+                mDataOutputStream = new DataOutputStream(mOutputStream);
+                isClientConnected = true;
+                mDataOutputStream.writeUTF(clientName);
                 start();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
 
-        //keeps listening to the inputstream while connected
+        private void disconnect() throws IOException {
+            mInputStream.close();
+            mInputStream = null;
+            mOutputStream.close();
+            mOutputStream = null;
+            mDataInputStream.close();
+            mDataInputStream = null;
+            mSocket.close();
+            mSocket = null;
+            if (cdt != null) {
+                cdt.cancel();
+            }
+            clientActivity.finish();
+        }
 
-        @Override
-        public void run() {
-            //update UI for the stream
-            Log.d("ShareService", "client side started");
-            try {
-                while (true) {
-                    byte[] bytes;
-                    int len = mDataInputStream.readInt();
-                    bytes = new byte[len];
-                    if (len > 0) {
-                        mDataInputStream.readFully(bytes, 0, bytes.length);
-                    }
-                    updateUiHandler.post(new updateUiThread(bytes, mImageView));
-                    bitmapReceive++;
-                    Log.d("Share Service", "Bitmap received: " + bitmapReceive);
+        private void initSpo() {
+            clientActivity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    tv.setBackgroundColor(mContext.getResources().getColor(R.color.colorRed));
+                    tv.setVisibility(View.VISIBLE);
                 }
+            });
+
+            if (!isInLockTaskMode()) {
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        cdt = new CountDownTimer(10000, 1000) {
+                            @Override
+                            public void onTick(long l) {
+                                tv.setText("Please Enable Screen Pinning. Disconnecting in " + l / 1000 + " seconds.");
+                            }
+
+                            @Override
+                            public void onFinish() {
+                                Log.d("CountDownTimer", "onFinish() callBack");
+                                isClientConnected = false;
+                                screenPinningRequest = false;
+                                tv.setVisibility(View.GONE);
+                            }
+                        }.start();
+                    }
+                });
+            }
+
+            spo = new ScreenPinningObservable() {
+                @Override
+                public void run() {
+                    while (screenPinningRequest) {
+                        spo.setState(isInLockTaskMode());
+                    }
+                    Log.e("ScreenPinningListener", "Listener stopServer");
+                }
+            };
+
+            spo.setScreenPinningObserver(new ScreenPinningObservable.ScreenPinningObserver() {
+                @Override
+                public void onStateChanged(boolean inLockTaskMode) {
+                    if (!inLockTaskMode && screenPinningEnabled) {
+                        if (cdt != null) {
+                            cdt.cancel();
+                        }
+                        screenPinningEnabled = false;
+                        clientActivity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                tv.setVisibility(View.VISIBLE);
+                                tv.setText("Screen Pinning is cancelled. Disconnecting...");
+                                tv.setBackgroundColor(mContext.getResources().getColor(R.color.colorRed));
+                            }
+                        });
+                        new Timer().schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+                                Log.e("ScreenPinningListener", "onStateChanged() callback disconnect");
+                                isClientConnected = false;
+                                screenPinningRequest = false;
+                            }
+                        }, 1000);
+                    } else if (inLockTaskMode && !screenPinningEnabled) {
+                        screenPinningEnabled = true;
+                        if (cdt != null) {
+                            cdt.cancel();
+                        }
+                        clientActivity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                tv.setText("Screen Pinning is Enabled.");
+                                tv.setBackgroundColor(mContext.getResources().getColor(R.color.colorGreen));
+                            }
+                        });
+                        new Timer().schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+                                clientActivity.runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        tv.setVisibility(View.GONE);
+                                    }
+                                });
+                            }
+                        }, 1000);
+                    }
+                }
+            });
+        }
+
+        private boolean isInLockTaskMode() {
+            ActivityManager am = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                // For SDK version 23 and above.
+                return am.getLockTaskModeState()
+                        != ActivityManager.LOCK_TASK_MODE_NONE;
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                // When SDK version >= 21. This API is deprecated in 23.
+                return am.isInLockTaskMode();
+            }
+            return false;
+        }
+
+        private void screenPinOn() {
+            //start screen pinning
+            initSpo();
+            spo.start();
+            screenPinningRequest = true;
+            Log.d("ShareService", "ScreenPinning is on");
+            if (!isInLockTaskMode()) {
+                clientActivity.startLockTask();
+            }
+        }
+
+        private void screenPinOff() {
+            Log.d("ShareService", "ScreenPinning is off");
+            screenPinningRequest = false;   //to stopServer the listener
+            if (cdt != null) {
+                cdt.cancel();
+            }
+            clientActivity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    tv.setText("Screen Pinning has been disabled by the host.");
+                    tv.setBackgroundColor(mContext.getResources().getColor(R.color.colorGreen));
+                    tv.setVisibility(View.VISIBLE);
+                }
+            });
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    clientActivity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            tv.setVisibility(View.GONE);
+                            screenPinningEnabled = false;
+                        }
+                    });
+                }
+            }, 1000);
+            clientActivity.stopLockTask();
+        }
+
+        private void handleCommandReceived(int COMMAND_CODE) {
+            Log.d("ShareService", "Command has been received: " + COMMAND_CODE);
+            switch (COMMAND_CODE) {
+                case SCREEN_PIN_ON:
+                    screenPinOn();
+                    break;
+                case SCREEN_PIN_OFF:
+                    screenPinOff();
+                    break;
+                case FACE_ANALYSIS_ON:
+                    break;
+                case FACE_ANALYSIS_OFF:
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void listen() {
+            try {
+                while (isClientConnected) {
+                    final byte[] bytes;
+                    int len = mDataInputStream.readInt();
+                    Log.d("ShareService", "value of len:" + len);
+                    if (len > 0) {
+                        bytes = new byte[len];
+                        mDataInputStream.readFully(bytes, 0, bytes.length);
+                        clientActivity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                ImageView iv = clientActivity.findViewById(R.id.image_view_screen_share);
+                                Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                                iv.setImageBitmap(bm);
+                            }
+                        });
+                    } else {    //it's a command so let this block handle it.
+                        handleCommandReceived(len);
+                    }
+                }
+                Log.d("Share Service", "Client Disconnects");
+                disconnect();
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
-        //the host sending screenshot
-        public void send(byte[] buffer) {
-            try {
-                mDataOutputStream = new DataOutputStream(mOutputStream);
-                mDataOutputStream.writeInt(buffer.length);
-                mDataOutputStream.write(buffer, 0, buffer.length);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-//        public void sendToClient(String message){
-//            try{
-//                mDataOutputStream.writeUTF(message);
-//            }catch (IOException e){
-//                e.printStackTrace();
-//            }
-//        }
-
-    }
-
-    class updateUiThread implements Runnable {
-        private byte[] byteArray;
-        private ImageView mImageView;
-
-        public updateUiThread(byte[] bytes, ImageView imageView) {
-            byteArray = bytes;
-            mImageView = imageView;
-        }
-
+        //keeps listening to the inputstream while connected
         @Override
         public void run() {
-            Bitmap bm = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-            mImageView.setImageBitmap(bm);
+            //update UI for the stream
+            Log.d("ShareService", "client side started");
+            listen();
         }
     }
 

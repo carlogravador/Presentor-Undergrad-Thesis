@@ -18,11 +18,9 @@ import android.widget.TextView;
 
 import com.example.android.presentor.R;
 import com.example.android.presentor.db.ServicesContract.ServiceEntry;
-import com.example.android.presentor.screenshare.AccessActivity;
 import com.example.android.presentor.screenshare.ClientActivity;
 import com.example.android.presentor.utils.Utility;
 
-import java.util.concurrent.ThreadLocalRandom;
 
 
 /**
@@ -46,21 +44,27 @@ public class ServiceCursorAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, final Context context, Cursor cursor) {
 
-        CardView cardView = (CardView)view.findViewById(R.id.card_view_lobby);
+        CardView cardView = (CardView) view.findViewById(R.id.card_view_lobby);
         TextView textViewServiceName = (TextView) view.findViewById(R.id.text_view_lobby_name);
         TextView textViewServiceCreator = (TextView) view.findViewById(R.id.text_view_creator_name);
         ImageView imageViewBackground = (ImageView) view.findViewById(R.id.list_item_background);
+        ImageView imageViewSecuredIndicator = (ImageView) view.findViewById(R.id.iv_secured_indicator);
+
 
         int serviceNameIndex = cursor.getColumnIndex(ServiceEntry.COL_SERVICE_NAME);
         int serviceCreatorIndex = cursor.getColumnIndex(ServiceEntry.COL_CREATOR_NAME);
         int servicePasswordIndex = cursor.getColumnIndex(ServiceEntry.COL_PASSWORD);
         int ipIndex = cursor.getColumnIndex(ServiceEntry.COL_IP_ADDRESS);
+        int portIndex = cursor.getColumnIndex(ServiceEntry.COL_PORT_NUMBER);
 
         GradientDrawable backgroundCircle = (GradientDrawable)imageViewBackground.getBackground();
         final String serviceName = cursor.getString(serviceNameIndex);
         final String serviceCreator = cursor.getString(serviceCreatorIndex);
         final String servicePassword = cursor.getString(servicePasswordIndex);
-        final String creatorIp = cursor.getString(ipIndex);
+        String creatorIp = cursor.getString(ipIndex);
+        int port = cursor.getInt(portIndex);
+
+        final String address = creatorIp + ":" + port;
 
 
         final int position = cursor.getPosition();
@@ -70,6 +74,10 @@ public class ServiceCursorAdapter extends CursorAdapter {
         textViewServiceCreator.setText(serviceCreator);
         backgroundCircle.setColor(getColor(getItemId(cursor.getPosition())));
 
+        if(servicePassword.length() == 0){
+            imageViewSecuredIndicator.setVisibility(View.GONE);
+        }
+
         cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -77,12 +85,15 @@ public class ServiceCursorAdapter extends CursorAdapter {
                 Uri uri = ContentUris.withAppendedId(ServiceEntry.CONTENT_URI_SERVICE, getItemId(position));
                 intent.setData(uri);
 
-                if(servicePassword.length() != 0){
-                    Utility.showInputPassword(context, intent, serviceName, serviceCreator, creatorIp,
+                Utility.showConnectDialog(context, intent, serviceName, serviceCreator, address,
                             servicePassword);
-                    return;
-                }
-               mContext.startActivity(intent);
+
+//                if(servicePassword.length() != 0){
+//                    Utility.showConnectDialog(context, intent, serviceName, serviceCreator, creatorIp,
+//                            servicePassword);
+//                    return;
+//                }
+//               mContext.startActivity(intent);
             }
         });
 

@@ -1,17 +1,27 @@
 package com.example.android.presentor.utils;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -21,6 +31,8 @@ import android.widget.Toast;
 import com.example.android.presentor.R;
 import com.example.android.presentor.domotics.DomoticsActivity;
 import com.example.android.presentor.domotics.DomoticsSwitch;
+
+import org.w3c.dom.Text;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -45,44 +57,74 @@ public class Utility {
     }
 
     //temp only
-    public static void showInputPassword(final Context context, final Intent intent, String lobbyName,
+    public static void showConnectDialog(final Context context, final Intent intent, String lobbyName,
                                          String creatorName, String ip, final String password){
-        AlertDialog.Builder adb = new AlertDialog.Builder(context);
-        adb.setTitle(lobbyName);
-        final EditText et = new EditText(context);
-        TextView tv = new TextView(context);
-        tv.setText(creatorName + " " + ip + " " + password);
-        FrameLayout container = new FrameLayout(context);
-        FrameLayout.LayoutParams params= new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT);
-        int margins = context.getResources().getDimensionPixelSize(R.dimen.dialog_margin);
-        params.setMargins(margins, margins, margins, 0);
-        et.setLayoutParams(params);
-        et.setSingleLine();
-        container.addView(tv);
-        container.addView(et);
-        adb.setView(container);
+        LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View passwordAlertLayout = inflater.inflate(R.layout.create_lobby_custom_dialog, null);
+
+        View passwordContainer = (View) passwordAlertLayout.findViewById(R.id.dialog_password_panel);
+
+        TextView titleTv = (TextView) passwordAlertLayout.findViewById(R.id.dialog_title);
+        TextView creatorTv = (TextView) passwordAlertLayout.findViewById(R.id.dialog_creator);
+        TextView ipTv = (TextView) passwordAlertLayout.findViewById(R.id.dialog_ip);
+        final EditText passwordEt = (EditText) passwordAlertLayout.findViewById(R.id.dialog_password_et);
+        CheckBox passwordCb = (CheckBox) passwordAlertLayout.findViewById(R.id.dialog_password_cb);
+
+        Button cancelBtn = (Button) passwordAlertLayout.findViewById(R.id.dialog_cancel_btn);
+        Button connectBtn = (Button) passwordAlertLayout.findViewById(R.id.dialog_connect_btn);
+
+        titleTv.setText(lobbyName);
+        creatorTv.setText(creatorName);
+        ipTv.setText(ip);
 
 
-        DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
+        if(password.length() == 0){
+            passwordContainer.setVisibility(View.GONE);
+        }
+
+        final Dialog customDialog = new Dialog(context);
+        customDialog.setContentView(passwordAlertLayout);
+        customDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        customDialog.show();
+
+        cancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                switch(i){
-                    case DialogInterface.BUTTON_POSITIVE:
-                        if(et.getText().toString().equals(password)){
-                            context.startActivity(intent);
-                        }else{
-                            et.setError("Password is incorrect.");
-                        }
+            public void onClick(View view) {
+                customDialog.dismiss();
+            }
+        });
+
+        connectBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //has password
+                if(password.length() != 0){
+                    //input password is wrong
+                    if(!passwordEt.getText().toString().equals(password)){
+                        passwordEt.setError("Password is incorrect.");
+                        return;
+                    }
+                }
+                context.startActivity(intent);
+                customDialog.dismiss();
+            }
+        });
+
+        passwordCb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                if(isChecked){
+                    passwordEt.setTransformationMethod(HideReturnsTransformationMethod
+                            .getInstance());
+                    passwordEt.setSelection(passwordEt.length());
+                }
+                else{
+                    passwordEt.setTransformationMethod(PasswordTransformationMethod
+                            .getInstance());
+                    passwordEt.setSelection(passwordEt.length());
                 }
             }
-        };
-
-        adb.setPositiveButton(R.string.connect, listener);
-        adb.setNegativeButton(R.string.cancel, listener);
-
-        AlertDialog alertDialog = adb.create();
-        alertDialog.show();
+        });
     }
 
 

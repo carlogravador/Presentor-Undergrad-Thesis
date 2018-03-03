@@ -69,14 +69,14 @@ public class NsdHelper {
 
     public void initClientSide(){
         mServicesDbHelper = new ServicesDbHelper(mContext);
-        initializeResolveListener();
+        //initializeResolveListener();
         //discoverServices();
     }
 
 
 
     public void setServiceName(String serviceName, String serviceCreator, String servicePassword) {
-        this.mServiceName = serviceName + UNDERSCORE + serviceCreator + UNDERSCORE + servicePassword;
+        this.mServiceName = servicePassword + UNDERSCORE + serviceCreator + UNDERSCORE + serviceName;
     }
 
 
@@ -104,7 +104,7 @@ public class NsdHelper {
                     Log.d(TAG, "Same machine: " + mServiceName);
                     return;
                 }
-                mNsdManager.resolveService(service, mResolveListener);
+                mNsdManager.resolveService(service, new MyResolveListener());
 //                else if (service.getServiceName().equals(mServiceName)) {
 //                    Log.d(TAG, "Same machine: " + mServiceName);
 //                } else if (service.getServiceName().contains(mServiceName)) {
@@ -117,10 +117,10 @@ public class NsdHelper {
             @Override
             public void onServiceLost(NsdServiceInfo service) {
                 Log.e(TAG, "service lost" + service);
-                DatabaseUtility.removeServiceToList(mContext, mService);
-                if (mService == service) {
-                    mService = null;
-                }
+                DatabaseUtility.removeServiceToList(mContext, service);
+//                if (mService == service) {
+//                    mService = null;
+//                }
             }
 
             @Override
@@ -139,6 +139,7 @@ public class NsdHelper {
             }
         };
     }
+
 
     private void initializeResolveListener() {
         mResolveListener = new NsdManager.ResolveListener() {
@@ -238,4 +239,24 @@ public class NsdHelper {
         }
     }
 
+
+    private class MyResolveListener implements NsdManager.ResolveListener{
+        @Override
+        public void onServiceResolved(NsdServiceInfo serviceInfo) {
+            Log.v(TAG, "Resolve Succeeded. " + serviceInfo);
+            if (serviceInfo.getServiceName().equals(mServiceName)) {
+                Log.d(TAG, "Same IP.");
+                return;
+            }
+            mService = serviceInfo;
+            DatabaseUtility.addServiceToList(mContext, mService);
+        }
+
+        @Override
+        public void onResolveFailed(NsdServiceInfo nsdServiceInfo, int i) {
+            Log.d(TAG, "Service registration failed: " + i);
+            //Toast.makeText(mContext, "Service Failed", Toast.LENGTH_LONG).show();
+            mNsdManager.resolveService(nsdServiceInfo, new MyResolveListener());
+        }
+    }
 }

@@ -3,10 +3,9 @@ package com.example.android.presentor.db;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import com.example.android.presentor.db.ServicesContract.ServiceEntry;
-
+import com.example.android.presentor.db.ServicesContract.DeviceEntry;
 /**
  * Authored by KaushalD on 8/27/2016.
  */
@@ -30,7 +29,16 @@ public class ServicesDbHelper extends SQLiteOpenHelper {
                 + ServiceEntry.COL_CREATOR_NAME + " TEXT NOT NULL, "
                 + ServiceEntry.COL_PASSWORD + " TEXT, "
                 + ServiceEntry.COL_IP_ADDRESS + " TEXT NOT NULL );" ;
+
+        String SQL_CREATE_DEVICES_TABLE = "CREATE TABLE " + DeviceEntry.TABLE_DEVICES + "("
+                + DeviceEntry.COL_DEV_ID+ " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + DeviceEntry.COL_DEV_PORT + "  INTEGER, "
+                + DeviceEntry.COL_DEV_NAME+ " TEXT NOT NULL, "
+                + DeviceEntry.COL_DEV_IP+ " TEXT NOT NULL );";
+
+
         db.execSQL(SQL_CREATE_SERVICE_TABLE);
+        db.execSQL(SQL_CREATE_DEVICES_TABLE);
     }
 
     @Override

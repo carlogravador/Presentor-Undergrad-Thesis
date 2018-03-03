@@ -4,60 +4,70 @@ package com.example.android.presentor;
  * Created by villa on 07/02/2018.
  */
 
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.DialogInterface;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
-import android.widget.Toast;
 
-public class SettingsActivity extends AppCompatActivity{
+import com.example.android.presentor.screenshare.ShareService;
+
+public class SettingsActivity extends AppCompatActivity {
 
     private Button a;
-    private TextView b;
 
+    ShareService mShareService;
 
-
-    Dialog customDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
-        customDialog = new Dialog(this);
-//        customDialog.setContentView(R.layout.create_lobby_custom_dialog);
-//        customDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        mShareService = ShareService.getInstance();
+        a = findViewById(R.id.button);
 
-        a = (Button) findViewById(R.id.button);
-        a.setOnClickListener(new View.OnClickListener() {
+
+        final Button pauseButton = (Button) findViewById(R.id.pauseButton);
+        pauseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (!mShareService.onPauseScreenMirroringServer()) {
+                    mShareService.pauseScreenMirroringServer();
+                    pauseButton.setText("Resume");
+                    a.setVisibility(View.GONE);
+                } else {
+                    mShareService.resumeScreenMirroringServer();
+                    pauseButton.setText("Pause");
+                    a.setVisibility(View.VISIBLE);
+                }
 
-                customDialog.setContentView(R.layout.create_lobby_custom_dialog);
-                customDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                customDialog.show();
             }
         });
 
-        b = (TextView) findViewById(R.id.textView);
+        final Button pinningButton = (Button) findViewById(R.id.pinningButton);
+        pinningButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!mShareService.getScreenPinningModeServer()){
+                    pinningButton.setText("unpinned");
+                }else{
+                    pinningButton.setText("pinned");
+                }
+                new Thread() {
+                    @Override
+                    public void run() {
+                        if (!mShareService.getScreenPinningModeServer()) {
+                            mShareService.setScreenPinningModeServer(true);
+                            mShareService.sendCommandToAllClientsConnected(ShareService.SCREEN_PIN_ON);
+                        }else{
+                            mShareService.setScreenPinningModeServer(false);
+                            mShareService.sendCommandToAllClientsConnected(ShareService.SCREEN_PIN_OFF);
+                        }
+                    }
+                }.start();
+            }
+        });
+
     }
 
-
-//    @Override
-//    public void onClick(View v) {
-//        // TODO Auto-generated method stub
-//        Dialog customDialog = new Dialog(getApplicationContext());
-//
-//        customDialog.setContentView(R.layout.create_lobby_custom_dialog);
-//        customDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-//        customDialog.show();
-//    }
 }

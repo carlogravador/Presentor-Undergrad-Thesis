@@ -12,6 +12,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.example.android.presentor.db.ServicesContract.ServiceEntry;
+import com.example.android.presentor.db.ServicesContract.DeviceEntry;
 
 /**
  * Created by Carlo on 17/10/2017.
@@ -84,7 +85,7 @@ public class ServicesProvider extends ContentProvider {
                 // For the PETS code, query the pets table directly with the given
                 // projection, selection, selection arguments, and sort order. The cursor
                 // could contain multiple rows of the pets table.
-                cursor = db.query(ServiceEntry.TABLE_DEVICES, projection, selection, selectionArgs,
+                cursor = db.query(DeviceEntry.TABLE_DEVICES, projection, selection, selectionArgs,
                         null, null, sortOrder);
                 break;
             case DEVICE_ID:
@@ -96,9 +97,9 @@ public class ServicesProvider extends ContentProvider {
                 // For every "?" in the selection, we need to have an element in the selection
                 // arguments that will fill in the "?". Since we have 1 question mark in the
                 // selection, we have 1 String in the selection arguments' String array.
-                selection = ServiceEntry.COL_DEV_ID + "=?";
+                selection = DeviceEntry.COL_DEV_ID + "=?";
                 selectionArgs = new String[] { String.valueOf(ContentUris.parseId(uri)) };
-                cursor = db.query(ServiceEntry.TABLE_DEVICES, projection, selection, selectionArgs,
+                cursor = db.query(DeviceEntry.TABLE_DEVICES, projection, selection, selectionArgs,
                         null, null, sortOrder);
                 break;
             default:
@@ -122,9 +123,9 @@ public class ServicesProvider extends ContentProvider {
             case SERVICE_ID:
                 return ServiceEntry.CONTENT_ITEM_TYPE_SERVICE;
             case DEVICES:
-                return ServiceEntry.CONTENT_LIST_TYPE_DEVICE;
+                return DeviceEntry.CONTENT_LIST_TYPE_DEVICE;
             case DEVICE_ID:
-                return ServiceEntry.CONTENT_ITEM_TYPE_DEVICE;
+                return DeviceEntry.CONTENT_ITEM_TYPE_DEVICE;
             default:
                 throw new IllegalStateException("Unknown URI" + uri + " with match " + match);
         }
@@ -164,7 +165,7 @@ public class ServicesProvider extends ContentProvider {
     public Uri insertDevice(Uri uri, ContentValues contentValues) {
         SQLiteDatabase db = mServicesDbHelper.getWritableDatabase();
 
-        long id = db.insert(ServiceEntry.TABLE_DEVICES, null, contentValues);
+        long id = db.insert(DeviceEntry.TABLE_DEVICES, null, contentValues);
 
         if(id==-1){
             Log.e("ServicesProvider", "Failed to Insert row for " + uri);
@@ -190,7 +191,7 @@ public class ServicesProvider extends ContentProvider {
                 rowsDeleted = database.delete(ServiceEntry.TABLE_SERVICES, selection, selectionArgs);
                 break;
             case DEVICES:
-                rowsDeleted = database.delete(ServiceEntry.TABLE_DEVICES, selection, selectionArgs);
+                rowsDeleted = database.delete(DeviceEntry.TABLE_DEVICES, selection, selectionArgs);
                 break;
             default:
                 throw new IllegalArgumentException("Deletion is not supported for " + uri);

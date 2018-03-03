@@ -6,7 +6,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.android.presentor.screenshare.ClientActivity"
+    android:orientation="vertical"
     android:background="@color/colorBlack">
+
+    <TextView
+        android:id="@+id/screen_pin_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorRed"
+        android:textColor="@color/colorWhite"
+        android:gravity="center"
+        android:textSize="12sp"
+        android:visibility="gone"
+        tools:text="Please enable Screen Pinning. Disconnecting in 10 seconds"
+    />
 
     <ImageView
         android:id="@+id/image_view_screen_share"

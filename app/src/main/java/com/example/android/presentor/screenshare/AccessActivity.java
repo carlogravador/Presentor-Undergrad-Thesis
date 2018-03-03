@@ -6,6 +6,7 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ListView;
 
 import com.example.android.presentor.R;
@@ -27,17 +28,19 @@ public class AccessActivity extends AppCompatActivity
     private NsdHelper mNsdHelper;
     private ServiceCursorAdapter mServiceCursorAdapter;
 
+    public static PulsatorLayout pulsator;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_access);
 
 
-        PulsatorLayout pulsator = (PulsatorLayout) findViewById(R.id.pulsator);
-        pulsator.start();
+        pulsator = (PulsatorLayout) findViewById(R.id.pulsator);
 
         //delete first existing database every time activity is created
         DatabaseUtility.clearServiceList(this);
+
         //create new database;
         mServiceCursorAdapter = new ServiceCursorAdapter(this, null);
         mNsdHelper = NsdHelper.getInstatnce();
@@ -49,20 +52,27 @@ public class AccessActivity extends AppCompatActivity
         lobbyListView.setEmptyView(pulsator);
 
 
+
         getLoaderManager().initLoader(SERVICE_LOADER, null, this);
 
     }
 
+
     @Override
     protected void onStop() {
-        DatabaseUtility.clearServiceList(this);
         mNsdHelper.stopDiscovery();
         super.onStop();
     }
 
+
+
+
     @Override
     protected void onResume() {
         super.onResume();
+        DatabaseUtility.clearServiceList(this);
+        pulsator.start();
+        ShareService.getInstance().disconnectClient();
         new Timer().schedule(
                 new TimerTask() {
                     @Override
@@ -92,7 +102,8 @@ public class AccessActivity extends AppCompatActivity
                 ServiceEntry.COL_SERVICE_NAME,
                 ServiceEntry.COL_CREATOR_NAME,
                 ServiceEntry.COL_PASSWORD,
-                ServiceEntry.COL_IP_ADDRESS
+                ServiceEntry.COL_IP_ADDRESS,
+                ServiceEntry.COL_PORT_NUMBER
         };
 
         return new CursorLoader(this,

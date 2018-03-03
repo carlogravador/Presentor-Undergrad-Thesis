@@ -17,6 +17,7 @@
     <string name="screen_mirror_start_session">Start Screen Mirroring</string>
     <string name="screen_mirror_stop_session">Stop Screen Mirroring</string>
     <string name="screen_mirror_show_pass">Show Password</string>
+    <string name="connected_clients">Connected Clients: </string>
 
     <!--content main strings-->
     <string name="title_screen_mirror">Share</string>
@@ -46,6 +47,7 @@
 
     <!--screen share string-->
 
+    <string name="title">Available rooms</string>
     <string name="searching">Searching for rooms...</string>
     <string name="room_empty">No available rooms as of now.</string>
 

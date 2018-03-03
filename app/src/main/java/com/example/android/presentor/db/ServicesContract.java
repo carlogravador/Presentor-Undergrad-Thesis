@@ -23,9 +23,6 @@ public class ServicesContract {
     public static final class ServiceEntry implements BaseColumns {
 
         public static final Uri CONTENT_URI_SERVICE = Uri.withAppendedPath(BASE_CONTENT_URI, PATH_SERVICES);
-        public static final Uri CONTENT_URI_DEVICE = Uri.withAppendedPath(BASE_CONTENT_URI, PATH_DEVICES);
-        
-
 
         public static final String CONTENT_LIST_TYPE_SERVICE =
                 ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_SERVICES;
@@ -33,20 +30,7 @@ public class ServicesContract {
         public static final String CONTENT_ITEM_TYPE_SERVICE =
                 ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_SERVICES;
 
-        public static final String CONTENT_LIST_TYPE_DEVICE =
-                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_SERVICES;
 
-        public static final String CONTENT_ITEM_TYPE_DEVICE =
-                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_SERVICES;
-
-        public static final String TABLE_DEVICES = "devices";
-        
-        public static final String COL_DEV_ID = BaseColumns._ID;
-        public static final String COL_DEV_IP = "ipaddress";
-        public static final String COL_DEV_MODEL = "devicemodel";
-        public static final String COL_DEV_PORT = "port";
-        public static final String COL_DEV_VERSION = "osversion";
-        public static final String COL_DEV_PLAYER = "player";
 
         
         //DATABASE SERVICES COLUMNS
@@ -60,6 +44,27 @@ public class ServicesContract {
         public static final String COL_PASSWORD = "password";
 
 
+
+    }
+
+    public static final class DeviceEntry implements BaseColumns{
+
+        public static final Uri CONTENT_URI_DEVICE = Uri.withAppendedPath(BASE_CONTENT_URI, PATH_DEVICES);
+
+        public static final String CONTENT_LIST_TYPE_DEVICE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_SERVICES;
+
+        public static final String CONTENT_ITEM_TYPE_DEVICE =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_SERVICES;
+
+
+        //DATABASE DEVICES COLUMNS
+        public static final String TABLE_DEVICES = "devices";
+
+        public static final String COL_DEV_ID = BaseColumns._ID;
+        public static final String COL_DEV_IP = "ipaddress";
+        public static final String COL_DEV_NAME = "devicename";
+        public static final String COL_DEV_PORT = "port";
 
     }
 

@@ -1,19 +1,25 @@
 package com.example.android.presentor.screenshare;
 
+import android.app.ActivityManager;
 import android.app.LoaderManager;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.widget.ImageView;
 
 import com.example.android.presentor.R;
 import com.example.android.presentor.db.ServicesContract;
+
+import pl.bclogic.pulsator4droid.library.PulsatorLayout;
 
 public class ClientActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -24,6 +30,21 @@ public class ClientActivity extends AppCompatActivity implements LoaderManager.L
     Uri mCurrentService;
     public final static int CURRENT_SERVICE_LOADER = 0;
 
+    public boolean isInLockTaskMode(){
+        ActivityManager am = (ActivityManager)getSystemService(Context.ACTIVITY_SERVICE);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            // For SDK version 23 and above.
+            return am.getLockTaskModeState()
+                    != ActivityManager.LOCK_TASK_MODE_NONE;
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            // When SDK version >= 21. This API is deprecated in 23.
+            return am.isInLockTaskMode();
+        }
+        return false;
+    }
 
     class ConnectThread extends Thread {
         String ip;
@@ -36,8 +57,41 @@ public class ClientActivity extends AppCompatActivity implements LoaderManager.L
 
         @Override
         public void run() {
-            mShareService.connect(ip, port, mUiHandler, mImageView);
+            mShareService.connectClient(ClientActivity.this, ip, port);
         }
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        if(isInLockTaskMode()){
+            return;
+        }
+        super.onBackPressed();
+    }
+
+    @Override
+    public boolean onKeyLongPress(int keyCode, KeyEvent event) {
+        boolean b = keyCode == KeyEvent.KEYCODE_BACK;
+        if(keyCode == KeyEvent.KEYCODE_BACK){
+            Log.e("ClientActivity", "onKeyLongPress() Called: "+  b);
+            return true;
+        }
+        return super.onKeyLongPress(keyCode, event);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if(isInLockTaskMode())
+            switch(keyCode){
+                case KeyEvent.KEYCODE_HOME:
+                    Log.e("ClientActivity", "Home pressed");
+                    return true;
+                case KeyEvent.KEYCODE_APP_SWITCH:
+                    Log.e("ClientActivity", "Home pressed");
+                    return true;
+            }
+        return super.onKeyDown(keyCode, event);
     }
 
     @Override
@@ -45,9 +99,15 @@ public class ClientActivity extends AppCompatActivity implements LoaderManager.L
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_client);
 
+        //DatabaseUtility.clearServiceList(this);
+        PulsatorLayout pl = AccessActivity.pulsator;
+        pl.stop();
+
+
         mShareService = ShareService.getInstance();
         mUiHandler = new Handler();
         mImageView = (ImageView) findViewById(R.id.image_view_screen_share);
+        mImageView.setKeepScreenOn(true);
 
         Intent i = getIntent();
         mCurrentService = i.getData();
@@ -91,4 +151,17 @@ public class ClientActivity extends AppCompatActivity implements LoaderManager.L
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
     }
+
+    @Override
+    public void startLockTask() {
+        Log.e("ClientActivity", "startLockTask() called");
+        super.startLockTask();
+    }
+
+    @Override
+    public void stopLockTask() {
+        Log.e("ClientActivity", "stopLockTask() called");
+        super.stopLockTask();
+    }
+
 }

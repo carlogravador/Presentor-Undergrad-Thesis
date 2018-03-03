@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.widget.CardView;
@@ -39,6 +40,8 @@ public class MainActivity extends AppCompatActivity
     Intent mIntent;
 
     boolean turnOnBluetooth = false;
+    boolean doubleBackToExitPressedOnce = false;
+
 
     ShareService mShareSrvice;
 
@@ -58,13 +61,15 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        notification();
+        //notification();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
 
         NsdHelper.getInstatnce().init(getApplicationContext());
+        ShareService.getInstance().init(getApplicationContext());
+
         mShareSrvice = ShareService.getInstance();
 
         CardView shareCardView = (CardView) findViewById(R.id.card_view_share);
@@ -159,7 +164,26 @@ public class MainActivity extends AppCompatActivity
         if (mDrawer.isDrawerOpen(GravityCompat.START)) {
             mDrawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            if(mShareSrvice.getServerStatus()){
+                MainActivity.this.moveTaskToBack(true);
+            }else{
+                if (doubleBackToExitPressedOnce) {
+                    super.onBackPressed();
+                    return;
+                }
+
+                this.doubleBackToExitPressedOnce = true;
+                Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
+
+                new Handler().postDelayed(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        doubleBackToExitPressedOnce=false;
+                    }
+                }, 2000);
+            }
+            //super.onBackPressed();
         }
     }
 
@@ -236,7 +260,7 @@ public class MainActivity extends AppCompatActivity
 
 
 
-    public void notification(){
+    public void startNotification(){
         //Build the notification
 
         notification = new NotificationCompat.Builder(this);
@@ -246,12 +270,14 @@ public class MainActivity extends AppCompatActivity
         notification.setSmallIcon(R.drawable.ic_notif_icon);
 
 
+
         //notification.setTicker("This is the ticker");
         //notification.setWhen(System.currentTimeMillis());
         notification.setContentTitle("Presentor is running");
         notification.setContentText("Tap for more details.");
         notification.setOngoing(true);
         notification.setAutoCancel(false);
+
 
         Intent intent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);

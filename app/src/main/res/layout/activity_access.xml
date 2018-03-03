@@ -1,20 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                tools:context="com.example.android.presentor.screenshare.AccessActivity">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:id="@+id/access_parent"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:animateLayoutChanges="true"
+              android:orientation="vertical"
+              tools:context="com.example.android.presentor.screenshare.AccessActivity">
+
+    <RelativeLayout
+        android:id="@+id/title_parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp">
+
+        <TextView
+            android:id="@+id/lobby_header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:text="@string/title"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+            android:textColor="@color/colorAccent"
+            android:textStyle="bold"
+            />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/lobby_header"
+            android:background="@color/colorAccent"/>
+
+    </RelativeLayout>
 
 
     <ListView
         android:id="@+id/list_view_lobby"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:animateLayoutChanges="true"
         android:divider="@null"
         android:dividerHeight="0dp"
-        tools:listitem="@layout/list_item_lobby">
+        tools:listitem="@layout/list_item_lobby"
+        >
     </ListView>
 
     <!--Empty View-->
@@ -60,4 +90,4 @@
     </pl.bclogic.pulsator4droid.library.PulsatorLayout>
 
 
-</RelativeLayout>
+</LinearLayout>

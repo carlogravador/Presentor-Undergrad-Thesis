@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/rl"
                 xmlns:app="http://schemas.android.com/apk/res-auto"
                 xmlns:tools="http://schemas.android.com/tools"
+                android:id="@+id/rl"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
@@ -24,9 +24,36 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:padding="16dp"
+            android:padding="20dp"
             >
 
+            <TextView
+                android:id="@+id/tv_connected_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:text="@string/connected_clients"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp"
+                android:textColor="@color/colorBlack"/>
+
+            <View
+                android:id="@+id/div"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@+id/tv_connected_count"
+                android:layout_centerHorizontal="true"
+                android:background="@color/colorAccent"/>
+
+            <ListView
+                android:layout_below="@id/div"
+                android:id="@+id/list_view_devices"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:animateLayoutChanges="true"
+                tools:listitem="@layout/list_item_devices">
+            </ListView>
 
         </RelativeLayout>
 
@@ -133,8 +160,6 @@
         </LinearLayout>
 
     </android.support.v7.widget.CardView>
-
-
 
 
 </RelativeLayout>
