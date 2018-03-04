@@ -36,6 +36,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.android.presentor.FloatingWidgetService;
 import com.example.android.presentor.R;
 import com.example.android.presentor.db.DatabaseUtility;
 import com.example.android.presentor.db.DevicesCursorAdapter;
@@ -177,6 +178,7 @@ public class CreateActivity extends AppCompatActivity implements
             }
         });
 
+
         new Thread() {
             @Override
             public void run() {
@@ -221,6 +223,8 @@ public class CreateActivity extends AppCompatActivity implements
         String mLobbyPassword = passwordNameEditText.getText().toString().trim();
         //disables the texfields
         etSetEditable(false);
+
+        startService(new Intent(CreateActivity.this, FloatingWidgetService.class));
         //creatorName = ;
         int mPort = ConnectionUtility.getPort(this);
         try {

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <!--   Root container of Floating Widget View  -->
+    <RelativeLayout
+        android:id="@+id/root_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <!--  View while view is collapsed  -->
+        <RelativeLayout
+            android:id="@+id/collapse_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="visible">
+
+            <!--   ImageView of floating widget  -->
+            <ImageView
+                android:id="@+id/collapsed_iv"
+                android:layout_width="@dimen/big_dimen"
+                android:layout_height="@dimen/big_dimen"
+                android:src="@drawable/ic_splash_logo"
+                tools:ignore="ContentDescription" />
+
+            <!--   Close button to close Floating Widget View  -->
+            <!--<ImageView
+                android:id="@+id/close_floating_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="50dp"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/circle_shape"
+                android:src="@drawable/ic_close_white_24dp"
+                tools:ignore="ContentDescription" />-->
+        </RelativeLayout>
+
+        <!--   View while view is expanded   -->
+        <RelativeLayout
+            android:id="@+id/expanded_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:background="@null"
+            android:visibility="visible">
+
+            <!--Stop button-->
+            <ImageButton
+                android:id="@+id/circleIv1"
+                android:layout_width="@dimen/sub_button_dimen"
+                android:layout_height="@dimen/sub_button_dimen"
+                android:layout_centerVertical="true"
+                android:layout_margin="10dp"
+                android:background="@drawable/background_widget_button"
+                android:src="@drawable/widget_button_icon_stop_screenshare" />
+
+            <!--Pause/Play button-->
+            <ImageButton
+                android:id="@+id/circleIv2"
+                android:layout_width="@dimen/sub_button_dimen"
+                android:layout_height="@dimen/sub_button_dimen"
+                android:layout_centerVertical="true"
+                android:layout_margin="10dp"
+                android:background="@drawable/background_widget_button"
+                android:src="@drawable/widget_button_icon_pause_screenshare" />
+
+            <!--Screen Pin button-->
+            <ImageButton
+                android:id="@+id/circleIv3"
+                android:layout_width="@dimen/sub_button_dimen"
+                android:layout_height="@dimen/sub_button_dimen"
+                android:layout_centerVertical="true"
+                android:layout_margin="10dp"
+                android:background="@drawable/background_widget_button"
+                android:src="@drawable/widget_button_icon_screen_pin" />
+
+            <!--Face Analysis button-->
+            <ImageButton
+                android:id="@+id/circleIv4"
+                android:layout_width="@dimen/sub_button_dimen"
+                android:layout_height="@dimen/sub_button_dimen"
+                android:layout_centerVertical="true"
+                android:layout_margin="10dp"
+                android:background="@drawable/background_widget_button"
+                android:src="@drawable/widget_button_icon_face_analysis" />
+
+            <!--Domotics button-->
+            <ImageButton
+                android:id="@+id/circleIv5"
+                android:layout_width="@dimen/sub_button_dimen"
+                android:layout_height="@dimen/sub_button_dimen"
+                android:layout_centerVertical="true"
+                android:layout_margin="10dp"
+                android:background="@drawable/background_widget_button"
+                android:src="@drawable/widget_button_icon_domotics" />
+
+            <!--Open Lobby create/access-->
+            <ImageButton
+                android:id="@+id/circleIv6"
+                android:layout_width="@dimen/sub_button_dimen"
+                android:layout_height="@dimen/sub_button_dimen"
+                android:layout_centerVertical="true"
+                android:layout_margin="10dp"
+                android:background="@drawable/background_widget_button"
+                android:src="@drawable/widget_button_icon_show_main_layout" />
+
+            <!--Move/Drag button-->
+            <ImageView
+                android:id="@+id/holder_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/widget_button_icon_drag" />
+
+
+            <ImageButton
+                android:id="@+id/floating_widget_image_view"
+                android:layout_width="@dimen/big_dimen"
+                android:layout_height="@dimen/big_dimen"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:background="@drawable/background_widget_button"
+                android:src="@mipmap/ic_launcher" />
+
+
+        </RelativeLayout>
+
+
+    </RelativeLayout>
+
+</FrameLayout>

@@ -7,4 +7,11 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="dialog_margin">20dp</dimen>
     <dimen name="top_margin">10dp</dimen>
+
+    <dimen name="big_dimen">65dp</dimen>
+    <dimen name="small_dimen">60dp</dimen>
+    <dimen name="sub_button_dimen">20dp</dimen>
+    <dimen name="margin_to_logo">75dp</dimen>
+    <dimen name="margin_allowance">10dp</dimen>
+    <dimen name="margin_orig">14dp</dimen>
 </resources>

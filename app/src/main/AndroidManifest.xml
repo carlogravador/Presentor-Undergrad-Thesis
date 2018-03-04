@@ -5,6 +5,8 @@
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
     <uses-permission
         android:name="android.permission.ACCESS_WIFI_STATE"
         android:required="true" />
@@ -36,10 +38,11 @@
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
+                <category android:name="android.intent.category.LAUNCHER" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".screenshare.CreateActivity"
             android:parentActivityName=".MainActivity" />
@@ -51,18 +54,24 @@
             android:parentActivityName=".MainActivity" />
         <activity
             android:name=".screenshare.ClientActivity"
-            android:parentActivityName=".screenshare.AccessActivity"></activity>
+            android:parentActivityName=".screenshare.AccessActivity" />
         <activity
             android:name=".SettingsActivity"
-            android:parentActivityName=".MainActivity"></activity>
+            android:parentActivityName=".MainActivity"/>
         <activity
             android:name=".AboutActivity"
-            android:parentActivityName=".MainActivity"></activity>
+            android:parentActivityName=".MainActivity"/>
 
         <provider
             android:name=".db.ServicesProvider"
             android:authorities="com.example.android.presentor"
             android:exported="false" />
+
+        <service
+            android:name=".FloatingWidgetService"
+            android:enabled="true"
+            android:exported="false" />
+
 
     </application>
 
