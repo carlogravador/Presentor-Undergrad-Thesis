@@ -16,7 +16,9 @@ import android.widget.TextView;
 
 import com.example.android.presentor.R;
 import com.example.android.presentor.db.DatabaseUtility;
-import com.example.android.presentor.observer.ScreenPinningObservable;
+import com.example.android.presentor.faceanalysis.FaceAnalysisActivator;
+import com.example.android.presentor.faceanalysis.FaceAnalyzer;
+import com.example.android.presentor.screenpinning.ScreenPinningObservable;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -53,6 +55,7 @@ public class ShareService {
     private boolean isServerOpen = false;
     private boolean isPause = false;
     private boolean isOnScreenPinningModeServer = false;
+    private boolean isOnFaceAnalysisModeServer = false;
 
     //for client variables
     private boolean isClientConnected = false;
@@ -281,7 +284,10 @@ public class ShareService {
         private DataOutputStream mDataOutputStream;
         private DataInputStream mDataInputStream;
 
-        private ScreenPinningObservable spo;
+        private ScreenPinningObservable screenPinningObservable;
+        private FaceAnalysisActivator faceAnalysisActivator;
+        private FaceAnalyzer faceAnalyzer;
+
         private CountDownTimer cdt;
 
         private boolean screenPinningRequest = false;
@@ -302,6 +308,7 @@ public class ShareService {
                 mDataOutputStream = new DataOutputStream(mOutputStream);
                 isClientConnected = true;
                 mDataOutputStream.writeUTF(clientName);
+                initFaceAnalysisObserver();
                 start();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -321,9 +328,10 @@ public class ShareService {
                 cdt.cancel();
             }
             clientActivity.finish();
+            faceAnalyzer.release();
         }
 
-        private void initSpo() {
+        private void initScreenPinningObservable() {
             clientActivity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -354,17 +362,17 @@ public class ShareService {
                 });
             }
 
-            spo = new ScreenPinningObservable() {
+            screenPinningObservable = new ScreenPinningObservable() {
                 @Override
                 public void run() {
                     while (screenPinningRequest) {
-                        spo.setState(isInLockTaskMode());
+                        screenPinningObservable.setState(isInLockTaskMode());
                     }
                     Log.e("ScreenPinningListener", "Listener stopServer");
                 }
             };
 
-            spo.setScreenPinningObserver(new ScreenPinningObservable.ScreenPinningObserver() {
+            screenPinningObservable.setScreenPinningObserver(new ScreenPinningObservable.ScreenPinningObserver() {
                 @Override
                 public void onStateChanged(boolean inLockTaskMode) {
                     if (!inLockTaskMode && screenPinningEnabled) {
@@ -383,7 +391,7 @@ public class ShareService {
                         new Timer().schedule(new TimerTask() {
                             @Override
                             public void run() {
-                                Log.e("ScreenPinningListener", "onStateChanged() callback disconnect");
+                                Log.e("ScreenPinningListener", "clientDisconnects callback disconnect");
                                 isClientConnected = false;
                                 screenPinningRequest = false;
                             }
@@ -416,6 +424,24 @@ public class ShareService {
             });
         }
 
+        private void initFaceAnalysisObserver(){
+            faceAnalysisActivator = new FaceAnalysisActivator();
+            faceAnalyzer = new FaceAnalyzer(mContext);
+            faceAnalyzer.createCameraSource();
+            faceAnalysisActivator.setFaceAnalysisObserver(new FaceAnalysisActivator.FaceAnalysisObserver() {
+                @Override
+                public void onFaceAnalysisRequestStateChanged(boolean isOn) {
+                    if(isOn){
+                        Log.e("FaceAnalysis", "Status On");
+                        faceAnalyzer.start();
+                    }else{
+                        Log.e("FaceAnalysis", "Status Off");
+                        faceAnalyzer.stop();
+                    }
+                }
+            });
+        }
+
         private boolean isInLockTaskMode() {
             ActivityManager am = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
 
@@ -434,8 +460,8 @@ public class ShareService {
 
         private void screenPinOn() {
             //start screen pinning
-            initSpo();
-            spo.start();
+            initScreenPinningObservable();
+            screenPinningObservable.start();
             screenPinningRequest = true;
             Log.d("ShareService", "ScreenPinning is on");
             if (!isInLockTaskMode()) {
@@ -482,8 +508,10 @@ public class ShareService {
                     screenPinOff();
                     break;
                 case FACE_ANALYSIS_ON:
+                    faceAnalysisActivator.setState(true);
                     break;
                 case FACE_ANALYSIS_OFF:
+                    faceAnalysisActivator.setState(false);
                     break;
                 default:
                     break;

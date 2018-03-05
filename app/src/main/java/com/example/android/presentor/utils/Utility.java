@@ -1,5 +1,7 @@
 package com.example.android.presentor.utils;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
@@ -7,6 +9,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.wifi.WifiInfo;
@@ -14,6 +17,7 @@ import android.net.wifi.WifiManager;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.support.v4.app.ActivityCompat;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.view.LayoutInflater;
@@ -43,6 +47,8 @@ import java.util.regex.Pattern;
  */
 
 public class Utility {
+
+    public static final int REQUEST_CAMERA_PERM = 69;
 
     public static void showAlertDialog(Context context, String title, String message,
                                        DialogInterface.OnClickListener listener) {
@@ -128,6 +134,18 @@ public class Utility {
     }
 
 
+    public static boolean isCameraPermissionGranted(Context context) {
+        return ActivityCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    /**
+     * Request the camera permission
+     */
+    public static void requestCameraPermission(Activity activity) {
+        final String[] permissions = new String[]{Manifest.permission.CAMERA};
+        ActivityCompat.requestPermissions(activity, permissions, REQUEST_CAMERA_PERM);
+    }
+
 
     public static boolean isBluetoothOn() {
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -144,7 +162,7 @@ public class Utility {
         }
     }
 
-    public static void turnOnBluetooth(final Context context) {
+    public static void turnOnBluetooth(final Context context, final Intent intent) {
         DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
@@ -152,7 +170,7 @@ public class Utility {
                     case DialogInterface.BUTTON_POSITIVE:
                         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
                         bluetoothAdapter.enable();
-                        context.startActivity(new Intent(context, DomoticsActivity.class));
+                        context.startActivity(intent);
                 }
             }
         };
@@ -237,5 +255,13 @@ public class Utility {
         return m.find();
     }
 
-
+    public static void showToast(final Context context, final String msg) {
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 }

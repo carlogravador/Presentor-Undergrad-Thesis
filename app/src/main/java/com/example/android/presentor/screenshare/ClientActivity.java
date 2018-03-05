@@ -21,7 +21,7 @@ import com.example.android.presentor.db.ServicesContract;
 
 import pl.bclogic.pulsator4droid.library.PulsatorLayout;
 
-public class ClientActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class ClientActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
 
     ImageView mImageView;
     Handler mUiHandler;
@@ -29,6 +29,7 @@ public class ClientActivity extends AppCompatActivity implements LoaderManager.L
 
     Uri mCurrentService;
     public final static int CURRENT_SERVICE_LOADER = 0;
+
 
     public boolean isInLockTaskMode(){
         ActivityManager am = (ActivityManager)getSystemService(Context.ACTIVITY_SERVICE);
@@ -45,6 +46,7 @@ public class ClientActivity extends AppCompatActivity implements LoaderManager.L
         }
         return false;
     }
+
 
     class ConnectThread extends Thread {
         String ip;
@@ -70,29 +72,6 @@ public class ClientActivity extends AppCompatActivity implements LoaderManager.L
         super.onBackPressed();
     }
 
-    @Override
-    public boolean onKeyLongPress(int keyCode, KeyEvent event) {
-        boolean b = keyCode == KeyEvent.KEYCODE_BACK;
-        if(keyCode == KeyEvent.KEYCODE_BACK){
-            Log.e("ClientActivity", "onKeyLongPress() Called: "+  b);
-            return true;
-        }
-        return super.onKeyLongPress(keyCode, event);
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if(isInLockTaskMode())
-            switch(keyCode){
-                case KeyEvent.KEYCODE_HOME:
-                    Log.e("ClientActivity", "Home pressed");
-                    return true;
-                case KeyEvent.KEYCODE_APP_SWITCH:
-                    Log.e("ClientActivity", "Home pressed");
-                    return true;
-            }
-        return super.onKeyDown(keyCode, event);
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

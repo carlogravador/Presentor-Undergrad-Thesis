@@ -1,4 +1,4 @@
-package com.example.android.presentor.observer;
+package com.example.android.presentor.screenpinning;
 
 
 
@@ -9,12 +9,11 @@ package com.example.android.presentor.observer;
 public class ScreenPinningObservable extends Thread {
 
     private ScreenPinningObserver screenPinningObserver;
+    private boolean mState = false;
 
     public interface ScreenPinningObserver {
         void onStateChanged(boolean state);
     }
-
-    private boolean mState = false;
 
 
     public void setState(boolean state) {

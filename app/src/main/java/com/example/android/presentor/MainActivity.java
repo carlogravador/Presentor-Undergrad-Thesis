@@ -4,14 +4,18 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -28,6 +32,7 @@ import com.example.android.presentor.networkservicediscovery.NsdHelper;
 import com.example.android.presentor.screenshare.AccessActivity;
 import com.example.android.presentor.screenshare.CreateActivity;
 import com.example.android.presentor.screenshare.ShareService;
+import com.example.android.presentor.utils.PlayServicesUtil;
 import com.example.android.presentor.utils.Utility;
 
 
@@ -57,6 +62,34 @@ public class MainActivity extends AppCompatActivity
     };
 
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode != Utility.REQUEST_CAMERA_PERM) {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+            return;
+        }
+
+        //Camera Permission Granted
+        if (grantResults.length != 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            Log.d("MainActivity", "Camera Permission Granted");
+            return;
+        }
+
+        DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                finish();
+            }
+        };
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Presentor")
+                .setMessage("Please Allow Camera Permision")
+                .setPositiveButton("Ok", listener)
+                .show();
+
+
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -69,6 +102,15 @@ public class MainActivity extends AppCompatActivity
 
         NsdHelper.getInstatnce().init(getApplicationContext());
         ShareService.getInstance().init(getApplicationContext());
+
+        PlayServicesUtil.isPlayServicesAvailable(this, 69);
+
+        // permission granted...?
+        if (!Utility.isCameraPermissionGranted(this)) {
+            //request the camera permission
+            Utility.requestCameraPermission(this);
+        }
+
 
         mShareSrvice = ShareService.getInstance();
 
@@ -138,8 +180,8 @@ public class MainActivity extends AppCompatActivity
                     //added
                     mIntent = null;
                 } else if (turnOnBluetooth) {
-                    mNavigationView.setCheckedItem(R.id.nav_screen_mirroring);
-                    Utility.turnOnBluetooth(MainActivity.this);
+                    Intent i = new Intent(MainActivity.this, DomoticsActivity.class);
+                    Utility.turnOnBluetooth(MainActivity.this, i);
                     turnOnBluetooth = false;
                 }
 //                if(turnOnBluetooth){
