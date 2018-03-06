@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -40,6 +41,9 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
 
+    /*  Permission request code to draw over other apps  */
+    private static final int DRAW_OVER_OTHER_APP_PERMISSION_REQUEST_CODE = 1222;
+
     NavigationView mNavigationView;
     DrawerLayout mDrawer;
     Intent mIntent;
@@ -48,19 +52,37 @@ public class MainActivity extends AppCompatActivity
     boolean doubleBackToExitPressedOnce = false;
 
 
-    ShareService mShareSrvice;
+    ShareService mShareService;
 
-    DialogInterface.OnClickListener dialoagNetworkListener = new DialogInterface.OnClickListener() {
-        @Override
-        public void onClick(DialogInterface dialogInterface, int i) {
-            switch (i) {
-                case DialogInterface.BUTTON_POSITIVE:
-                    startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
-                    break;
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == DRAW_OVER_OTHER_APP_PERMISSION_REQUEST_CODE) {
+            //Check if the permission is granted or not.
+            if (resultCode == RESULT_OK) {
+                //If permission granted start floating widget service
+                Log.d("MainActivity", "Permission Granted");
+                return;
             }
-        }
-    };
 
+            Utility.showAlertDialog(this,
+                    "Permission Error",
+                    "Draw over the app permission not granted. Application will close.",
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            switch (i) {
+                                case DialogInterface.BUTTON_POSITIVE:
+                                    finish();
+                                    break;
+                            }
+                        }
+                    }
+            );
+
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -75,17 +97,20 @@ public class MainActivity extends AppCompatActivity
             return;
         }
 
-        DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                finish();
-            }
-        };
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Presentor")
-                .setMessage("Please Allow Camera Permision")
-                .setPositiveButton("Ok", listener)
-                .show();
-
+        Utility.showAlertDialog(this,
+                "Permission Error",
+                "Camera permission not granted. Application will close.",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        switch (i) {
+                            case DialogInterface.BUTTON_POSITIVE:
+                                finish();
+                                break;
+                        }
+                    }
+                }
+        );
 
     }
 
@@ -111,8 +136,17 @@ public class MainActivity extends AppCompatActivity
             Utility.requestCameraPermission(this);
         }
 
+        //permission to draw over the app
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
+            //If the draw over permission is not available open the settings screen
+            //to grant the permission.
+            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                    Uri.parse("package:" + getPackageName()));
+            startActivityForResult(intent, DRAW_OVER_OTHER_APP_PERMISSION_REQUEST_CODE);
+        }
 
-        mShareSrvice = ShareService.getInstance();
+
+        mShareService = ShareService.getInstance();
 
         CardView shareCardView = (CardView) findViewById(R.id.card_view_share);
         shareCardView.setOnClickListener(new View.OnClickListener() {
@@ -128,7 +162,16 @@ public class MainActivity extends AppCompatActivity
                     String message = MainActivity.this.getResources()
                             .getString(R.string.screen_share_dialog_message);
                     Utility.showAlertDialog(MainActivity.this, title, message,
-                            dialoagNetworkListener);
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    switch (i) {
+                                        case DialogInterface.BUTTON_POSITIVE:
+                                            startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+                                            break;
+                                    }
+                                }
+                            });
                 }
             }
         });
@@ -138,7 +181,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 if (Utility.isWifiConnected(MainActivity.this)) {
-                    if (!mShareSrvice.getServerStatus()) {
+                    if (!mShareService.getServerStatus()) {
                         Intent i = new Intent(MainActivity.this, AccessActivity.class);
                         startActivity(i);
                     } else {
@@ -153,7 +196,16 @@ public class MainActivity extends AppCompatActivity
                     String message = MainActivity.this.getResources()
                             .getString(R.string.screen_share_dialog_message);
                     Utility.showAlertDialog(MainActivity.this, title, message,
-                            dialoagNetworkListener);
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    switch (i) {
+                                        case DialogInterface.BUTTON_POSITIVE:
+                                            startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+                                            break;
+                                    }
+                                }
+                            });
                 }
             }
         });
@@ -206,9 +258,9 @@ public class MainActivity extends AppCompatActivity
         if (mDrawer.isDrawerOpen(GravityCompat.START)) {
             mDrawer.closeDrawer(GravityCompat.START);
         } else {
-            if(mShareSrvice.getServerStatus()){
+            if (mShareService.getServerStatus()) {
                 MainActivity.this.moveTaskToBack(true);
-            }else{
+            } else {
                 if (doubleBackToExitPressedOnce) {
                     super.onBackPressed();
                     return;
@@ -221,7 +273,7 @@ public class MainActivity extends AppCompatActivity
 
                     @Override
                     public void run() {
-                        doubleBackToExitPressedOnce=false;
+                        doubleBackToExitPressedOnce = false;
                     }
                 }, 2000);
             }
@@ -295,22 +347,19 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-
     //TODO : BUG: multiple instances of app opens when application is clicked followed by clicking the notification
     NotificationCompat.Builder notification;
     private static final int uniqueID = 45612;
 
 
-
-    public void startNotification(){
+    public void startNotification() {
         //Build the notification
 
         notification = new NotificationCompat.Builder(this);
 
-        Bitmap logo = BitmapFactory.decodeResource(getResources(),R.drawable.ic_splash_logo);
+        Bitmap logo = BitmapFactory.decodeResource(getResources(), R.drawable.ic_splash_logo);
         notification.setLargeIcon(logo);
         notification.setSmallIcon(R.drawable.ic_notif_icon);
-
 
 
         //notification.setTicker("This is the ticker");
@@ -330,8 +379,6 @@ public class MainActivity extends AppCompatActivity
         nm.notify(uniqueID, notification.build());
 
     }
-
-
 
 
 }
