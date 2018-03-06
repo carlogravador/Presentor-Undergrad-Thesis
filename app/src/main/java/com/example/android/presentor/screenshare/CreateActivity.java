@@ -41,6 +41,7 @@ import com.example.android.presentor.R;
 import com.example.android.presentor.db.DatabaseUtility;
 import com.example.android.presentor.db.DevicesCursorAdapter;
 import com.example.android.presentor.db.ServicesContract.DeviceEntry;
+import com.example.android.presentor.floatingwidget.FloatingWidgetService;
 import com.example.android.presentor.networkservicediscovery.NsdHelper;
 import com.example.android.presentor.utils.ConnectionUtility;
 import com.example.android.presentor.utils.Utility;
@@ -215,7 +216,16 @@ public class CreateActivity extends AppCompatActivity implements
                 /*Handler*/);
     }
 
+    private void startFloatingWidgetService(){
+        startService(new Intent(CreateActivity.this, FloatingWidgetService.class));
+    }
+
+    private void stopFloatingWidgetService(){
+        stopService(new Intent(CreateActivity.this, FloatingWidgetService.class));
+    }
+
     private void startScreenSharing(int resultCode, Intent data) {
+        startFloatingWidgetService();
         startButton.setText(this.getResources().getString(R.string.screen_mirror_stop_session));
         moveView(RelativeLayout.CENTER_HORIZONTAL, true);
         connectedDeviceLv.setVisibility(View.VISIBLE);
@@ -254,7 +264,9 @@ public class CreateActivity extends AppCompatActivity implements
     }
 
 
+
     private void stopScreenSharing() {
+        stopFloatingWidgetService();
         startButton.setText(this.getResources().getString(R.string.screen_mirror_start_session));
         moveView(RelativeLayout.CENTER_IN_PARENT, true);
         connectedDeviceLv.setVisibility(View.INVISIBLE);

@@ -25,17 +25,6 @@
                 android:layout_height="@dimen/big_dimen"
                 android:src="@drawable/ic_splash_logo"
                 tools:ignore="ContentDescription" />
-
-            <!--   Close button to close Floating Widget View  -->
-            <!--<ImageView
-                android:id="@+id/close_floating_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="50dp"
-                android:layout_marginTop="5dp"
-                android:background="@drawable/circle_shape"
-                android:src="@drawable/ic_close_white_24dp"
-                tools:ignore="ContentDescription" />-->
         </RelativeLayout>
 
         <!--   View while view is expanded   -->
@@ -47,7 +36,7 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:background="@null"
-            android:visibility="visible">
+            android:visibility="gone">
 
             <!--Stop button-->
             <ImageButton
@@ -57,6 +46,7 @@
                 android:layout_centerVertical="true"
                 android:layout_margin="10dp"
                 android:background="@drawable/background_widget_button"
+                android:foreground="?android:attr/selectableItemBackground"
                 android:src="@drawable/widget_button_icon_stop_screenshare" />
 
             <!--Pause/Play button-->
@@ -67,6 +57,7 @@
                 android:layout_centerVertical="true"
                 android:layout_margin="10dp"
                 android:background="@drawable/background_widget_button"
+                android:foreground="?android:attr/selectableItemBackground"
                 android:src="@drawable/widget_button_icon_pause_screenshare" />
 
             <!--Screen Pin button-->
@@ -77,6 +68,7 @@
                 android:layout_centerVertical="true"
                 android:layout_margin="10dp"
                 android:background="@drawable/background_widget_button"
+                android:foreground="?android:attr/selectableItemBackground"
                 android:src="@drawable/widget_button_icon_screen_pin" />
 
             <!--Face Analysis button-->
@@ -87,6 +79,7 @@
                 android:layout_centerVertical="true"
                 android:layout_margin="10dp"
                 android:background="@drawable/background_widget_button"
+                android:foreground="?android:attr/selectableItemBackground"
                 android:src="@drawable/widget_button_icon_face_analysis" />
 
             <!--Domotics button-->
@@ -97,6 +90,7 @@
                 android:layout_centerVertical="true"
                 android:layout_margin="10dp"
                 android:background="@drawable/background_widget_button"
+                android:foreground="?android:attr/selectableItemBackground"
                 android:src="@drawable/widget_button_icon_domotics" />
 
             <!--Open Lobby create/access-->
@@ -107,11 +101,13 @@
                 android:layout_centerVertical="true"
                 android:layout_margin="10dp"
                 android:background="@drawable/background_widget_button"
+                android:foreground="?android:attr/selectableItemBackground"
                 android:src="@drawable/widget_button_icon_show_main_layout" />
 
             <!--Move/Drag button-->
             <ImageView
                 android:id="@+id/holder_iv"
+                android:layout_marginRight="16dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
@@ -119,13 +115,14 @@
                 android:src="@drawable/widget_button_icon_drag" />
 
 
-            <ImageButton
+            <ImageView
                 android:id="@+id/floating_widget_image_view"
                 android:layout_width="@dimen/big_dimen"
                 android:layout_height="@dimen/big_dimen"
                 android:layout_alignParentLeft="true"
                 android:layout_centerVertical="true"
-                android:background="@drawable/background_widget_button"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:background="@color/colorTransparent"
                 android:src="@mipmap/ic_launcher" />
 
 

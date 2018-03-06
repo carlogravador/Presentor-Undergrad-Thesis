@@ -26,6 +26,18 @@ public class SettingsActivity extends AppCompatActivity {
         mShareService = ShareService.getInstance();
         a = findViewById(R.id.button);
 
+        a.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mShareService.sendCommandToAllClientsConnected(ShareService.FACE_ANALYSIS_ON);
+                    }
+                }).start();
+            }
+        });
+
 
         final Button pauseButton = (Button) findViewById(R.id.pauseButton);
         pauseButton.setOnClickListener(new View.OnClickListener() {
@@ -48,9 +60,9 @@ public class SettingsActivity extends AppCompatActivity {
         pinningButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!mShareService.getScreenPinningModeServer()){
+                if (!mShareService.getScreenPinningModeServer()) {
                     pinningButton.setText("unpinned");
-                }else{
+                } else {
                     pinningButton.setText("pinned");
                 }
                 new Thread() {
@@ -59,7 +71,7 @@ public class SettingsActivity extends AppCompatActivity {
                         if (!mShareService.getScreenPinningModeServer()) {
                             mShareService.setScreenPinningModeServer(true);
                             mShareService.sendCommandToAllClientsConnected(ShareService.SCREEN_PIN_ON);
-                        }else{
+                        } else {
                             mShareService.setScreenPinningModeServer(false);
                             mShareService.sendCommandToAllClientsConnected(ShareService.SCREEN_PIN_OFF);
                         }

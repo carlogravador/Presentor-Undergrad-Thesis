@@ -4,6 +4,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -11,8 +12,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -29,12 +33,16 @@ import com.example.android.presentor.networkservicediscovery.NsdHelper;
 import com.example.android.presentor.screenshare.AccessActivity;
 import com.example.android.presentor.screenshare.CreateActivity;
 import com.example.android.presentor.screenshare.ShareService;
+import com.example.android.presentor.utils.PlayServicesUtil;
 import com.example.android.presentor.utils.Utility;
 
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+
+    /*  Permission request code to draw over other apps  */
+    private static final int DRAW_OVER_OTHER_APP_PERMISSION_REQUEST_CODE = 1222;
 
     NavigationView mNavigationView;
     DrawerLayout mDrawer;
@@ -44,20 +52,69 @@ public class MainActivity extends AppCompatActivity
     boolean doubleBackToExitPressedOnce = false;
 
 
-    ShareService mShareSrvice;
+    ShareService mShareService;
 
-    DialogInterface.OnClickListener dialoagNetworkListener = new DialogInterface.OnClickListener() {
-        @Override
-        public void onClick(DialogInterface dialogInterface, int i) {
-            switch (i) {
-                case DialogInterface.BUTTON_POSITIVE:
-                    startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
-                    break;
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == DRAW_OVER_OTHER_APP_PERMISSION_REQUEST_CODE) {
+            //Check if the permission is granted or not.
+            if (resultCode == RESULT_OK) {
+                //If permission granted start floating widget service
+                Log.d("MainActivity", "Permission Granted");
+                return;
             }
+
+            Utility.showAlertDialog(this,
+                    "Permission Error",
+                    "Draw over the app permission not granted. Application will close.",
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            switch (i) {
+                                case DialogInterface.BUTTON_POSITIVE:
+                                    finish();
+                                    break;
+                            }
+                        }
+                    }
+            );
+
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
         }
-    };
+    }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode != Utility.REQUEST_CAMERA_PERM) {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+            return;
+        }
 
+        //Camera Permission Granted
+        if (grantResults.length != 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            Log.d("MainActivity", "Camera Permission Granted");
+            return;
+        }
+
+        Utility.showAlertDialog(this,
+                "Permission Error",
+                "Camera permission not granted. Application will close.",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        switch (i) {
+                            case DialogInterface.BUTTON_POSITIVE:
+                                finish();
+                                break;
+                        }
+                    }
+                }
+        );
+
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -71,7 +128,25 @@ public class MainActivity extends AppCompatActivity
         NsdHelper.getInstatnce().init(getApplicationContext());
         ShareService.getInstance().init(getApplicationContext());
 
-        mShareSrvice = ShareService.getInstance();
+        PlayServicesUtil.isPlayServicesAvailable(this, 69);
+
+        // permission granted...?
+        if (!Utility.isCameraPermissionGranted(this)) {
+            //request the camera permission
+            Utility.requestCameraPermission(this);
+        }
+
+        //permission to draw over the app
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
+            //If the draw over permission is not available open the settings screen
+            //to grant the permission.
+            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                    Uri.parse("package:" + getPackageName()));
+            startActivityForResult(intent, DRAW_OVER_OTHER_APP_PERMISSION_REQUEST_CODE);
+        }
+
+
+        mShareService = ShareService.getInstance();
 
         CardView shareCardView = (CardView) findViewById(R.id.card_view_share);
         shareCardView.setOnClickListener(new View.OnClickListener() {
@@ -87,7 +162,16 @@ public class MainActivity extends AppCompatActivity
                     String message = MainActivity.this.getResources()
                             .getString(R.string.screen_share_dialog_message);
                     Utility.showAlertDialog(MainActivity.this, title, message,
-                            dialoagNetworkListener);
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    switch (i) {
+                                        case DialogInterface.BUTTON_POSITIVE:
+                                            startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+                                            break;
+                                    }
+                                }
+                            });
                 }
             }
         });
@@ -97,7 +181,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 if (Utility.isWifiConnected(MainActivity.this)) {
-                    if (!mShareSrvice.getServerStatus()) {
+                    if (!mShareService.getServerStatus()) {
                         Intent i = new Intent(MainActivity.this, AccessActivity.class);
                         startActivity(i);
                     } else {
@@ -112,7 +196,16 @@ public class MainActivity extends AppCompatActivity
                     String message = MainActivity.this.getResources()
                             .getString(R.string.screen_share_dialog_message);
                     Utility.showAlertDialog(MainActivity.this, title, message,
-                            dialoagNetworkListener);
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    switch (i) {
+                                        case DialogInterface.BUTTON_POSITIVE:
+                                            startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+                                            break;
+                                    }
+                                }
+                            });
                 }
             }
         });
@@ -139,8 +232,8 @@ public class MainActivity extends AppCompatActivity
                     //added
                     mIntent = null;
                 } else if (turnOnBluetooth) {
-                    mNavigationView.setCheckedItem(R.id.nav_screen_mirroring);
-                    Utility.turnOnBluetooth(MainActivity.this);
+                    Intent i = new Intent(MainActivity.this, DomoticsActivity.class);
+                    Utility.turnOnBluetooth(MainActivity.this, i);
                     turnOnBluetooth = false;
                 }
 //                if(turnOnBluetooth){
@@ -165,9 +258,9 @@ public class MainActivity extends AppCompatActivity
         if (mDrawer.isDrawerOpen(GravityCompat.START)) {
             mDrawer.closeDrawer(GravityCompat.START);
         } else {
-            if(mShareSrvice.getServerStatus()){
+            if (mShareService.getServerStatus()) {
                 MainActivity.this.moveTaskToBack(true);
-            }else{
+            } else {
                 if (doubleBackToExitPressedOnce) {
                     super.onBackPressed();
                     return;
@@ -180,7 +273,7 @@ public class MainActivity extends AppCompatActivity
 
                     @Override
                     public void run() {
-                        doubleBackToExitPressedOnce=false;
+                        doubleBackToExitPressedOnce = false;
                     }
                 }, 2000);
             }
@@ -254,22 +347,19 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-
     //TODO : BUG: multiple instances of app opens when application is clicked followed by clicking the notification
     NotificationCompat.Builder notification;
     private static final int uniqueID = 45612;
 
 
-
-    public void startNotification(){
+    public void startNotification() {
         //Build the notification
 
         notification = new NotificationCompat.Builder(this);
 
-        Bitmap logo = BitmapFactory.decodeResource(getResources(),R.drawable.ic_splash_logo);
+        Bitmap logo = BitmapFactory.decodeResource(getResources(), R.drawable.ic_splash_logo);
         notification.setLargeIcon(logo);
         notification.setSmallIcon(R.drawable.ic_notif_icon);
-
 
 
         //notification.setTicker("This is the ticker");
@@ -289,54 +379,6 @@ public class MainActivity extends AppCompatActivity
         nm.notify(uniqueID, notification.build());
 
     }
-
-
-
-    /*   For FLOATING WIDGET SERVICE */
-    /*  Permission request code to draw over other apps  */
-    private static final int DRAW_OVER_OTHER_APP_PERMISSION_REQUEST_CODE = 1222;
-
-    /*  start floating widget service  */
-    public void createFloatingWidget(View view) {
-        //Check if the application has draw over other apps permission or not?
-        //This permission is by default available for API<23. But for API > 23
-        //you have to ask for the permission in runtime.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
-            //If the draw over permission is not available open the settings screen
-            //to grant the permission.
-            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    Uri.parse("package:" + getPackageName()));
-            startActivityForResult(intent, DRAW_OVER_OTHER_APP_PERMISSION_REQUEST_CODE);
-        }
-            //If permission is granted start floating widget service
-            //startFloatingWidgetService();
-
-    }
-
-    /*  Start Floating widget service and finish current activity */
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == DRAW_OVER_OTHER_APP_PERMISSION_REQUEST_CODE) {
-            //Check if the permission is granted or not.
-            if (resultCode != RESULT_OK)
-                Toast.makeText(this,
-                        getResources().getString(R.string.draw_other_app_permission_denied),
-                        Toast.LENGTH_SHORT).show();
-                //If permission granted start floating widget service
-                //startFloatingWidgetService();
-//            else
-//                //Permission is not available then display toast
-//                Toast.makeText(this,
-//                        getResources().getString(R.string.draw_other_app_permission_denied),
-//                        Toast.LENGTH_SHORT).show();
-
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
-    }
-
-
 
 
 }
