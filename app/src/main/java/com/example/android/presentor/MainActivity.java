@@ -14,7 +14,6 @@ import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.View;
@@ -325,6 +324,11 @@ public class MainActivity extends AppCompatActivity
             case R.id.nav_settings:
                 mIntent = new Intent(MainActivity.this, SettingsActivity.class);
                 break;
+
+            case R.id.nav_others:
+                mIntent = new Intent(MainActivity.this, OthersActivity.class);
+                break;
+
             case R.id.nav_about:
                 mIntent = new Intent(MainActivity.this, AboutActivity.class);
                 break;
