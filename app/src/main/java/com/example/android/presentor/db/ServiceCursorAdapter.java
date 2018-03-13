@@ -29,7 +29,7 @@ import com.example.android.presentor.utils.Utility;
 
 public class ServiceCursorAdapter extends CursorAdapter {
 
-    Context mContext;
+    private Context mContext;
 
     public ServiceCursorAdapter(Context context, Cursor c) {
         super(context, c, 0);
@@ -44,11 +44,11 @@ public class ServiceCursorAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, final Context context, Cursor cursor) {
 
-        CardView cardView = (CardView) view.findViewById(R.id.card_view_lobby);
-        TextView textViewServiceName = (TextView) view.findViewById(R.id.text_view_lobby_name);
-        TextView textViewServiceCreator = (TextView) view.findViewById(R.id.text_view_creator_name);
-        ImageView imageViewBackground = (ImageView) view.findViewById(R.id.list_item_background);
-        ImageView imageViewSecuredIndicator = (ImageView) view.findViewById(R.id.iv_secured_indicator);
+        CardView cardView = view.findViewById(R.id.card_view_lobby);
+        TextView textViewServiceName = view.findViewById(R.id.text_view_lobby_name);
+        TextView textViewServiceCreator = view.findViewById(R.id.text_view_creator_name);
+        ImageView imageViewBackground = view.findViewById(R.id.list_item_background);
+        ImageView imageViewSecuredIndicator = view.findViewById(R.id.iv_secured_indicator);
 
 
         int serviceNameIndex = cursor.getColumnIndex(ServiceEntry.COL_SERVICE_NAME);
@@ -88,12 +88,6 @@ public class ServiceCursorAdapter extends CursorAdapter {
                 Utility.showConnectDialog(context, intent, serviceName, serviceCreator, address,
                             servicePassword);
 
-//                if(servicePassword.length() != 0){
-//                    Utility.showConnectDialog(context, intent, serviceName, serviceCreator, creatorIp,
-//                            servicePassword);
-//                    return;
-//                }
-//               mContext.startActivity(intent);
             }
         });
 
@@ -105,7 +99,6 @@ public class ServiceCursorAdapter extends CursorAdapter {
         switch (color) {
             case 1:
                 magnitudeColorResourceId = R.color.colorBlue;
-
                 break;
             case 2:
                 magnitudeColorResourceId = R.color.colorOrange;

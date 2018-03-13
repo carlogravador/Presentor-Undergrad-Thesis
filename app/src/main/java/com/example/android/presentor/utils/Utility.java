@@ -64,27 +64,27 @@ public class Utility {
 
     //temp only
     public static void showConnectDialog(final Context context, final Intent intent, String lobbyName,
-                                         String creatorName, String ip, final String password){
-        LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                                         String creatorName, String ip, final String password) {
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View passwordAlertLayout = inflater.inflate(R.layout.create_lobby_custom_dialog, null);
 
-        View passwordContainer = (View) passwordAlertLayout.findViewById(R.id.dialog_password_panel);
+        View passwordContainer = passwordAlertLayout.findViewById(R.id.dialog_password_panel);
 
-        TextView titleTv = (TextView) passwordAlertLayout.findViewById(R.id.dialog_title);
-        TextView creatorTv = (TextView) passwordAlertLayout.findViewById(R.id.dialog_creator);
-        TextView ipTv = (TextView) passwordAlertLayout.findViewById(R.id.dialog_ip);
-        final EditText passwordEt = (EditText) passwordAlertLayout.findViewById(R.id.dialog_password_et);
-        CheckBox passwordCb = (CheckBox) passwordAlertLayout.findViewById(R.id.dialog_password_cb);
+        TextView titleTv = passwordAlertLayout.findViewById(R.id.dialog_title);
+        TextView creatorTv = passwordAlertLayout.findViewById(R.id.dialog_creator);
+        TextView ipTv = passwordAlertLayout.findViewById(R.id.dialog_ip);
+        final EditText passwordEt = passwordAlertLayout.findViewById(R.id.dialog_password_et);
+        CheckBox passwordCb = passwordAlertLayout.findViewById(R.id.dialog_password_cb);
 
-        Button cancelBtn = (Button) passwordAlertLayout.findViewById(R.id.dialog_cancel_btn);
-        Button connectBtn = (Button) passwordAlertLayout.findViewById(R.id.dialog_connect_btn);
+        Button cancelBtn = passwordAlertLayout.findViewById(R.id.dialog_cancel_btn);
+        Button connectBtn = passwordAlertLayout.findViewById(R.id.dialog_connect_btn);
 
         titleTv.setText(lobbyName);
         creatorTv.setText(creatorName);
         ipTv.setText(ip);
 
 
-        if(password.length() == 0){
+        if (password.length() == 0) {
             passwordContainer.setVisibility(View.GONE);
         }
 
@@ -104,9 +104,9 @@ public class Utility {
             @Override
             public void onClick(View view) {
                 //has password
-                if(password.length() != 0){
+                if (password.length() != 0) {
                     //input password is wrong
-                    if(!passwordEt.getText().toString().equals(password)){
+                    if (!passwordEt.getText().toString().equals(password)) {
                         passwordEt.setError("Password is incorrect.");
                         return;
                     }
@@ -119,12 +119,11 @@ public class Utility {
         passwordCb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                if(isChecked){
+                if (isChecked) {
                     passwordEt.setTransformationMethod(HideReturnsTransformationMethod
                             .getInstance());
                     passwordEt.setSelection(passwordEt.length());
-                }
-                else{
+                } else {
                     passwordEt.setTransformationMethod(PasswordTransformationMethod
                             .getInstance());
                     passwordEt.setSelection(passwordEt.length());
@@ -149,17 +148,7 @@ public class Utility {
 
     public static boolean isBluetoothOn() {
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if (bluetoothAdapter == null) {
-            //Device does not support Bluetooth
-            //TODO show dialog that tells device does not support bluetooth
-            return false;
-        } else {
-            if (bluetoothAdapter.isEnabled()) {
-                return true;
-            } else {
-                return false;
-            }
-        }
+        return bluetoothAdapter != null && bluetoothAdapter.isEnabled();
     }
 
     public static void turnOnBluetooth(final Context context, final Intent intent) {
@@ -187,13 +176,10 @@ public class Utility {
 
 
     public static boolean isWifiConnected(Context context) {
-        WifiManager wifiMgr = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        WifiManager wifiMgr = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         if (wifiMgr.isWifiEnabled()) { // WiFi adapter is ON
             WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
-            if (wifiInfo != null && wifiInfo.getNetworkId() == -1) {
-                return false; // Not connected to an access-Point
-            }
-            return true;      // Connected to an Access Point
+            return wifiInfo != null && wifiInfo.getNetworkId() != -1;
         } else {
             return false; // WiFi adapter is OFF
         }
@@ -217,8 +203,7 @@ public class Utility {
 
     public static String getString(Context cxt, String key) {
         SharedPreferences prefs = cxt.getSharedPreferences("presentor", Context.MODE_PRIVATE);
-        String val = prefs.getString(key, null);
-        return val;
+        return prefs.getString(key, null);
     }
 
     public static void saveInt(Context cxt, String key, int value) {
@@ -230,21 +215,14 @@ public class Utility {
 
     public static int getInt(Context cxt, String key) {
         SharedPreferences prefs = cxt.getSharedPreferences("presentor", Context.MODE_PRIVATE);
-        int val = prefs.getInt(key, -1);
-        return val;
+        return prefs.getInt(key, -1);
     }
 
-    public static void saveBoolean(Context cxt, String key, boolean value){
+    public static void saveBoolean(Context cxt, String key, boolean value) {
         SharedPreferences.Editor prefsEditor = cxt.getSharedPreferences("presentor",
                 Context.MODE_PRIVATE).edit();
         prefsEditor.putBoolean(key, value);
         prefsEditor.commit();
-    }
-
-    public static boolean getBoolean(Context cxt, String key){
-        SharedPreferences prefs = cxt.getSharedPreferences("presentor", Context.MODE_PRIVATE);
-        boolean val = prefs.getBoolean(key, false);
-        return val;
     }
 
     /***returns true if there is a special character on the String word***/

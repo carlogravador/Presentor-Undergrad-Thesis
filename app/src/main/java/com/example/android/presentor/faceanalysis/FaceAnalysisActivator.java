@@ -5,8 +5,6 @@ package com.example.android.presentor.faceanalysis;
  */
 
 public class FaceAnalysisActivator {
-
-    private boolean state = false;
     private FaceAnalysisObserver faceAnalysisObserver;
 
     public interface FaceAnalysisObserver {
@@ -18,7 +16,6 @@ public class FaceAnalysisActivator {
     }
 
     public void setState(boolean b) {
-        this.state = b;
         notifyStateChanged(b);
     }
 
@@ -26,7 +23,7 @@ public class FaceAnalysisActivator {
         this.faceAnalysisObserver = fao;
     }
 
-    public void notifyStateChanged(boolean state){
+    private void notifyStateChanged(boolean state){
         faceAnalysisObserver.onFaceAnalysisRequestStateChanged(state);
     }
 

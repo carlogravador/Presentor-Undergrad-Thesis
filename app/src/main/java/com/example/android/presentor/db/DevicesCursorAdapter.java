@@ -17,11 +17,9 @@ import com.example.android.presentor.db.ServicesContract.DeviceEntry;
 
 public class DevicesCursorAdapter extends CursorAdapter {
 
-    Context mContext;
 
-    public DevicesCursorAdapter(Context context, Cursor c){
+    public DevicesCursorAdapter(Context context, Cursor c) {
         super(context, c, 0);
-        mContext = context;
     }
 
     @Override
@@ -32,8 +30,8 @@ public class DevicesCursorAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
 
-        TextView tvName = (TextView) view.findViewById(R.id.tv_connected_name);
-        TextView tvAddress = (TextView) view.findViewById(R.id.tv_connected_ip);
+        TextView tvName = view.findViewById(R.id.tv_connected_name);
+        TextView tvAddress = view.findViewById(R.id.tv_connected_ip);
 
         int deviceNameIndex = cursor.getColumnIndex(DeviceEntry.COL_DEV_NAME);
         int deviceIpIndex = cursor.getColumnIndex(DeviceEntry.COL_DEV_IP);

@@ -1,21 +1,13 @@
 package com.example.android.presentor.networkservicediscovery;
 
 import android.content.Context;
-import android.content.Intent;
 import android.net.nsd.NsdManager;
 import android.net.nsd.NsdServiceInfo;
 import android.os.Build;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-import android.widget.Button;
 import android.widget.Toast;
 
-import com.example.android.presentor.R;
 import com.example.android.presentor.db.DatabaseUtility;
-import com.example.android.presentor.db.ServicesDbHelper;
-
-import pl.bclogic.pulsator4droid.library.PulsatorLayout;
-
 /**
  * Created by Carlo on 17/11/2017.
  */
@@ -24,59 +16,31 @@ public class NsdHelper {
 
     private Context mContext;
 
-//    private LocalBroadcastManager broadcaster;
 
-    private static final NsdHelper ourInstance = new NsdHelper();
-
-    NsdManager mNsdManager;
-    NsdManager.ResolveListener mResolveListener;
-    NsdManager.DiscoveryListener mDiscoveryListener;
-    NsdManager.RegistrationListener mRegistrationListener;
+    private NsdManager mNsdManager;
+    private NsdManager.DiscoveryListener mDiscoveryListener;
+    private NsdManager.RegistrationListener mRegistrationListener;
 
 
-    public static final String SERVICE_TYPE = "_http._tcp";
-    public static final String BROADCAST_REGISTER_SUCCESS = "RegisterBroadcast";
-    public static final String BROADCAST_UNREGISTER_SUCCESS = "UnregisterBroadcast";
+    private static final String SERVICE_TYPE = "_http._tcp";
     //separator for service name and service host
-    public static final String UNDERSCORE = "_";
+
 
     // There is an additional dot at the end of service name most probably by os, this is to
     // rectify that problem
-    public static final String SERVICE_TYPE_PLUS_DOT = SERVICE_TYPE + ".";
+    private static final String SERVICE_TYPE_PLUS_DOT = SERVICE_TYPE + ".";
 
-    public static final String TAG = "NSDHelperDXDX: ";
+    private static final String TAG = "NSDHelperDXDX: ";
 
+    private String mServiceName;
 
-
-    ServicesDbHelper mServicesDbHelper;
-    public String mServiceName;
-
-    NsdServiceInfo mService;
-
-    private NsdHelper() {
-//        mContext = context;
-//        mNsdManager = (NsdManager) context.getSystemService(Context.NSD_SERVICE);
-    }
-
-    public static NsdHelper getInstatnce(){
-        return  ourInstance;
-    }
-
-    public void init(Context context){
+    public NsdHelper(Context context) {
         this.mContext = context.getApplicationContext();
         this.mNsdManager = (NsdManager) context.getSystemService(Context.NSD_SERVICE);
     }
 
-    public void initClientSide(){
-        mServicesDbHelper = new ServicesDbHelper(mContext);
-        //initializeResolveListener();
-        //discoverServices();
-    }
-
-
-
     public void setServiceName(String serviceName, String serviceCreator, String servicePassword) {
-        this.mServiceName = servicePassword + UNDERSCORE + serviceCreator + UNDERSCORE + serviceName;
+        this.mServiceName = servicePassword + "_" + serviceCreator + "_" + serviceName;
     }
 
 
@@ -100,27 +64,17 @@ public class NsdHelper {
                     Log.d(TAG, "Unknown Service Type: " + service.getServiceType());
                     return;
                 }
-                if(service.getServiceName().equals(mServiceName)){
+                if (service.getServiceName().equals(mServiceName)) {
                     Log.d(TAG, "Same machine: " + mServiceName);
                     return;
                 }
                 mNsdManager.resolveService(service, new MyResolveListener());
-//                else if (service.getServiceName().equals(mServiceName)) {
-//                    Log.d(TAG, "Same machine: " + mServiceName);
-//                } else if (service.getServiceName().contains(mServiceName)) {
-//                    Log.d(TAG, "different machines. (" + service.getServiceName() + "-" +
-//                            mServiceName + ")");
-//                    mNsdManager.resolveService(service, mResolveListener);
-//                }
             }
 
             @Override
             public void onServiceLost(NsdServiceInfo service) {
                 Log.e(TAG, "service lost" + service);
                 DatabaseUtility.removeServiceToList(mContext, service);
-//                if (mService == service) {
-//                    mService = null;
-//                }
             }
 
             @Override
@@ -141,35 +95,13 @@ public class NsdHelper {
     }
 
 
-    private void initializeResolveListener() {
-        mResolveListener = new NsdManager.ResolveListener() {
-            @Override
-            public void onResolveFailed(NsdServiceInfo serviceInfo, int errorCode) {
-                Log.e(TAG, "Resolve failed" + errorCode);
-            }
-
-            @Override
-            public void onServiceResolved(NsdServiceInfo serviceInfo) {
-                Log.v(TAG, "Resolve Succeeded. " + serviceInfo);
-                if (serviceInfo.getServiceName().equals(mServiceName)) {
-                    Log.d(TAG, "Same IP.");
-                    return;
-                }
-                mService = serviceInfo;
-                DatabaseUtility.addServiceToList(mContext, mService);
-            }
-        };
-    }
-
-    public void initializeRegistrationListener() {
+    private void initializeRegistrationListener() {
         mRegistrationListener = new NsdManager.RegistrationListener() {
             @Override
             public void onServiceRegistered(NsdServiceInfo NsdServiceInfo) {
                 mServiceName = NsdServiceInfo.getServiceName();
                 Log.d(TAG, "Service registered: " + NsdServiceInfo);
                 Toast.makeText(mContext, "Service Registered", Toast.LENGTH_LONG).show();
-//                Intent intent = new Intent(BROADCAST_REGISTER_SUCCESS);
-//                broadcaster.sendBroadcast(intent);
             }
 
             @Override
@@ -183,9 +115,6 @@ public class NsdHelper {
             public void onServiceUnregistered(NsdServiceInfo arg0) {
                 Log.d(TAG, "Service unregistered: " + arg0.getServiceName());
                 Toast.makeText(mContext, "Service Unregistered", Toast.LENGTH_LONG).show();
-//                Intent intent = new Intent(BROADCAST_UNREGISTER_SUCCESS);
-//                broadcaster.sendBroadcast(intent);
-//                //DatabaseUtility.clearConnectedDevice(mContext);
             }
 
             @Override
@@ -221,7 +150,7 @@ public class NsdHelper {
         if (mDiscoveryListener != null) {
             try {
                 mNsdManager.stopServiceDiscovery(mDiscoveryListener);
-            } catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             mDiscoveryListener = null;
@@ -233,14 +162,15 @@ public class NsdHelper {
             try {
                 Log.d("NsdHelper", "Service unregister");
                 mNsdManager.unregisterService(mRegistrationListener);
-            } finally {
+            } catch(Exception e){
+                e.printStackTrace();
             }
             mRegistrationListener = null;
         }
     }
 
 
-    private class MyResolveListener implements NsdManager.ResolveListener{
+    private class MyResolveListener implements NsdManager.ResolveListener {
         @Override
         public void onServiceResolved(NsdServiceInfo serviceInfo) {
             Log.v(TAG, "Resolve Succeeded. " + serviceInfo);
@@ -248,8 +178,7 @@ public class NsdHelper {
                 Log.d(TAG, "Same IP.");
                 return;
             }
-            mService = serviceInfo;
-            DatabaseUtility.addServiceToList(mContext, mService);
+            DatabaseUtility.addServiceToList(mContext, serviceInfo);
         }
 
         @Override

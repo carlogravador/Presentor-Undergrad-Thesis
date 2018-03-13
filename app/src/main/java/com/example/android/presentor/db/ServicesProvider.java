@@ -43,13 +43,14 @@ public class ServicesProvider extends ContentProvider {
 
     }
 
-    ServicesDbHelper mServicesDbHelper;
+    private ServicesDbHelper mServicesDbHelper;
 
     @Override
     public boolean onCreate() {
         mServicesDbHelper = new ServicesDbHelper(getContext());
         return false;
     }
+
 
     @Nullable
     @Override
@@ -199,7 +200,7 @@ public class ServicesProvider extends ContentProvider {
 
         // If 1 or more rows were deleted, then notify all listeners that the data at the
         // given URI has changed
-        if (rowsDeleted != 0) {
+        if (rowsDeleted != 0 ) {
             getContext().getContentResolver().notifyChange(uri, null);
         }
 

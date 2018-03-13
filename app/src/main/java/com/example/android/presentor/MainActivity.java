@@ -14,7 +14,6 @@ import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.View;
@@ -29,7 +28,6 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.example.android.presentor.domotics.DomoticsActivity;
-import com.example.android.presentor.networkservicediscovery.NsdHelper;
 import com.example.android.presentor.screenshare.AccessActivity;
 import com.example.android.presentor.screenshare.CreateActivity;
 import com.example.android.presentor.screenshare.ShareService;
@@ -38,21 +36,21 @@ import com.example.android.presentor.utils.Utility;
 
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
 
 
     /*  Permission request code to draw over other apps  */
     private static final int DRAW_OVER_OTHER_APP_PERMISSION_REQUEST_CODE = 1222;
 
-    NavigationView mNavigationView;
-    DrawerLayout mDrawer;
-    Intent mIntent;
+    private NavigationView mNavigationView;
+    private DrawerLayout mDrawer;
+    private Intent mIntent;
 
-    boolean turnOnBluetooth = false;
-    boolean doubleBackToExitPressedOnce = false;
+    private ShareService mShareService;
 
+    private boolean turnOnBluetooth = false;
+    private boolean doubleBackToExitPressedOnce = false;
 
-    ShareService mShareService;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -111,7 +109,6 @@ public class MainActivity extends AppCompatActivity
                     }
                 }
         );
-
     }
 
     @Override
@@ -120,15 +117,17 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         //notification();
+        Log.e("MainActivity", "onCreate() callback");
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
-        NsdHelper.getInstatnce().init(getApplicationContext());
         ShareService.getInstance().init(getApplicationContext());
+        mShareService = ShareService.getInstance();
 
-        PlayServicesUtil.isPlayServicesAvailable(this, 69);
+        if (!PlayServicesUtil.isPlayServicesAvailable(this, 69)) {
+            //TODO: show dialog
+        }
 
         // permission granted...?
         if (!Utility.isCameraPermissionGranted(this)) {
@@ -146,71 +145,13 @@ public class MainActivity extends AppCompatActivity
         }
 
 
-        mShareService = ShareService.getInstance();
+        CardView shareCardView = findViewById(R.id.card_view_share);
+        shareCardView.setOnClickListener(this);
 
-        CardView shareCardView = (CardView) findViewById(R.id.card_view_share);
-        shareCardView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (Utility.isWifiConnected(MainActivity.this)) {
-                    Intent i = new Intent(MainActivity.this, CreateActivity.class);
-                    startActivity(i);
-                } else {
-                    //open dialog box
-                    String title = MainActivity.this.getResources()
-                            .getString(R.string.screen_share_dialog_title);
-                    String message = MainActivity.this.getResources()
-                            .getString(R.string.screen_share_dialog_message);
-                    Utility.showAlertDialog(MainActivity.this, title, message,
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    switch (i) {
-                                        case DialogInterface.BUTTON_POSITIVE:
-                                            startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
-                                            break;
-                                    }
-                                }
-                            });
-                }
-            }
-        });
+        CardView accessCardView = findViewById(R.id.card_view_access);
+        accessCardView.setOnClickListener(this);
 
-        CardView accessCardView = (CardView) findViewById(R.id.card_view_access);
-        accessCardView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (Utility.isWifiConnected(MainActivity.this)) {
-                    if (!mShareService.getServerStatus()) {
-                        Intent i = new Intent(MainActivity.this, AccessActivity.class);
-                        startActivity(i);
-                    } else {
-                        Toast.makeText(MainActivity.this,
-                                "Access is not available when Screen Mirroring is running.",
-                                Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    //open dialog box
-                    String title = MainActivity.this.getResources()
-                            .getString(R.string.screen_share_dialog_title);
-                    String message = MainActivity.this.getResources()
-                            .getString(R.string.screen_share_dialog_message);
-                    Utility.showAlertDialog(MainActivity.this, title, message,
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    switch (i) {
-                                        case DialogInterface.BUTTON_POSITIVE:
-                                            startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
-                                            break;
-                                    }
-                                }
-                            });
-                }
-            }
-        });
-
-        mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawer = findViewById(R.id.drawer_layout);
         mDrawer.addDrawerListener(new DrawerLayout.DrawerListener() {
             @Override
             public void onDrawerSlide(View drawerView, float slideOffset) {
@@ -248,18 +189,25 @@ public class MainActivity extends AppCompatActivity
         mDrawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        mNavigationView = (NavigationView) findViewById(R.id.nav_view);
+        mNavigationView = findViewById(R.id.nav_view);
         mNavigationView.setNavigationItemSelectedListener(this);
     }
 
     @Override
+    protected void onDestroy() {
+        Log.e("MainActivity", "onDestroy() callback");
+        mShareService.stop();
+        super.onDestroy();
+    }
+
+    @Override
     public void onBackPressed() {
-        mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawer = findViewById(R.id.drawer_layout);
         if (mDrawer.isDrawerOpen(GravityCompat.START)) {
             mDrawer.closeDrawer(GravityCompat.START);
         } else {
-            if (mShareService.getServerStatus()) {
-                MainActivity.this.moveTaskToBack(true);
+            if (mShareService.isServerOpen()) {
+                moveTaskToBack(false);
             } else {
                 if (doubleBackToExitPressedOnce) {
                     super.onBackPressed();
@@ -339,10 +287,11 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onResume() {
+        super.onResume();
+        Log.e("MainActivity", "onResume callback");
         mNavigationView.setCheckedItem(R.id.nav_screen_mirroring);
         mIntent = null;
         turnOnBluetooth = false;
-        super.onResume();
 
     }
 
@@ -381,4 +330,61 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.card_view_access:
+                if (Utility.isWifiConnected(MainActivity.this)) {
+                    if (!mShareService.isServerOpen()) {
+                        Intent i = new Intent(MainActivity.this, AccessActivity.class);
+                        startActivity(i);
+                    } else {
+                        Toast.makeText(MainActivity.this,
+                                "Access is not available when Screen Mirroring is running.",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    //open dialog box
+                    String title = MainActivity.this.getResources()
+                            .getString(R.string.screen_share_dialog_title);
+                    String message = MainActivity.this.getResources()
+                            .getString(R.string.screen_share_dialog_message);
+                    Utility.showAlertDialog(MainActivity.this, title, message,
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    switch (i) {
+                                        case DialogInterface.BUTTON_POSITIVE:
+                                            startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+                                            break;
+                                    }
+                                }
+                            });
+                }
+                break;
+            case R.id.card_view_share:
+                if (Utility.isWifiConnected(MainActivity.this)) {
+                    Intent i = new Intent(MainActivity.this, CreateActivity.class);
+                    startActivity(i);
+                } else {
+                    //open dialog box
+                    String title = MainActivity.this.getResources()
+                            .getString(R.string.screen_share_dialog_title);
+                    String message = MainActivity.this.getResources()
+                            .getString(R.string.screen_share_dialog_message);
+                    Utility.showAlertDialog(MainActivity.this, title, message,
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    switch (i) {
+                                        case DialogInterface.BUTTON_POSITIVE:
+                                            startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+                                            break;
+                                    }
+                                }
+                            });
+                }
+                break;
+        }
+    }
 }

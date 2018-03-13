@@ -14,10 +14,8 @@ import android.widget.TextView;
 import com.example.android.presentor.R;
 import com.example.android.presentor.db.ServicesContract.ServiceEntry;
 import com.example.android.presentor.db.ServicesContract.DeviceEntry;
-import com.example.android.presentor.networkservicediscovery.NsdHelper;
-import com.example.android.presentor.screenshare.CreateActivity;
+import com.example.android.presentor.utils.Utility;
 
-import java.io.File;
 
 /**
  * Created by Carlo on 21/10/2017.
@@ -25,28 +23,27 @@ import java.io.File;
 
 public class DatabaseUtility {
 
-    public final static String LOG = "DatabaseUtility";
-    public final static String DB_PATH = "data/data/" + ServicesContract.CONTENT_AUTHORITY
-            + "/databases/" + ServicesDbHelper.DB_NAME;
+    private final static String LOG = "DatabaseUtility";
+    public static final String UNDERSCORE = "_";
 
     private static String getServicePassword(NsdServiceInfo serviceInfo) {
         String serviceName = serviceInfo.getServiceName();
-        int endPosition = serviceName.indexOf(NsdHelper.UNDERSCORE);
+        int endPosition = serviceName.indexOf(UNDERSCORE);
 
         return serviceName.substring(0, endPosition);
     }
 
     private static String getCreatorName(NsdServiceInfo serviceInfo) {
         String serviceName = serviceInfo.getServiceName();
-        int startPosition = serviceName.indexOf(NsdHelper.UNDERSCORE) + 1;
-        int lastPosition = serviceName.lastIndexOf(NsdHelper.UNDERSCORE);
+        int startPosition = serviceName.indexOf(UNDERSCORE) + 1;
+        int lastPosition = serviceName.lastIndexOf(UNDERSCORE);
 
         return serviceName.substring(startPosition, lastPosition);
     }
 
     private static String getServiceName(NsdServiceInfo serviceInfo){
         String serviceName = serviceInfo.getServiceName();
-        int startPosition = serviceName.lastIndexOf(NsdHelper.UNDERSCORE) + 1;
+        int startPosition = serviceName.lastIndexOf(UNDERSCORE) + 1;
 
         return serviceName.substring(startPosition);
     }
@@ -66,11 +63,14 @@ public class DatabaseUtility {
         Cursor c = db.query(ServiceEntry.TABLE_SERVICES, projection, selection, selectionArgs,
                 null, null, null);
 
+
+
         Log.e("DatabaseUtility", "Cursor count: " + c.getCount());
 
         if(c.getCount() > 0){
             c.close();
             db.close();
+            dbHelper.close();
             return;
         }
 
@@ -111,26 +111,18 @@ public class DatabaseUtility {
         Log.v(LOG, rowsDeleted + " row deleted from service database");
     }
 
-    public static void addDeviceToList(final Context context, final Activity act,
-                                       String name, String ip, int port){
+    public static void addDeviceToList(Context context, String name, String ip, int port){
         ContentValues values = new ContentValues();
 
         values.put(DeviceEntry.COL_DEV_NAME, name);
         values.put(DeviceEntry.COL_DEV_IP, ip);
         values.put(DeviceEntry.COL_DEV_PORT, port);
 
+        //TODO: Add string literals to strings.xml. Use placeholders
+        Utility.showToast(context.getApplicationContext(), name + " is connected.");
+
         Uri newUri = context.getContentResolver().insert(DeviceEntry.CONTENT_URI_DEVICE, values);
 
-        final long deviceCount = getDeviceCount(context);
-
-        act.runOnUiThread(new Runnable(){
-            @Override
-            public void run(){
-                //settext here
-                TextView countTv = act.findViewById(R.id.tv_connected_count);
-                countTv.setText("Clients Connected: " + deviceCount);
-            }
-        });
 
         if (newUri == null) {
             // If the new content URI is null, then there was an error with insertion.
@@ -141,29 +133,40 @@ public class DatabaseUtility {
         }
     }
 
-    public static void removeDeviceToList(final Context context, final Activity act,
-                                          String ip, int port){
+    public static void removeDeviceToList(final Context context, String ip, int port){
+        ServicesDbHelper dbHelper = new ServicesDbHelper(context);
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        String[] projection = {
+                DeviceEntry.COL_DEV_ID,
+                DeviceEntry.COL_DEV_NAME,
+        };
+
         String selection = DeviceEntry.COL_DEV_IP + "=? AND " + DeviceEntry.COL_DEV_PORT + "=?";
         String[] selectionArgs = {
                 ip,
                 Integer.toString(port)
         };
+        Cursor c = db.query(DeviceEntry.TABLE_DEVICES,
+                projection,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                null);
+        if(c.getCount() == 1) c.moveToFirst();
+        int index = c.getColumnIndex(DeviceEntry.COL_DEV_NAME);
+        Log.e("DatabaseUtility", "index = " + index);
+        String name = c.getString(index);
+        c.close();
+        db.close();
+        dbHelper.close();
 
-
+        //TODO: Get the name of the device to be removed.
+        Utility.showToast(context.getApplicationContext(), name + " leave the room.");
 
         int rowsDeleted = context.getContentResolver().delete(DeviceEntry.CONTENT_URI_DEVICE,
                 selection, selectionArgs);
-
-        final long deviceCount = getDeviceCount(context);
-
-        act.runOnUiThread(new Runnable(){
-            @Override
-            public void run(){
-                //settext here
-                TextView countTv = act.findViewById(R.id.tv_connected_count);
-                countTv.setText("Clients Connected: " + deviceCount);
-            }
-        });
 
         Log.v(LOG, rowsDeleted + " row deleted from device database");
     }

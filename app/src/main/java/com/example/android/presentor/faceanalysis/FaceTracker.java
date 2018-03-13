@@ -1,12 +1,10 @@
 package com.example.android.presentor.faceanalysis;
 
 import android.content.Context;
-import android.media.FaceDetector;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Vibrator;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.example.android.presentor.utils.Utility;
 import com.google.android.gms.vision.Detector;
@@ -20,7 +18,6 @@ import com.google.android.gms.vision.face.Face;
 public class FaceTracker extends Tracker<Face> {
 
     private static final float PROB_THRESHOLD = .0f;
-    private boolean eyesClosed;
     private boolean attentionLost;
     private boolean hasFace;
     private boolean handlerStarting;
@@ -65,7 +62,7 @@ public class FaceTracker extends Tracker<Face> {
             public void run() {
                 while (attentionLost) {
                     if (!isVibrateStarted) {
-                        vibrator.vibrate(10000000);
+                        vibrator.vibrate(100000000);
                         isVibrateStarted = true;
                     }
                 }
@@ -76,39 +73,35 @@ public class FaceTracker extends Tracker<Face> {
     }
 
     private void startHandler() {
-//        Utility.showToast(mContext, "Timer will start. hasFace = " + hasFace
-//                + " eyesClosed = " + eyesClosed);
         vibrateHandler.postDelayed(vibrateEvent, 5000);
         handlerStarting = true;
     }
 
     private void stopHandler() {
-        //Utility.showToast(mContext, "Attention regained");
         vibrateHandler.removeCallbacks(vibrateEvent);
         handlerStarting = false;
     }
 
     @Override
     public void onUpdate(Detector.Detections<Face> detections, Face face) {
-        Log.e("FaceTracker", "EulerY = " + face.getEulerY());
         if (hasFace) {
             if (!(face.getEulerY() >= -12 && face.getEulerY() <= 12)) {
                 //face is not front facing, attention has been lost
-                Log.e("FaceTracker", "Attention lost");
                 if (!handlerStarting) {  //start the handler if it's still not starting
                     startHandler();
                 }
                 attentionLost = true;
-
             } else {
                 //face is front facing, check if eyes are opened
                 boolean isEyesClosed = face.getIsLeftEyeOpenProbability() == PROB_THRESHOLD
                         && face.getIsRightEyeOpenProbability() == PROB_THRESHOLD;
-                eyesClosed = isEyesClosed;
+                Log.e("FaceTracker", "Left eye proba = " + face.getIsLeftEyeOpenProbability()
+                        + " and Right eye proba = " + face.getIsRightEyeOpenProbability());
                 if (isEyesClosed) {
                     //no attention
                     Log.e("FaceTracker", "Eyes is Closed");
                     attentionLost = true;
+                    Utility.showToast(mContext, "Eyes is Closed");
                     if (!handlerStarting) {
                         startHandler();
                     }
@@ -144,6 +137,8 @@ public class FaceTracker extends Tracker<Face> {
     @Override
     public void onDone() {
         Log.e("FaceTracker", "onDone() callback");
+        attentionLost = false;
+        stopHandler();
     }
 
 

@@ -1,6 +1,7 @@
 package com.example.android.presentor.faceanalysis;
 
 import android.content.Context;
+import android.os.Vibrator;
 import android.util.Log;
 
 import com.google.android.gms.vision.CameraSource;
@@ -31,27 +32,25 @@ public class FaceAnalyzer {
         }
     }
 
-    public void stop() {
-        if (mCameraSource != null) {
-            mCameraSource.stop();
-        }
-    }
 
     public void release() {
+        if (mCameraSource != null) {
+            mCameraSource.stop();
+            mCameraSource.release();
+        }
         if (mFaceDetector != null) {
             mFaceDetector.release();
         }
-        if (mCameraSource != null) {
-            mCameraSource.release();
-        }
+
+//        ((Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE)).cancel();
     }
 
     public void createCameraSource() {
         mFaceDetector = new FaceDetector.Builder(mContext)
                 .setProminentFaceOnly(true) // optimize for single, relatively large face
                 .setTrackingEnabled(true) // enable face tracking
-                .setClassificationType(/* eyes open and smile */ FaceDetector.ALL_CLASSIFICATIONS)
-                .setMode(FaceDetector.ACCURATE_MODE) // for one face this is OK
+                .setClassificationType(FaceDetector.ALL_CLASSIFICATIONS) /* eyes open and smile */
+                .setMode(FaceDetector.ACCURATE_MODE) // to get EulerY value
                 .build();
 
         mFaceDetector.setProcessor(new LargestFaceFocusingProcessor(mFaceDetector, new FaceTracker(mContext)));

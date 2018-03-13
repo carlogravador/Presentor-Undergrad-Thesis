@@ -21,14 +21,14 @@ public class ConnectionUtility {
         return localPort;
     }
 
-    public static int getNextFreePort() {
+    private static int getNextFreePort() {
         int localPort = -1;
         try {
             ServerSocket s = new ServerSocket(0);
             localPort = s.getLocalPort();
 
             //closing the port
-            if (s != null && !s.isClosed()) {
+            if (!s.isClosed()) {
                 s.close();
             }
         } catch (IOException e) {

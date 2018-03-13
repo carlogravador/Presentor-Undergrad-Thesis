@@ -4,9 +4,9 @@ import android.app.LoaderManager.LoaderCallbacks;
 import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.ListView;
 
 import com.example.android.presentor.R;
@@ -28,7 +28,7 @@ public class AccessActivity extends AppCompatActivity
     private NsdHelper mNsdHelper;
     private ServiceCursorAdapter mServiceCursorAdapter;
 
-    public static PulsatorLayout pulsator;
+    private PulsatorLayout pulsator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,22 +36,19 @@ public class AccessActivity extends AppCompatActivity
         setContentView(R.layout.activity_access);
 
 
-        pulsator = (PulsatorLayout) findViewById(R.id.pulsator);
+        pulsator = findViewById(R.id.pulsator);
 
         //delete first existing database every time activity is created
         DatabaseUtility.clearServiceList(this);
 
         //create new database;
         mServiceCursorAdapter = new ServiceCursorAdapter(this, null);
-        mNsdHelper = NsdHelper.getInstatnce();
-        initClientSide();
+        mNsdHelper = new NsdHelper(this);
 
 
-        ListView lobbyListView = (ListView) findViewById(R.id.list_view_lobby);
+        ListView lobbyListView = findViewById(R.id.list_view_lobby);
         lobbyListView.setAdapter(mServiceCursorAdapter);
         lobbyListView.setEmptyView(pulsator);
-
-
 
         getLoaderManager().initLoader(SERVICE_LOADER, null, this);
 
@@ -64,31 +61,24 @@ public class AccessActivity extends AppCompatActivity
         super.onStop();
     }
 
-
-
+    @Override
+    protected void onDestroy() {
+        mNsdHelper.stopDiscovery();
+        mNsdHelper = null;
+        super.onDestroy();
+    }
 
     @Override
     protected void onResume() {
         super.onResume();
         DatabaseUtility.clearServiceList(this);
         pulsator.start();
-        ShareService.getInstance().disconnectClient();
-        new Timer().schedule(
-                new TimerTask() {
+        new Handler().postDelayed(
+                new Runnable() {
                     @Override
                     public void run() {
+                        if(mNsdHelper != null)
                         mNsdHelper.discoverServices();
-                    }
-                }, 2000
-        );
-    }
-
-    private void initClientSide() {
-        new Timer().schedule(
-                new TimerTask() {
-                    @Override
-                    public void run() {
-                        mNsdHelper.initClientSide();
                     }
                 }, 2000
         );

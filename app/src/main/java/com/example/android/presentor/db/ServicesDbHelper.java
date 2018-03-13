@@ -12,7 +12,7 @@ import com.example.android.presentor.db.ServicesContract.DeviceEntry;
 public class ServicesDbHelper extends SQLiteOpenHelper {
 
     private static final int DB_VERSION = 1;
-    public static final String DB_NAME = "services.db";
+    private static final String DB_NAME = "services.db";
 
 
 

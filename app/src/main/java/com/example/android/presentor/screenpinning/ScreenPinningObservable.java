@@ -9,7 +9,6 @@ package com.example.android.presentor.screenpinning;
 public class ScreenPinningObservable extends Thread {
 
     private ScreenPinningObserver screenPinningObserver;
-    private boolean mState = false;
 
     public interface ScreenPinningObserver {
         void onStateChanged(boolean state);
@@ -17,15 +16,14 @@ public class ScreenPinningObservable extends Thread {
 
 
     public void setState(boolean state) {
-        mState = state;
-        notifyStateChanged(mState);
+        notifyStateChanged(state);
     }
 
     public void setScreenPinningObserver(ScreenPinningObserver observer) {
         this.screenPinningObserver = observer;
     }
 
-    public void notifyStateChanged(boolean state){
+    private void notifyStateChanged(boolean state){
         screenPinningObserver.onStateChanged(state);
     }
 

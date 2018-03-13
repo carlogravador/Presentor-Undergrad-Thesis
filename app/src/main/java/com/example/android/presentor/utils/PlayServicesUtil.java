@@ -47,14 +47,9 @@ public class PlayServicesUtil {
                 apiAvailability.getErrorDialog(activity, resultCode, requestCode).show();
             } else {
                 Log.e(TAG, "GooglePlayServices not supported");
-
-                // finish activity
-                activity.finish();
             }
-
             return false;
         }
-
         // All good
         return true;
     }

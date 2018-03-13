@@ -3,12 +3,14 @@ package com.example.android.presentor.screenshare;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -19,6 +21,7 @@ import com.example.android.presentor.db.DatabaseUtility;
 import com.example.android.presentor.faceanalysis.FaceAnalysisActivator;
 import com.example.android.presentor.faceanalysis.FaceAnalyzer;
 import com.example.android.presentor.screenpinning.ScreenPinningObservable;
+import com.example.android.presentor.utils.Utility;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -29,8 +32,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Created by Carlo on 18/11/2017.
@@ -40,26 +41,10 @@ public class ShareService {
 
     private Context mContext;
 
-    public static final int SCREEN_PIN_ON = -1;
-    public static final int SCREEN_PIN_OFF = -2;
-    public static final int FACE_ANALYSIS_ON = -3;
-    public static final int FACE_ANALYSIS_OFF = -4;
+    private static ShareService ourInstance;
 
-
-    //private Handler mHandler;
-    private final static ShareService ourInstance = new ShareService();
-
-    private Server mServer;
-
-    //for server variables
-    private boolean isServerOpen = false;
-    private boolean isPause = false;
-    private boolean isOnScreenPinningModeServer = false;
-    private boolean isOnFaceAnalysisModeServer = false;
-
-    //for client variables
-    private boolean isClientConnected = false;
-
+    private ServerThread mServer;
+    private ClientThread mClient;
 
     //for ShareService initialization
     private ShareService() {
@@ -67,113 +52,139 @@ public class ShareService {
     }
 
     public static ShareService getInstance() {
+        if (ourInstance == null) {
+            ourInstance = new ShareService();
+        }
         return ourInstance;
     }
 
     public void init(Context context) {
-        mContext = context.getApplicationContext();
+        mContext = context;
     }
 
-    //for server methods
-    public void startServer(Activity act, int port) throws IOException {
-        setServerStatus(true);
-        mServer = new Server(act, port);
+    public void stop() {
+        mServer = null;
+        mClient = null;
+        ourInstance = null;
+    }
+
+    //for server
+    public ServerThread startServer(int port) throws IOException {
+        mServer = new ServerThread(port);
+        return mServer;
+    }
+
+    public ServerThread getServer() {
+        return mServer;
     }
 
     public void stopServer() {
-        setServerStatus(false);
-        mServer = null;
-    }
-
-    public void setServerActivity(Activity act){
-        mServer.serverActivity = act;
-    }
-
-    public void setScreenPinningModeServer(boolean b) {
-        this.isOnScreenPinningModeServer = b;
-    }
-
-    public boolean getScreenPinningModeServer() {
-        return this.isOnScreenPinningModeServer;
-    }
-
-    public boolean getServerStatus() {
-        return isServerOpen;
-    }
-
-    public void setServerStatus(boolean status) {
-        this.isServerOpen = status;
-    }
-
-    public boolean serverHasClients() {
-        //returns false if outputstreamshashtable is null;
-        //outputstreamhashtable is null if service is onstop;
-        boolean b = false;
+        Log.e("ShareService", "stopServer() callback");
         if (mServer != null) {
-            b = !mServer.mOutputStreamsHashtable.isEmpty();
+            mServer.stopServer();
+            mServer = null;
         }
-
-        return b;
     }
 
-    public void pauseScreenMirroringServer() {
-        isPause = true;
-    }
-
-    public void resumeScreenMirroringServer() {
-        isPause = false;
-    }
-
-    public boolean onPauseScreenMirroringServer() {
-        return isPause;
-    }
-
-    public void sendToAllClientsConnected(byte[] buffer) {
-        mServer.sendToAll(buffer);
-    }
-
-    public void sendCommandToAllClientsConnected(int commandCode) {
-        mServer.sendCommandToAll(commandCode);
+    public boolean isServerOpen() {
+        return mServer != null && mServer.getStatus();
     }
 
     //for client methods
-    public void setClientStatus(boolean status) {
-        this.isClientConnected = status;
-    }
 
-    public void connectClient(Activity act, String ip, int port) {
-        setClientStatus(true);
-        new Client(act, ip, port);
+    public void connectClient(Context activityContext, String ip, int port) {
+        mClient = new ClientThread(activityContext, ip, port);
     }
 
     public void disconnectClient() {
-        setClientStatus(false);
+        mClient.disconnectClient();
+        mClient = null;
     }
 
-    public class Server extends Thread {
 
-        private Activity serverActivity;
+    public class ServerThread extends Thread {
 
         private ServerSocket mServerSocket;
-        private Hashtable mOutputStreamsHashtable;
+        private final Hashtable<Socket, DataOutputStream> mOutputStreamsHashtable = new Hashtable<>();
+        private LocalBroadcastManager mBroadCastManager;
 
         private int mPort;
 
-        public Server(Activity act, int port) throws IOException {
-            serverActivity = act;
-            mPort = port;
-            start();
-        }
+        private boolean isServerOpen = false;
+        private boolean isPause = false;
+        private boolean isOnScreenPinningMode = false;
+        private boolean isOnFaceAnalysisMode = false;
+
 
         private Enumeration getSockets() {
             return mOutputStreamsHashtable.keys();
         }
 
-        private void sendToAll(byte[] buffer) {
+        public void stopServer() {
+            if (isOnFaceAnalysisMode)
+                executeSendCommandToAll(ScreenShareConstants.FACE_ANALYSIS_OFF);
+            if (isOnScreenPinningMode) executeSendCommandToAll(ScreenShareConstants.SCREEN_PIN_ON);
+            executeSendCommandToAll(ScreenShareConstants.ON_STOP);
+        }
+
+        public boolean getStatus() {
+            return this.isServerOpen;
+        }
+
+        public void setStatus(boolean isOn) {
+            this.isServerOpen = isOn;
+            if (!isOn) {
+                try {
+                    mServerSocket.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        public boolean hasClients() {
+            return !mOutputStreamsHashtable.isEmpty();
+        }
+
+        public void pauseScreenMirroring() {
+            isPause = true;
+            executeSendCommandToAll(ScreenShareConstants.ON_PAUSE);
+        }
+
+        public void resumeScreenMirroring() {
+            isPause = false;
+            executeSendCommandToAll(ScreenShareConstants.ON_RESUME);
+        }
+
+        public boolean isPausedScreenMirroring() {
+            return isPause;
+        }
+
+        public void setScreenPinningMode(boolean isOn) {
+            this.isOnScreenPinningMode = isOn;
+            if (isOn) executeSendCommandToAll(ScreenShareConstants.SCREEN_PIN_ON);
+            else executeSendCommandToAll(ScreenShareConstants.SCREEN_PIN_OFF);
+        }
+
+        public boolean getScreenPinningModeServer() {
+            return this.isOnScreenPinningMode;
+        }
+
+        public void setFaceAnalysisMode(boolean isOn) {
+            this.isOnFaceAnalysisMode = isOn;
+            if (isOn) executeSendCommandToAll(ScreenShareConstants.FACE_ANALYSIS_ON);
+            else executeSendCommandToAll(ScreenShareConstants.FACE_ANALYSIS_OFF);
+        }
+
+        public boolean getFaceAnalysisMode() {
+            return this.isOnFaceAnalysisMode;
+        }
+
+        public void sendToAll(byte[] buffer) {
             synchronized (mOutputStreamsHashtable) {
                 for (Enumeration e = getSockets(); e.hasMoreElements(); ) {
                     Socket s = (Socket) e.nextElement();
-                    DataOutputStream dout = (DataOutputStream) mOutputStreamsHashtable.get(s);
+                    DataOutputStream dout = mOutputStreamsHashtable.get(s);
                     //send the message
                     try {
                         dout.writeInt(buffer.length);
@@ -185,7 +196,7 @@ public class ShareService {
             }
         }
 
-        private void sendCommand(int command, DataOutputStream dout) {
+        private void sendCommand(DataOutputStream dout, int command) {
             try {
                 dout.writeInt(command);
             } catch (IOException e) {
@@ -195,11 +206,10 @@ public class ShareService {
         }
 
         private void sendCommandToAll(int commandCode) {
-            Log.d("ShareService", "sendCommandToAllClientsConnected() called");
             synchronized (mOutputStreamsHashtable) {
                 for (Enumeration e = getSockets(); e.hasMoreElements(); ) {
                     Socket s = (Socket) e.nextElement();
-                    DataOutputStream dout = (DataOutputStream) mOutputStreamsHashtable.get(s);
+                    DataOutputStream dout = mOutputStreamsHashtable.get(s);
                     //send the message
                     try {
                         dout.writeInt(commandCode);
@@ -207,6 +217,30 @@ public class ShareService {
                         er.printStackTrace();
                     }
                 }
+            }
+        }
+
+        public void executeSendCommandToAll(final int commandCode) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    sendCommandToAll(commandCode);
+                    if (commandCode == ScreenShareConstants.ON_STOP) {
+                        setStatus(false);
+                    }
+                }
+            }).start();
+        }
+
+        private void sendServerState(DataOutputStream dout) {
+            if (isPause) {
+                sendCommand(dout, ScreenShareConstants.ON_PAUSE);
+            }
+            if (isOnFaceAnalysisMode) {
+                sendCommand(dout, ScreenShareConstants.FACE_ANALYSIS_ON);
+            }
+            if (isOnScreenPinningMode) {
+                sendCommand(dout, ScreenShareConstants.SCREEN_PIN_ON);
             }
         }
 
@@ -219,47 +253,45 @@ public class ShareService {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                DatabaseUtility.removeDeviceToList(mContext, serverActivity,
-                        s.getInetAddress().getHostAddress(), s.getPort());
+                DatabaseUtility.removeDeviceToList(mContext, s.getInetAddress().getHostAddress(), s.getPort());
+                mBroadCastManager.sendBroadcast(new Intent(ScreenShareConstants.BROADCAST_DEVICE_COUNT_CHANGED));
             }
         }
 
         private void listen(int port) throws IOException {
 
             mServerSocket = new ServerSocket(port);
-            mOutputStreamsHashtable = new Hashtable();
 
             while (isServerOpen) {
                 //blocking statement
                 Socket clientSocket = mServerSocket.accept();
-                //to get the client's data
-                DataInputStream dataInputStream = new DataInputStream(clientSocket.getInputStream());
-                Log.d("ShareService listen", "address: " + clientSocket.getInetAddress() + ", port: " + clientSocket.getPort());
-                Log.d("ShareService listen", "somebody is connected");
-                //mClient = new Client(clientSocket);
 
                 //somebody is connected
                 //get outputstream so we can write to the client;
-
                 DataOutputStream dataOutputStream = new DataOutputStream(clientSocket.getOutputStream());
-                if (isOnScreenPinningModeServer) {
-                    sendCommand(SCREEN_PIN_ON, dataOutputStream);
-                }
+                sendServerState(dataOutputStream);
+
+                //to get the client's name
+                DataInputStream dataInputStream = new DataInputStream(clientSocket.getInputStream());
                 mOutputStreamsHashtable.put(clientSocket, dataOutputStream);
 
                 //Add to connected device
-                DatabaseUtility.addDeviceToList(mContext, serverActivity,
-                        dataInputStream.readUTF(), clientSocket.getInetAddress().getHostAddress(),
+                DatabaseUtility.addDeviceToList(mContext, dataInputStream.readUTF(),
+                        clientSocket.getInetAddress().getHostAddress(),
                         clientSocket.getPort());
 
+                mBroadCastManager.sendBroadcast(new Intent(ScreenShareConstants.BROADCAST_DEVICE_COUNT_CHANGED));
+                Log.e("Looper", "End of loop reach");
             }
-            Log.d("ShareService", "Server Stop");
-            mServerSocket.close();
-            mServerSocket = null;
-            mOutputStreamsHashtable.clear();
-            mOutputStreamsHashtable = null;
-            isOnScreenPinningModeServer = false;
         }
+
+        public ServerThread(int port) {
+            this.mBroadCastManager = LocalBroadcastManager.getInstance(mContext);
+            this.mPort = port;
+            setStatus(true);
+            start();
+        }
+
 
         @Override
         public void run() {
@@ -267,16 +299,22 @@ public class ShareService {
                 Log.d("ShareService", "server start listening for connection");
                 listen(mPort);
             } catch (IOException e) {
+                Log.d("ShareService", "Server Stop");
+                mServerSocket = null;
+                mOutputStreamsHashtable.clear();
                 e.printStackTrace();
             }
         }
 
     }
 
-    public class Client extends Thread {
+    public class ClientThread extends Thread implements ScreenPinningObservable.ScreenPinningObserver,
+            FaceAnalysisActivator.FaceAnalysisObserver {
 
-        private Activity clientActivity;
-        private TextView tv;
+        private Context activityContext;
+        private TextView mTextView;
+        private ImageView mImageView;
+        private Handler mHandler;
 
         private Socket mSocket;
         private InputStream mInputStream;
@@ -292,26 +330,34 @@ public class ShareService {
 
         private boolean screenPinningRequest = false;
         private boolean screenPinningEnabled = false;
+        private boolean isConnected = false;
 
-        private long bitmapReceive;
+        //Temporary
         private String clientName = "Kaboomskie";
 
+        public void disconnectClient() {
+            this.isConnected = false;
+        }
+
         //create a client to connect to server
-        private Client(Activity act, String ip, int port) {
+        public ClientThread(Context context, String ip, int port) {
             try {
-                clientActivity = act;
-                tv = (TextView) clientActivity.findViewById(R.id.screen_pin_tv);
+                activityContext = context;
+                mTextView = ((Activity) activityContext).findViewById(R.id.screen_pin_tv);
+                mImageView = ((Activity) activityContext).findViewById(R.id.image_view_screen_share);
+                mHandler = new Handler(Looper.getMainLooper());
                 mSocket = new Socket(ip, port);
                 mInputStream = mSocket.getInputStream();
                 mOutputStream = mSocket.getOutputStream();
                 mDataInputStream = new DataInputStream(mInputStream);
                 mDataOutputStream = new DataOutputStream(mOutputStream);
-                isClientConnected = true;
+                isConnected = true;
                 mDataOutputStream.writeUTF(clientName);
                 initFaceAnalysisObserver();
                 start();
             } catch (IOException e) {
                 e.printStackTrace();
+                Utility.showToast(activityContext, "Error connecting to the server.");
             }
         }
 
@@ -327,41 +373,41 @@ public class ShareService {
             if (cdt != null) {
                 cdt.cancel();
             }
-            clientActivity.finish();
             faceAnalyzer.release();
+            faceAnalyzer = null;
+            ((Activity) activityContext).finish();
         }
 
         private void initScreenPinningObservable() {
-            clientActivity.runOnUiThread(new Runnable() {
+            mHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    tv.setBackgroundColor(mContext.getResources().getColor(R.color.colorRed));
-                    tv.setVisibility(View.VISIBLE);
+                    mTextView.setBackgroundColor(activityContext.getResources().getColor(R.color.colorRed));
+                    mTextView.setVisibility(View.VISIBLE);
                 }
             });
-
             if (!isInLockTaskMode()) {
-                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                mHandler.post(new Runnable() {
                     @Override
                     public void run() {
                         cdt = new CountDownTimer(10000, 1000) {
                             @Override
                             public void onTick(long l) {
-                                tv.setText("Please Enable Screen Pinning. Disconnecting in " + l / 1000 + " seconds.");
+                                //TODO: Add string literals on strings.xml, use place holders.
+                                mTextView.setText("Please Enable Screen Pinning. Disconnecting in " + l / 1000 + " seconds.");
                             }
 
                             @Override
                             public void onFinish() {
                                 Log.d("CountDownTimer", "onFinish() callBack");
-                                isClientConnected = false;
+                                isConnected = false;
                                 screenPinningRequest = false;
-                                tv.setVisibility(View.GONE);
+                                mTextView.setVisibility(View.GONE);
                             }
                         }.start();
                     }
                 });
             }
-
             screenPinningObservable = new ScreenPinningObservable() {
                 @Override
                 public void run() {
@@ -372,90 +418,26 @@ public class ShareService {
                 }
             };
 
-            screenPinningObservable.setScreenPinningObserver(new ScreenPinningObservable.ScreenPinningObserver() {
-                @Override
-                public void onStateChanged(boolean inLockTaskMode) {
-                    if (!inLockTaskMode && screenPinningEnabled) {
-                        if (cdt != null) {
-                            cdt.cancel();
-                        }
-                        screenPinningEnabled = false;
-                        clientActivity.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                tv.setVisibility(View.VISIBLE);
-                                tv.setText("Screen Pinning is cancelled. Disconnecting...");
-                                tv.setBackgroundColor(mContext.getResources().getColor(R.color.colorRed));
-                            }
-                        });
-                        new Timer().schedule(new TimerTask() {
-                            @Override
-                            public void run() {
-                                Log.e("ScreenPinningListener", "clientDisconnects callback disconnect");
-                                isClientConnected = false;
-                                screenPinningRequest = false;
-                            }
-                        }, 1000);
-                    } else if (inLockTaskMode && !screenPinningEnabled) {
-                        screenPinningEnabled = true;
-                        if (cdt != null) {
-                            cdt.cancel();
-                        }
-                        clientActivity.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                tv.setText("Screen Pinning is Enabled.");
-                                tv.setBackgroundColor(mContext.getResources().getColor(R.color.colorGreen));
-                            }
-                        });
-                        new Timer().schedule(new TimerTask() {
-                            @Override
-                            public void run() {
-                                clientActivity.runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        tv.setVisibility(View.GONE);
-                                    }
-                                });
-                            }
-                        }, 1000);
-                    }
-                }
-            });
+            screenPinningObservable.setScreenPinningObserver(this);
         }
 
-        private void initFaceAnalysisObserver(){
+        private void initFaceAnalysisObserver() {
             faceAnalysisActivator = new FaceAnalysisActivator();
-            faceAnalyzer = new FaceAnalyzer(mContext);
-            faceAnalyzer.createCameraSource();
-            faceAnalysisActivator.setFaceAnalysisObserver(new FaceAnalysisActivator.FaceAnalysisObserver() {
-                @Override
-                public void onFaceAnalysisRequestStateChanged(boolean isOn) {
-                    if(isOn){
-                        Log.e("FaceAnalysis", "Status On");
-                        faceAnalyzer.start();
-                    }else{
-                        Log.e("FaceAnalysis", "Status Off");
-                        faceAnalyzer.stop();
-                    }
-                }
-            });
+            faceAnalysisActivator.setFaceAnalysisObserver(this);
         }
 
         private boolean isInLockTaskMode() {
-            ActivityManager am = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
+            ActivityManager am = (ActivityManager) activityContext.getSystemService(Context.ACTIVITY_SERVICE);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 // For SDK version 23 and above.
-                return am.getLockTaskModeState()
+                return am != null && am.getLockTaskModeState()
                         != ActivityManager.LOCK_TASK_MODE_NONE;
             }
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                // When SDK version >= 21. This API is deprecated in 23.
-                return am.isInLockTaskMode();
-            }
-            return false;
+            // When SDK version >= 21. This API is deprecated in 23.
+            return am != null && am.isInLockTaskMode() &&
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
         }
 
         private void screenPinOn() {
@@ -465,7 +447,7 @@ public class ShareService {
             screenPinningRequest = true;
             Log.d("ShareService", "ScreenPinning is on");
             if (!isInLockTaskMode()) {
-                clientActivity.startLockTask();
+                ((Activity) activityContext).startLockTask();
             }
         }
 
@@ -475,43 +457,48 @@ public class ShareService {
             if (cdt != null) {
                 cdt.cancel();
             }
-            clientActivity.runOnUiThread(new Runnable() {
+            mHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    tv.setText("Screen Pinning has been disabled by the host.");
-                    tv.setBackgroundColor(mContext.getResources().getColor(R.color.colorGreen));
-                    tv.setVisibility(View.VISIBLE);
+                    //TODO: add string literals to string.xml
+                    mTextView.setText("Screen Pinning has been disabled by the host.");
+                    mTextView.setBackgroundColor(activityContext.getResources().getColor(R.color.colorGreen));
+                    mTextView.setVisibility(View.VISIBLE);
                 }
             });
-            new Timer().schedule(new TimerTask() {
+
+
+            mHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    clientActivity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            tv.setVisibility(View.GONE);
-                            screenPinningEnabled = false;
-                        }
-                    });
+                    mTextView.setVisibility(View.GONE);
+                    screenPinningEnabled = false;
                 }
             }, 1000);
-            clientActivity.stopLockTask();
+            ((Activity) activityContext).stopLockTask();
+
         }
 
         private void handleCommandReceived(int COMMAND_CODE) {
             Log.d("ShareService", "Command has been received: " + COMMAND_CODE);
             switch (COMMAND_CODE) {
-                case SCREEN_PIN_ON:
+                case ScreenShareConstants.SCREEN_PIN_ON:
                     screenPinOn();
                     break;
-                case SCREEN_PIN_OFF:
+                case ScreenShareConstants.SCREEN_PIN_OFF:
                     screenPinOff();
                     break;
-                case FACE_ANALYSIS_ON:
+                case ScreenShareConstants.FACE_ANALYSIS_ON:
                     faceAnalysisActivator.setState(true);
                     break;
-                case FACE_ANALYSIS_OFF:
+                case ScreenShareConstants.FACE_ANALYSIS_OFF:
                     faceAnalysisActivator.setState(false);
+                    break;
+                case ScreenShareConstants.ON_RESUME:
+                    break;
+                case ScreenShareConstants.ON_PAUSE:
+                    break;
+                case ScreenShareConstants.ON_STOP:
                     break;
                 default:
                     break;
@@ -520,19 +507,18 @@ public class ShareService {
 
         private void listen() {
             try {
-                while (isClientConnected) {
+                while (isConnected) {
                     final byte[] bytes;
                     int len = mDataInputStream.readInt();
                     Log.d("ShareService", "value of len:" + len);
                     if (len > 0) {
                         bytes = new byte[len];
                         mDataInputStream.readFully(bytes, 0, bytes.length);
-                        clientActivity.runOnUiThread(new Runnable() {
+                        mHandler.post(new Runnable() {
                             @Override
                             public void run() {
-                                ImageView iv = clientActivity.findViewById(R.id.image_view_screen_share);
                                 Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                                iv.setImageBitmap(bm);
+                                mImageView.setImageBitmap(bm);
                             }
                         });
                     } else {    //it's a command so let this block handle it.
@@ -552,6 +538,70 @@ public class ShareService {
             //update UI for the stream
             Log.d("ShareService", "client side started");
             listen();
+        }
+
+        //---------------------------FaceAnalysisObserver implementation-----------------------------//
+
+        @Override
+        public void onFaceAnalysisRequestStateChanged(boolean isOn) {
+            if (isOn) {
+                Log.e("FaceAnalysis", "Status On");
+                faceAnalyzer = new FaceAnalyzer(activityContext);
+                faceAnalyzer.createCameraSource();
+                faceAnalyzer.start();
+            } else {
+                Log.e("FaceAnalysis", "Status Off");
+                faceAnalyzer.release();
+                faceAnalyzer = null;
+            }
+        }
+
+        //---------------------------ScreenPinningObserver implementation-----------------------------//
+
+        @Override
+        public void onStateChanged(boolean inLockTaskMode) {
+            if (!inLockTaskMode && screenPinningEnabled) {
+                if (cdt != null) {
+                    cdt.cancel();
+                }
+                screenPinningEnabled = false;
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        //TODO: Add string literals on strings.xml
+                        mTextView.setVisibility(View.VISIBLE);
+                        mTextView.setText("Screen Pinning is cancelled. Disconnecting...");
+                        mTextView.setBackgroundColor(activityContext.getResources().getColor(R.color.colorRed));
+                    }
+                });
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.e("ScreenPinningListener", "clientDisconnects callback disconnect");
+                        isConnected = false;
+                        screenPinningRequest = false;
+                    }
+                }, 1000);
+            } else if (inLockTaskMode && !screenPinningEnabled) {
+                screenPinningEnabled = true;
+                if (cdt != null) {
+                    cdt.cancel();
+                }
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        //TODO: Add string literals on strings.xml.
+                        mTextView.setText("Screen Pinning is Enabled.");
+                        mTextView.setBackgroundColor(activityContext.getResources().getColor(R.color.colorGreen));
+                    }
+                });
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mTextView.setVisibility(View.GONE);
+                    }
+                }, 1000);
+            }
         }
     }
 
