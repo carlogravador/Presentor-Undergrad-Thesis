@@ -10,9 +10,10 @@
 
     <dimen name="big_dimen">50dp</dimen>
     <dimen name="small_dimen">45dp</dimen>
-    <dimen name="sub_button_dimen">28dp</dimen>
-    <dimen name="margin_to_logo">60dp</dimen>
+    <dimen name="widget_button_dimen">32dp</dimen>
+    <dimen name="margin_to_logo">55dp</dimen>
     <dimen name="margin_allowance">10dp</dimen>
     <dimen name="margin_orig">14dp</dimen>
+    <dimen name="height">60dp</dimen>
 
 </resources>
