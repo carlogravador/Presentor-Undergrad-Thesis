@@ -1,12 +1,8 @@
 package com.example.android.presentor;
 
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,7 +19,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -31,7 +26,7 @@ import com.example.android.presentor.domotics.DomoticsActivity;
 import com.example.android.presentor.screenshare.AccessActivity;
 import com.example.android.presentor.screenshare.CreateActivity;
 import com.example.android.presentor.screenshare.ShareService;
-import com.example.android.presentor.slider.HelpActivity;
+import com.example.android.presentor.help.HelpActivity;
 import com.example.android.presentor.utils.PlayServicesUtil;
 import com.example.android.presentor.utils.Utility;
 
@@ -178,10 +173,6 @@ public class MainActivity extends AppCompatActivity
                     Utility.turnOnBluetooth(MainActivity.this, i);
                     turnOnBluetooth = false;
                 }
-//                if(turnOnBluetooth){
-//                    Utility.turnOnBluetooth(MainActivity.this);
-//                    turnOnBluetooth = false;
-//                }
                 mNavigationView.setCheckedItem(R.id.nav_screen_mirroring);
             }
         });
@@ -229,28 +220,28 @@ public class MainActivity extends AppCompatActivity
             //super.onBackPressed();
         }
     }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
+//
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        getMenuInflater().inflate(R.menu.main, menu);
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        // Handle action bar item clicks here. The action bar will
+//        // automatically handle clicks on the Home/Up button, so long
+//        // as you specify a parent activity in AndroidManifest.xml.
+//        int id = item.getItemId();
+//
+//        //noinspection SimplifiableIfStatement
+//        if (id == R.id.action_settings) {
+//            return true;
+//        }
+//
+//        return super.onOptionsItemSelected(item);
+//    }
 
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -274,18 +265,16 @@ public class MainActivity extends AppCompatActivity
             case R.id.nav_settings:
                 mIntent = new Intent(MainActivity.this, SettingsActivity.class);
                 break;
-
             case R.id.nav_help:
                 mIntent = new Intent(MainActivity.this, HelpActivity.class);
                 break;
-
             case R.id.nav_about:
                 mIntent = new Intent(MainActivity.this, AboutActivity.class);
                 break;
         }
 
 
-        mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawer = findViewById(R.id.drawer_layout);
 
         mDrawer.closeDrawer(GravityCompat.START);
         return true;
@@ -305,35 +294,6 @@ public class MainActivity extends AppCompatActivity
     //TODO : BUG: multiple instances of app opens when application is clicked followed by clicking the notification
     NotificationCompat.Builder notification;
     private static final int uniqueID = 45612;
-
-
-    public void startNotification() {
-        //Build the notification
-
-        notification = new NotificationCompat.Builder(this);
-
-        Bitmap logo = BitmapFactory.decodeResource(getResources(), R.drawable.ic_splash_logo);
-        notification.setLargeIcon(logo);
-        notification.setSmallIcon(R.drawable.ic_notif_icon);
-
-
-        //notification.setTicker("This is the ticker");
-        //notification.setWhen(System.currentTimeMillis());
-        notification.setContentTitle("Presentor is running");
-        notification.setContentText("Tap for more details.");
-        notification.setOngoing(true);
-        notification.setAutoCancel(false);
-
-
-        Intent intent = new Intent(this, MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        notification.setContentIntent(pendingIntent);
-
-        //Builds notification and issues it
-        NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        nm.notify(uniqueID, notification.build());
-
-    }
 
 
     @Override

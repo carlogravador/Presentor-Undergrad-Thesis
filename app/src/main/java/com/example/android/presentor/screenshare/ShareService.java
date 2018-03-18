@@ -121,9 +121,9 @@ public class ShareService {
         }
 
         public void stopServer() {
-            if (isOnFaceAnalysisMode)
-                executeSendCommandToAll(ScreenShareConstants.FACE_ANALYSIS_OFF);
-            if (isOnScreenPinningMode) executeSendCommandToAll(ScreenShareConstants.SCREEN_PIN_ON);
+            //cancel any state of the server to the client
+            if (isOnFaceAnalysisMode) executeSendCommandToAll(ScreenShareConstants.FACE_ANALYSIS_OFF);
+            if (isOnScreenPinningMode) executeSendCommandToAll(ScreenShareConstants.SCREEN_PIN_OFF);
             executeSendCommandToAll(ScreenShareConstants.ON_STOP);
         }
 
@@ -281,7 +281,6 @@ public class ShareService {
                         clientSocket.getPort());
 
                 mBroadCastManager.sendBroadcast(new Intent(ScreenShareConstants.BROADCAST_DEVICE_COUNT_CHANGED));
-                Log.e("Looper", "End of loop reach");
             }
         }
 
@@ -300,6 +299,7 @@ public class ShareService {
                 listen(mPort);
             } catch (IOException e) {
                 Log.d("ShareService", "Server Stop");
+                mBroadCastManager.sendBroadcast(new Intent(ScreenShareConstants.BROADCAST_SERVICE_STOP));
                 mServerSocket = null;
                 mOutputStreamsHashtable.clear();
                 e.printStackTrace();

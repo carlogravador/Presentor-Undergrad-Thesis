@@ -55,6 +55,7 @@
             android:screenOrientation="portrait"/>
         <activity
             android:name=".domotics.DomoticsActivity"
+            android:launchMode="singleInstance"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"/>
         <activity
@@ -62,15 +63,21 @@
             android:parentActivityName=".screenshare.AccessActivity"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".SettingsActivity"
+            android:name=".help.HelpActivity"
             android:parentActivityName=".MainActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".AboutActivity"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"/>
+        <activity
+            android:name=".SettingsActivity"
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait"/>
 
-        <!--  Declare FloatingWidget Service over here and set enabled true -->
+
+        <!-- Declare FloatingWidget Service over here and set enabled true -->
         <service
             android:name=".floatingwidget.FloatingWidgetService"
             android:enabled="true"
@@ -80,6 +87,7 @@
             android:name=".db.ServicesProvider"
             android:authorities="com.example.android.presentor"
             android:exported="false"/>
+
 
     </application>
 

@@ -1,4 +1,4 @@
-package com.example.android.presentor.slider;
+package com.example.android.presentor.help;
 
 import android.content.Context;
 import android.support.v4.view.PagerAdapter;

@@ -1,4 +1,4 @@
-package com.example.android.presentor.slider;
+package com.example.android.presentor.help;
 
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -50,7 +50,9 @@ public class HelpActivity extends AppCompatActivity {
         mNextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                if(mNextBtn.getText().equals("Finish")){
+                    finish();
+                }
                 mSlideViewPager.setCurrentItem(mCurrentPage + 1);
 
             }

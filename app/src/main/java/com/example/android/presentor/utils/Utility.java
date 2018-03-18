@@ -17,26 +17,21 @@ import android.net.wifi.WifiManager;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 
 import com.example.android.presentor.R;
-import com.example.android.presentor.domotics.DomoticsActivity;
-import com.example.android.presentor.domotics.DomoticsSwitch;
-
-import org.w3c.dom.Text;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -187,42 +182,54 @@ public class Utility {
 
 
     public static void clearKey(Context cxt, String key) {
-        SharedPreferences.Editor prefsEditor = cxt.getSharedPreferences("presentor",
-                Context.MODE_PRIVATE).edit();
+//        SharedPreferences.Editor prefsEditor = cxt.getSharedPreferences("presentor",
+//                Context.MODE_PRIVATE).edit();
+        SharedPreferences.Editor prefsEditor = PreferenceManager.
+                getDefaultSharedPreferences(cxt.getApplicationContext()).edit();
         prefsEditor.remove(key);
-        prefsEditor.commit();
+        prefsEditor.apply();
     }
 
     public static void saveString(Context cxt, String key, String value) {
-        SharedPreferences.Editor prefsEditor = cxt.getSharedPreferences("presentor",
-                Context.MODE_PRIVATE).edit();
+//        SharedPreferences.Editor prefsEditor = cxt.getSharedPreferences("presentor",
+//                Context.MODE_PRIVATE).edit();
+        SharedPreferences.Editor prefsEditor = PreferenceManager.
+                getDefaultSharedPreferences(cxt.getApplicationContext()).edit();
         prefsEditor.putString(key, value);
-        prefsEditor.commit();
+        prefsEditor.apply();
     }
 
 
     public static String getString(Context cxt, String key) {
-        SharedPreferences prefs = cxt.getSharedPreferences("presentor", Context.MODE_PRIVATE);
+//        SharedPreferences prefs = cxt.getSharedPreferences("presentor", Context.MODE_PRIVATE);
+        SharedPreferences prefs = PreferenceManager.
+                getDefaultSharedPreferences(cxt.getApplicationContext());
         return prefs.getString(key, null);
     }
 
     public static void saveInt(Context cxt, String key, int value) {
-        SharedPreferences.Editor prefsEditor = cxt.getSharedPreferences("presentor",
-                Context.MODE_PRIVATE).edit();
+//        SharedPreferences.Editor prefsEditor = cxt.getSharedPreferences("presentor",
+//                Context.MODE_PRIVATE).edit();
+        SharedPreferences.Editor prefsEditor = PreferenceManager.
+                getDefaultSharedPreferences(cxt.getApplicationContext()).edit();
         prefsEditor.putInt(key, value);
-        prefsEditor.commit();
+        prefsEditor.apply();
     }
 
     public static int getInt(Context cxt, String key) {
-        SharedPreferences prefs = cxt.getSharedPreferences("presentor", Context.MODE_PRIVATE);
+        //SharedPreferences prefs = cxt.getSharedPreferences("presentor", Context.MODE_PRIVATE);
+        SharedPreferences prefs = PreferenceManager.
+                getDefaultSharedPreferences(cxt.getApplicationContext());
         return prefs.getInt(key, -1);
     }
 
     public static void saveBoolean(Context cxt, String key, boolean value) {
-        SharedPreferences.Editor prefsEditor = cxt.getSharedPreferences("presentor",
-                Context.MODE_PRIVATE).edit();
+//        SharedPreferences.Editor prefsEditor = cxt.getSharedPreferences("presentor",
+//                Context.MODE_PRIVATE).edit();
+        SharedPreferences.Editor prefsEditor = PreferenceManager.
+                getDefaultSharedPreferences(cxt.getApplicationContext()).edit();
         prefsEditor.putBoolean(key, value);
-        prefsEditor.commit();
+        prefsEditor.apply();
     }
 
     /***returns true if there is a special character on the String word***/

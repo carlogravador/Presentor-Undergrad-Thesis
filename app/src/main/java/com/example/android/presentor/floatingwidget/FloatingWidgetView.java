@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.example.android.presentor.R;
@@ -22,7 +23,7 @@ import com.example.android.presentor.R;
  * Created by Carlo on 07/03/2018.
  */
 
-public class FloatingWidgetView implements View.OnTouchListener{
+public class FloatingWidgetView implements View.OnTouchListener {
 
     private Context mContext;
     private WindowManager mWindowManager;
@@ -35,11 +36,17 @@ public class FloatingWidgetView implements View.OnTouchListener{
     private int y_init_cord;
     private int x_init_margin;
     private int y_init_margin;
+    private int height;
 
     private long time_start = 0;
 
-    public FloatingWidgetView(Context context, View.OnClickListener onClickListener){
+    public ImageButton getImageButton(int position){
+        return arrayImageButton[position];
+    }
+
+    public FloatingWidgetView(Context context, View.OnClickListener onClickListener) {
         this.mContext = context;
+        height = mContext.getResources().getDimensionPixelOffset(R.dimen.height);
         this.mWindowManager = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
         create();
         setTouchListener();
@@ -49,19 +56,19 @@ public class FloatingWidgetView implements View.OnTouchListener{
     /**
      * create the floating widget view
      */
-    private void create(){
+    private void create() {
         getWindowManagerDefaultDisplay();
         LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         addFloatingWidgetView(inflater);
     }
 
-    private void setTouchListener(){
+    private void setTouchListener() {
         mFloatingWidgetView.findViewById(R.id.root_container).setOnTouchListener(this);
     }
 
-    private void setClickListener(View.OnClickListener listener){
+    private void setClickListener(View.OnClickListener listener) {
         mFloatingWidgetView.findViewById(R.id.floating_widget_image_view).setOnClickListener(listener);
-        for(ImageButton imageButton : arrayImageButton){
+        for (ImageButton imageButton : arrayImageButton) {
             imageButton.setOnClickListener(listener);
         }
     }
@@ -73,9 +80,10 @@ public class FloatingWidgetView implements View.OnTouchListener{
         mFloatingWidgetView = inflater.inflate(R.layout.floating_widget_layout, null);
 
         //Add the view to the window.
+
         final WindowManager.LayoutParams params = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.WRAP_CONTENT,
+                height,
                 WindowManager.LayoutParams.TYPE_PHONE,      //TYPE_APLICATION_OVERLAY
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
                         WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
@@ -99,12 +107,12 @@ public class FloatingWidgetView implements View.OnTouchListener{
         expandedView = mFloatingWidgetView.findViewById(R.id.expanded_container);
         //find the buttons of expanded view
         arrayImageButton = new ImageButton[6];
-        arrayImageButton[0] = expandedView.findViewById(R.id.circleIv1);
-        arrayImageButton[1] = expandedView.findViewById(R.id.circleIv2);
-        arrayImageButton[2] = expandedView.findViewById(R.id.circleIv3);
-        arrayImageButton[3] = expandedView.findViewById(R.id.circleIv4);
-        arrayImageButton[4] = expandedView.findViewById(R.id.circleIv5);
-        arrayImageButton[5] = expandedView.findViewById(R.id.circleIv6);
+        arrayImageButton[0] = expandedView.findViewById(R.id.circleIv1);    //stop
+        arrayImageButton[1] = expandedView.findViewById(R.id.circleIv2);    //play/pause
+        arrayImageButton[2] = expandedView.findViewById(R.id.circleIv3);    //pin
+        arrayImageButton[3] = expandedView.findViewById(R.id.circleIv4);    //face
+        arrayImageButton[4] = expandedView.findViewById(R.id.circleIv5);    //domotics
+        arrayImageButton[5] = expandedView.findViewById(R.id.circleIv6);    //screen share
     }
 
     /***Get the screen resolution of the current device***/
@@ -127,7 +135,7 @@ public class FloatingWidgetView implements View.OnTouchListener{
         ViewGroup vg = (ViewGroup) expandedView;
         TransitionManager.beginDelayedTransition(vg);
 
-        int subButton = mContext.getResources().getDimensionPixelSize(R.dimen.sub_button_dimen);
+        int subButton = mContext.getResources().getDimensionPixelSize(R.dimen.widget_button_dimen);
         int marginLeft = mContext.getResources().getDimensionPixelSize(R.dimen.margin_to_logo);
         int marginAllowance = mContext.getResources().getDimensionPixelSize(R.dimen.margin_allowance);
 
@@ -148,6 +156,7 @@ public class FloatingWidgetView implements View.OnTouchListener{
         }
 
     }
+
     /***Hide expanded view with animation***/
     private void hideButtons() {
         ViewGroup vg = (ViewGroup) expandedView;
@@ -167,6 +176,7 @@ public class FloatingWidgetView implements View.OnTouchListener{
 
     /**
      * Reset the position of floating widget, to the nearest side, either left or right
+     *
      * @param x_cord_now current x coordinate of floating widget
      */
     private void resetPosition(int x_cord_now) {
@@ -179,6 +189,7 @@ public class FloatingWidgetView implements View.OnTouchListener{
 
     /**
      * Move the floating widgeet to the left, with animation
+     *
      * @param current_x_cord current x coordinate of floating widget
      */
     private void moveToLeft(final int current_x_cord) {
@@ -199,7 +210,8 @@ public class FloatingWidgetView implements View.OnTouchListener{
     }
 
     /**
-     *Move the floating widgeet to the right, with animation
+     * Move the floating widgeet to the right, with animation
+     *
      * @param current_x_cord current x coordinate of floating widget
      */
     private void moveToRight(final int current_x_cord) {
@@ -219,7 +231,7 @@ public class FloatingWidgetView implements View.OnTouchListener{
     }
 
     /**
-     *  Detect if the floating view is collapsed or expanded
+     * Detect if the floating view is collapsed or expanded
      */
     private boolean isViewCollapsed() {
         return mFloatingWidgetView == null || mFloatingWidgetView.findViewById(R.id.collapse_view).getVisibility() == View.VISIBLE;
@@ -228,7 +240,7 @@ public class FloatingWidgetView implements View.OnTouchListener{
     /**
      * Collapsed the floating widget view
      */
-    public void onViewCollapsed(){
+    public void onViewCollapsed() {
         hideButtons();
         moveToLeft(0);
         new Handler().postDelayed(new Runnable() {
@@ -252,7 +264,8 @@ public class FloatingWidgetView implements View.OnTouchListener{
         return (int) Math.ceil(25 * mContext.getResources().getDisplayMetrics().density);
     }
 
-    /**  on Floating widget click show expanded view
+    /**
+     * on Floating widget click show expanded view
      * When user clicks on the image view of the collapsed layout,
      * visibility of the collapsed layout will be changed to "View.GONE"
      * and expanded view will become visible.
@@ -264,6 +277,11 @@ public class FloatingWidgetView implements View.OnTouchListener{
             //and expanded view will become visible.
             collapsedView.setVisibility(View.GONE);
             expandedView.setVisibility(View.VISIBLE);
+
+            WindowManager.LayoutParams layoutParams = (WindowManager.LayoutParams) mFloatingWidgetView.getLayoutParams();
+            layoutParams.height = height;
+            mWindowManager.updateViewLayout(mFloatingWidgetView, layoutParams);
+
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -274,10 +292,9 @@ public class FloatingWidgetView implements View.OnTouchListener{
     }
 
     /**
-     * @param newConfig
-     * Adjust floating widget view depending on the orientation of the phone
+     * @param newConfig Adjust floating widget view depending on the orientation of the phone
      */
-    public void handleOrientationChanges(Configuration newConfig){
+    public void handleOrientationChanges(Configuration newConfig) {
         getWindowManagerDefaultDisplay();
 
         WindowManager.LayoutParams layoutParams = (WindowManager.LayoutParams) mFloatingWidgetView.getLayoutParams();
@@ -307,12 +324,11 @@ public class FloatingWidgetView implements View.OnTouchListener{
     /**
      * Remove the floating widget view
      */
-    public void removeView(){
+    public void removeView() {
         if (mFloatingWidgetView != null) {
             mWindowManager.removeView(mFloatingWidgetView);
         }
     }
-
 
 
     //-------------------------Interface implementation for onTouch and onClick--------------------//
@@ -380,7 +396,7 @@ public class FloatingWidgetView implements View.OnTouchListener{
                 //resize floatingwidget on click, make it bigger
                 if (isViewCollapsed()) {
                     layoutParams.width = WindowManager.LayoutParams.WRAP_CONTENT;
-                    layoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
+                    layoutParams.height = height;
 
                     mWindowManager.updateViewLayout(mFloatingWidgetView, layoutParams);
                 }

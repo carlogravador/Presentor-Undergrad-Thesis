@@ -7,6 +7,7 @@ package com.example.android.presentor.screenshare;
 public interface ScreenShareConstants {
 
     String BROADCAST_DEVICE_COUNT_CHANGED = "DeviceAdded";
+    String BROADCAST_SERVICE_STOP = "stop";
 
     int SCREEN_PIN_ON = -1;
     int SCREEN_PIN_OFF = -2;

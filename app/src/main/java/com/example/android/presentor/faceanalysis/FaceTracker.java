@@ -17,7 +17,7 @@ import com.google.android.gms.vision.face.Face;
 
 public class FaceTracker extends Tracker<Face> {
 
-    private static final float PROB_THRESHOLD = .0f;
+    private static final float PROB_THRESHOLD = .2f;
     private boolean attentionLost;
     private boolean hasFace;
     private boolean handlerStarting;
@@ -93,8 +93,10 @@ public class FaceTracker extends Tracker<Face> {
                 attentionLost = true;
             } else {
                 //face is front facing, check if eyes are opened
-                boolean isEyesClosed = face.getIsLeftEyeOpenProbability() == PROB_THRESHOLD
-                        && face.getIsRightEyeOpenProbability() == PROB_THRESHOLD;
+                boolean isEyesClosed = face.getIsLeftEyeOpenProbability() <= PROB_THRESHOLD &&
+                            face.getIsLeftEyeOpenProbability() != -1.f &&
+                        face.getIsRightEyeOpenProbability() <= PROB_THRESHOLD &&
+                        face.getIsRightEyeOpenProbability() != -1.f;
                 Log.e("FaceTracker", "Left eye proba = " + face.getIsLeftEyeOpenProbability()
                         + " and Right eye proba = " + face.getIsRightEyeOpenProbability());
                 if (isEyesClosed) {

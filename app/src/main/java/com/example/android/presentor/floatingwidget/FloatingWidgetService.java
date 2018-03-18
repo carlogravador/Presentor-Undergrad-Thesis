@@ -7,8 +7,10 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
 
 import com.example.android.presentor.R;
+import com.example.android.presentor.screenshare.CreateActivity;
 import com.example.android.presentor.screenshare.ShareService;
 import com.example.android.presentor.screenshare.ShareService.ServerThread;
 
@@ -40,6 +42,7 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
 
     @Override
     public void onClick(View view) {
+        ImageButton b;
         switch (view.getId()) {
             case R.id.floating_widget_image_view:
                 mFloatingWidgetView.onViewCollapsed();
@@ -56,20 +59,42 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
                 stopSelf();
                 break;
             case R.id.circleIv2:    //Pause Button
-                if (!mServer.isPausedScreenMirroring()) mServer.pauseScreenMirroring();
-                else mServer.resumeScreenMirroring();
+                b = mFloatingWidgetView.getImageButton(1);
+                if (!mServer.isPausedScreenMirroring()) {
+                    mServer.pauseScreenMirroring();
+                    b.setImageResource(R.drawable.widget_button_icon_play_screenshare);
+                } else {
+                    mServer.resumeScreenMirroring();
+                    b.setImageResource(R.drawable.widget_button_icon_pause_screenshare);
+                }
                 break;
             case R.id.circleIv3:    //Screen Pinning Button
-                if (!mServer.getScreenPinningModeServer()) mServer.setScreenPinningMode(true);
-                else mServer.setScreenPinningMode(false);
+                b = mFloatingWidgetView.getImageButton(2);
+                if (!mServer.getScreenPinningModeServer()) {
+                    mServer.setScreenPinningMode(true);
+                    b.setImageResource(R.drawable.widget_button_icon_screen_pinned);
+                } else {
+                    mServer.setScreenPinningMode(false);
+                    b.setImageResource(R.drawable.widget_button_icon_screen_pin);
+                }
                 break;
             case R.id.circleIv4:    //Face Analysis Button
-                if (!mServer.getFaceAnalysisMode()) mServer.setFaceAnalysisMode(true);
-                else mServer.setFaceAnalysisMode(false);
+                b = mFloatingWidgetView.getImageButton(3);
+                if (!mServer.getFaceAnalysisMode()) {
+                    mServer.setFaceAnalysisMode(true);
+                    b.setImageResource(R.drawable.widget_button_icon_face_analysis_clicked);
+                } else {
+                    mServer.setFaceAnalysisMode(false);
+                    b.setImageResource(R.drawable.widget_button_icon_face_analysis);
+                }
                 break;
             case R.id.circleIv5:    //Domotics Button
                 break;
             case R.id.circleIv6:    //Share Button
+                if (!CreateActivity.isIsActive()) {
+                    Intent i = new Intent(this, CreateActivity.class);
+                    startActivity(i);
+                }
                 break;
         }
     }
@@ -86,6 +111,10 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
         Log.e("FloatingWidgetService", "onDestroy() callback");
         mFloatingWidgetView.removeView();
         mShareService.stopServer();
+        if (!CreateActivity.isIsActive()) {
+            Intent i = new Intent(this, CreateActivity.class);
+            startActivity(i);
+        }
         super.onDestroy();
     }
 }
