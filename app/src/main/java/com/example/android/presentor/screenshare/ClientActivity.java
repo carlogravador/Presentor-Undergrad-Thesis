@@ -6,9 +6,11 @@ import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -39,6 +41,11 @@ public class ClientActivity extends AppCompatActivity implements LoaderManager.L
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
     }
 
+    private String getPrefName() {
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        return sharedPrefs.getString(getResources().getString(R.string.pref_player_key),
+                "Player");
+    }
 
 
     @Override
@@ -102,10 +109,11 @@ public class ClientActivity extends AppCompatActivity implements LoaderManager.L
             final String ip = cursor.getString(ipIndex);
             final int port = cursor.getInt(portIndex);
 
+
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    mShareService.connectClient(ClientActivity.this, ip, port);
+                    mShareService.connectClient(ClientActivity.this, ip, port, getPrefName());
                 }
             }).start();
 

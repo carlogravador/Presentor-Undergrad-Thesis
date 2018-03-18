@@ -92,8 +92,8 @@ public class ShareService {
 
     //for client methods
 
-    public void connectClient(Context activityContext, String ip, int port) {
-        mClient = new ClientThread(activityContext, ip, port);
+    public void connectClient(Context activityContext, String ip, int port, String name) {
+        mClient = new ClientThread(activityContext, ip, port, name);
     }
 
     public void disconnectClient() {
@@ -281,6 +281,7 @@ public class ShareService {
                         clientSocket.getPort());
 
                 mBroadCastManager.sendBroadcast(new Intent(ScreenShareConstants.BROADCAST_DEVICE_COUNT_CHANGED));
+                Log.e("Looper", "End of loop reach");
             }
         }
 
@@ -333,16 +334,17 @@ public class ShareService {
         private boolean isConnected = false;
 
         //Temporary
-        private String clientName = "Kaboomskie";
+        private String clientName;
 
         public void disconnectClient() {
             this.isConnected = false;
         }
 
         //create a client to connect to server
-        public ClientThread(Context context, String ip, int port) {
+        public ClientThread(Context context, String ip, int port, String name) {
             try {
                 activityContext = context;
+                clientName = name;
                 mTextView = ((Activity) activityContext).findViewById(R.id.screen_pin_tv);
                 mImageView = ((Activity) activityContext).findViewById(R.id.image_view_screen_share);
                 mHandler = new Handler(Looper.getMainLooper());
