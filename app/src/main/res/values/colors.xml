@@ -4,7 +4,8 @@
     <color name="colorPrimaryDark">#00796B</color>
     <color name="colorAccent">#009688</color>
 
-    <color name="colorTransparent">#00ffffff</color>
+    <color name="colorTransparent">#8b434343</color>
+    <color name="colorTransparentWhite">#cccccc</color>
 
     <color name="colorBlack">#000000</color>
     <color name="colorWhite">#ffffff</color>

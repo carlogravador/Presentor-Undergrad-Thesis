@@ -52,9 +52,11 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
         mFloatingWidgetView = inflater.inflate(R.layout.floating_widget_layout, null);
 
         //Add the view to the window.
+        int height = getResources().getDimensionPixelSize(R.dimen.height);
+
         final WindowManager.LayoutParams params = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.WRAP_CONTENT,
+                height,
                 WindowManager.LayoutParams.TYPE_PHONE,      //TYPE_APLICATION_OVERLAY
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
                         WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
@@ -103,7 +105,7 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
         ViewGroup vg = (ViewGroup) expandedView;
         TransitionManager.beginDelayedTransition(vg);
 
-        int subButton = getResources().getDimensionPixelSize(R.dimen.sub_button_dimen);
+        int subButton = getResources().getDimensionPixelSize(R.dimen.widget_button_dimen);
         int marginLeft = getResources().getDimensionPixelSize(R.dimen.margin_to_logo);
         int marginAllowance = getResources().getDimensionPixelSize(R.dimen.margin_allowance);
 
@@ -241,7 +243,6 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
                                             //Also check the difference between start time and end time should be less than 300ms
                                             if ((time_end - time_start) < 300)
                                                 onFloatingWidgetClick();
-
                                         }
 
                                         y_cord_Destination = y_init_margin + y_diff;
@@ -259,8 +260,9 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
                                         resetPosition(x_cord);
                                         //resize floatingwidget on click, make it bigger
                                         if (isViewCollapsed()) {
+                                            int height = getResources().getDimensionPixelSize(R.dimen.height);
                                             layoutParams.width = WindowManager.LayoutParams.WRAP_CONTENT;
-                                            layoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
+                                            layoutParams.height = height;
 
                                             mWindowManager.updateViewLayout(mFloatingWidgetView, layoutParams);
                                         }
@@ -330,6 +332,7 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
                     public void run() {
                         WindowManager.LayoutParams params = (WindowManager.LayoutParams) mFloatingWidgetView.getLayoutParams();
                         params.width = WindowManager.LayoutParams.WRAP_CONTENT;
+                        params.height = getResources().getDimensionPixelSize(R.dimen.height);
                         mFloatingWidgetView.setLayoutParams(params);
                         mWindowManager.updateViewLayout(mFloatingWidgetView, params);
                         collapsedView.setVisibility(View.VISIBLE);
@@ -428,6 +431,10 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
             //and expanded view will become visible.
             collapsedView.setVisibility(View.GONE);
             expandedView.setVisibility(View.VISIBLE);
+
+            WindowManager.LayoutParams layoutParams = (WindowManager.LayoutParams) mFloatingWidgetView.getLayoutParams();
+            layoutParams.height = getResources().getDimensionPixelSize(R.dimen.height);
+            mWindowManager.updateViewLayout(mFloatingWidgetView, layoutParams);
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {

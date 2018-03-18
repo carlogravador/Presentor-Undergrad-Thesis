@@ -47,7 +47,7 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
         ViewGroup vg = (ViewGroup) expandedView;
         TransitionManager.beginDelayedTransition(vg);
 
-        int subButton = getResources().getDimensionPixelSize(R.dimen.sub_button_dimen);
+        int subButton = getResources().getDimensionPixelSize(R.dimen.widget_button_dimen);
         int marginLeft = getResources().getDimensionPixelSize(R.dimen.margin_to_logo);
         int marginAllowance = getResources().getDimensionPixelSize(R.dimen.margin_allowance);
 
