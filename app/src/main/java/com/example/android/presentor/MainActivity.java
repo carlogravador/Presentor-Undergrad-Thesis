@@ -31,6 +31,7 @@ import com.example.android.presentor.domotics.DomoticsActivity;
 import com.example.android.presentor.screenshare.AccessActivity;
 import com.example.android.presentor.screenshare.CreateActivity;
 import com.example.android.presentor.screenshare.ShareService;
+import com.example.android.presentor.slider.HelpActivity;
 import com.example.android.presentor.utils.PlayServicesUtil;
 import com.example.android.presentor.utils.Utility;
 
@@ -274,8 +275,8 @@ public class MainActivity extends AppCompatActivity
                 mIntent = new Intent(MainActivity.this, SettingsActivity.class);
                 break;
 
-            case R.id.nav_others:
-                mIntent = new Intent(MainActivity.this, OthersActivity.class);
+            case R.id.nav_help:
+                mIntent = new Intent(MainActivity.this, HelpActivity.class);
                 break;
 
             case R.id.nav_about:
