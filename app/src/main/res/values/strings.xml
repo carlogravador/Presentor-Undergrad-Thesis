@@ -113,6 +113,7 @@
 
     <!--Settings String-->
     <string name="pref_player_key">player_key</string>
+    <string name="pref_display_name_title">player_key</string>
     <string name="settings_default_player_name">Player</string>
 
     <string name="pref_auto_connect_key">auto_connect_key</string>
