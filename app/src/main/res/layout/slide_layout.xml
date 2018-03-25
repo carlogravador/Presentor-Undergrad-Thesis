@@ -20,7 +20,8 @@
         android:text="Screen Mirroring"
         android:textSize="32sp"
         android:textColor="@color/colorWhite"
-        android:textStyle="bold"/>
+        android:textStyle="bold"
+        android:gravity="center"/>
 
     <TextView
         android:id="@+id/slide_desc"
@@ -28,10 +29,11 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="135dp"
-        android:text="Place your ads here"
+        android:layout_marginBottom="100dp"
+        android:text="Display your android phone's screen display on other device’s screen wirelessly in real time"
         android:textColor="@color/colorWhite"
-        android:textSize="16sp" />
+        android:textSize="16sp"
+        android:gravity="center"/>
 
 
 </RelativeLayout>
