@@ -61,7 +61,8 @@
         <activity
             android:name=".screenshare.ClientActivity"
             android:parentActivityName=".screenshare.AccessActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".help.HelpActivity"
             android:parentActivityName=".MainActivity"
@@ -76,7 +77,6 @@
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"/>
 
-
         <!-- Declare FloatingWidget Service over here and set enabled true -->
         <service
             android:name=".floatingwidget.FloatingWidgetService"
@@ -87,7 +87,6 @@
             android:name=".db.ServicesProvider"
             android:authorities="com.example.android.presentor"
             android:exported="false"/>
-
 
     </application>
 

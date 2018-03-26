@@ -35,7 +35,6 @@ public class SliderAdapter  extends PagerAdapter{
             "Screen Mirroring",
             "Home Automation",
             "Notification"
-
     };
 
     public String [] slide_descs = {

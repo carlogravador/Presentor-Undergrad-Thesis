@@ -1,29 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.android.presentor.screenshare.ClientActivity"
+    android:background="@color/colorBlack"
     android:orientation="vertical"
-    android:background="@color/colorBlack">
+    tools:context="com.example.android.presentor.screenshare.ClientActivity">
 
     <TextView
         android:id="@+id/screen_pin_tv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorRed"
-        android:textColor="@color/colorWhite"
         android:gravity="center"
+        android:textColor="@color/colorWhite"
         android:textSize="12sp"
         android:visibility="gone"
         tools:text="Please enable Screen Pinning. Disconnecting in 10 seconds"
-    />
+        />
+
+    <RelativeLayout
+        android:id="@+id/on_pause_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:keepScreenOn="true"
+            android:scaleType="centerCrop"
+            android:src="@drawable/screenshare"/>
+
+        <TextView
+            android:id="@+id/message_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:text="Connecting....."
+            android:background="@color/colorWarning"
+            android:textSize="12sp"
+            android:textColor="@color/colorWhite"/>
+
+        <TextView
+            android:id="@+id/message2_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorWhite"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="64dp"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+            android:layout_centerHorizontal="true"
+            android:text="Screen mirroring is paused."
+            android:visibility="gone"/>
+    </RelativeLayout>
 
     <ImageView
         android:id="@+id/image_view_screen_share"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:keepScreenOn="true"
+        android:src="@drawable/screenshare"
+        android:visibility="gone"/>
 
 </LinearLayout>

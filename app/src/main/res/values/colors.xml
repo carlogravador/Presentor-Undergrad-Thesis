@@ -24,4 +24,6 @@
     <color name="colorIndigo">#3F51B5</color>
     <color name="colorViolet">#673AB7</color>
     <color name="colorDefault">#d2205d</color>
+
+    <color name="colorWarning">#df8a09</color>
 </resources>

@@ -53,7 +53,7 @@ public class FaceTracker extends Tracker<Face> {
             @Override
             public void run() {
                 //Utility.showToast(mContext, "End of Timer, start vibrating.");
-                vibrateIndefinitelyThread.start();
+                vibrateIndefinitelyThread.run();
             }
         };
 
@@ -92,23 +92,24 @@ public class FaceTracker extends Tracker<Face> {
                 }
                 attentionLost = true;
             } else {
-                //face is front facing, check if eyes are opened
+//                //face is front facing, check if eyes are opened
+//                Log.e("FaceTracker", "Left eye proba = " + face.getIsLeftEyeOpenProbability()
+//                        + " and Right eye proba = " + face.getIsRightEyeOpenProbability());
                 boolean isEyesClosed = face.getIsLeftEyeOpenProbability() <= PROB_THRESHOLD &&
                             face.getIsLeftEyeOpenProbability() != -1.f &&
                         face.getIsRightEyeOpenProbability() <= PROB_THRESHOLD &&
                         face.getIsRightEyeOpenProbability() != -1.f;
-                Log.e("FaceTracker", "Left eye proba = " + face.getIsLeftEyeOpenProbability()
-                        + " and Right eye proba = " + face.getIsRightEyeOpenProbability());
+
                 if (isEyesClosed) {
                     //no attention
-                    Log.e("FaceTracker", "Eyes is Closed");
+                    //Log.e("FaceTracker", "Eyes is Closed");
+                    //Utility.showToast(mContext, "Eyes is Closed");
                     attentionLost = true;
-                    Utility.showToast(mContext, "Eyes is Closed");
                     if (!handlerStarting) {
                         startHandler();
                     }
                 } else {
-                    Log.e("FaceTracker", "Attention regained");
+                    //Log.e("FaceTracker", "Attention regained");
                     attentionLost = false;
                     if (handlerStarting) {
                         stopHandler();
@@ -121,14 +122,14 @@ public class FaceTracker extends Tracker<Face> {
 
     @Override
     public void onNewItem(int i, Face face) {
-        Log.e("FaceTracker", "onNewItem() callback");
-        Utility.showToast(mContext, "Face detected");
+        //Log.e("FaceTracker", "onNewItem() callback");
+        //Utility.showToast(mContext, "Face detected");
         hasFace = true;
     }
 
     @Override
     public void onMissing(Detector.Detections<Face> detections) {
-        Log.e("FaceTracker", "onMissing() callback");
+        //Log.e("FaceTracker", "onMissing() callback");
         hasFace = false;
         if (!handlerStarting) {
             startHandler();
@@ -138,7 +139,7 @@ public class FaceTracker extends Tracker<Face> {
 
     @Override
     public void onDone() {
-        Log.e("FaceTracker", "onDone() callback");
+        //Log.e("FaceTracker", "onDone() callback");
         attentionLost = false;
         stopHandler();
     }

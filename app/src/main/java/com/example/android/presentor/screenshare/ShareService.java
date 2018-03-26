@@ -21,15 +21,17 @@ import com.example.android.presentor.db.DatabaseUtility;
 import com.example.android.presentor.faceanalysis.FaceAnalysisActivator;
 import com.example.android.presentor.faceanalysis.FaceAnalyzer;
 import com.example.android.presentor.screenpinning.ScreenPinningObservable;
-import com.example.android.presentor.utils.Utility;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.NoRouteToHostException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
@@ -97,8 +99,10 @@ public class ShareService {
     }
 
     public void disconnectClient() {
-        mClient.disconnectClient();
-        mClient = null;
+        if (mClient != null) {
+            mClient.disconnectClient();
+            mClient = null;
+        }
     }
 
 
@@ -122,7 +126,8 @@ public class ShareService {
 
         public void stopServer() {
             //cancel any state of the server to the client
-            if (isOnFaceAnalysisMode) executeSendCommandToAll(ScreenShareConstants.FACE_ANALYSIS_OFF);
+            if (isOnFaceAnalysisMode)
+                executeSendCommandToAll(ScreenShareConstants.FACE_ANALYSIS_OFF);
             if (isOnScreenPinningMode) executeSendCommandToAll(ScreenShareConstants.SCREEN_PIN_OFF);
             executeSendCommandToAll(ScreenShareConstants.ON_STOP);
         }
@@ -315,6 +320,9 @@ public class ShareService {
         private Context activityContext;
         private TextView mTextView;
         private ImageView mImageView;
+        private View mPausedView;
+        private TextView mPausedTextView;
+        private TextView mTv2;
         private Handler mHandler;
 
         private Socket mSocket;
@@ -340,27 +348,52 @@ public class ShareService {
             this.isConnected = false;
         }
 
+        private void findViews() {
+            mTextView = ((Activity) activityContext).findViewById(R.id.screen_pin_tv);
+            mImageView = ((Activity) activityContext).findViewById(R.id.image_view_screen_share);
+            mPausedView = ((Activity) activityContext).findViewById(R.id.on_pause_view);
+            mPausedTextView = ((Activity) activityContext).findViewById(R.id.message_tv);
+            mTv2 = ((Activity) activityContext).findViewById(R.id.message2_tv);
+        }
+
+        private void getStreams() throws IOException {
+            mInputStream = mSocket.getInputStream();
+            mOutputStream = mSocket.getOutputStream();
+            mDataInputStream = new DataInputStream(mInputStream);
+            mDataOutputStream = new DataOutputStream(mOutputStream);
+        }
+
+        private void showErrorMessage(final String message){
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    mPausedView.setVisibility(View.VISIBLE);
+                    mPausedTextView.setText(message);
+                    mPausedTextView.setBackgroundColor(mContext.getResources().getColor(R.color.colorRed));
+                    mPausedTextView.setVisibility(View.VISIBLE);
+                }
+            });
+        }
+
         //create a client to connect to server
         public ClientThread(Context context, String ip, int port, String name) {
             try {
                 activityContext = context;
-                clientName = name;
-                mTextView = ((Activity) activityContext).findViewById(R.id.screen_pin_tv);
-                mImageView = ((Activity) activityContext).findViewById(R.id.image_view_screen_share);
                 mHandler = new Handler(Looper.getMainLooper());
+                clientName = name;
+                findViews();
                 mSocket = new Socket(ip, port);
-                mInputStream = mSocket.getInputStream();
-                mOutputStream = mSocket.getOutputStream();
-                mDataInputStream = new DataInputStream(mInputStream);
-                mDataOutputStream = new DataOutputStream(mOutputStream);
+                getStreams();
                 isConnected = true;
                 mDataOutputStream.writeUTF(clientName);
                 initFaceAnalysisObserver();
                 start();
+            } catch (NoRouteToHostException e) {
+                showErrorMessage("Error connecting to the server.");
             } catch (IOException e) {
-                e.printStackTrace();
-                Utility.showToast(activityContext, "Error connecting to the server.");
+                showErrorMessage("Error connecting to the server.");
             }
+
         }
 
         private void disconnect() throws IOException {
@@ -375,8 +408,10 @@ public class ShareService {
             if (cdt != null) {
                 cdt.cancel();
             }
-            faceAnalyzer.release();
-            faceAnalyzer = null;
+            if (faceAnalyzer != null) {
+                faceAnalyzer.release();
+                faceAnalyzer = null;
+            }
             ((Activity) activityContext).finish();
         }
 
@@ -398,7 +433,6 @@ public class ShareService {
                                 //TODO: Add string literals on strings.xml, use place holders.
                                 mTextView.setText("Please Enable Screen Pinning. Disconnecting in " + l / 1000 + " seconds.");
                             }
-
                             @Override
                             public void onFinish() {
                                 Log.d("CountDownTimer", "onFinish() callBack");
@@ -497,10 +531,35 @@ public class ShareService {
                     faceAnalysisActivator.setState(false);
                     break;
                 case ScreenShareConstants.ON_RESUME:
+                    mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mPausedView.setVisibility(View.GONE);
+                            mPausedView.findViewById(R.id.message2_tv).setVisibility(View.GONE);
+                            mImageView.setVisibility(View.VISIBLE);
+                        }
+                    });
                     break;
                 case ScreenShareConstants.ON_PAUSE:
+                    mHandler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mPausedView.setVisibility(View.VISIBLE);
+                            mPausedView.findViewById(R.id.message2_tv).setVisibility(View.VISIBLE);
+                            mImageView.setVisibility(View.GONE);
+                        }
+                    }, 200);
                     break;
                 case ScreenShareConstants.ON_STOP:
+                    mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mPausedView.setVisibility(View.VISIBLE);
+                            mTv2.setVisibility(View.VISIBLE);
+                            mTv2.setText("Screen mirroring has been stopped.");
+                            mImageView.setVisibility(View.GONE);
+                        }
+                    });
                     break;
                 default:
                     break;
@@ -520,6 +579,9 @@ public class ShareService {
                             @Override
                             public void run() {
                                 Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                                mPausedView.setVisibility(View.GONE);
+                                mPausedTextView.setVisibility(View.GONE);
+                                mImageView.setVisibility(View.VISIBLE);
                                 mImageView.setImageBitmap(bm);
                             }
                         });
@@ -529,7 +591,16 @@ public class ShareService {
                 }
                 Log.d("Share Service", "Client Disconnects");
                 disconnect();
-            } catch (Exception e) {
+            } catch (EOFException e) {
+                //Output stream has been closed
+                Log.e("ShareService", "EOFException callback");
+                showErrorMessage("Disconnected from the server.");
+            } catch (SocketException e) {
+                Log.e("ShareService", "SocketException callback");
+                showErrorMessage("Disconnected from the server.");
+            } catch (IOException e) {
+                //handle unexpected exception
+                showErrorMessage("Disconnected from the server.");
                 e.printStackTrace();
             }
         }

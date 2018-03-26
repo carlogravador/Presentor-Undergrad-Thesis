@@ -55,24 +55,8 @@ public class MainActivity extends AppCompatActivity
             if (resultCode == RESULT_OK) {
                 //If permission granted start floating widget service
                 Log.d("MainActivity", "Permission Granted");
-                return;
+                Utility.showToast(MainActivity.this, "Permission granted");
             }
-
-            Utility.showAlertDialog(this,
-                    "Permission Error",
-                    "Draw over the app permission not granted. Application will close.",
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            switch (i) {
-                                case DialogInterface.BUTTON_POSITIVE:
-                                    finish();
-                                    break;
-                            }
-                        }
-                    }
-            );
-
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
@@ -88,18 +72,31 @@ public class MainActivity extends AppCompatActivity
         //Camera Permission Granted
         if (grantResults.length != 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             Log.d("MainActivity", "Camera Permission Granted");
+
+            if (!Utility.isFaceAnalysisOperational(MainActivity.this)) {
+                Utility.showToast(getApplicationContext(), "Face analysis not operational. ");
+                return;
+            }
+            if (!mShareService.isServerOpen()) {
+                Intent i = new Intent(MainActivity.this, AccessActivity.class);
+                startActivity(i);
+            } else {
+                Toast.makeText(MainActivity.this,
+                        "Access is not available when Screen Mirroring is running.",
+                        Toast.LENGTH_SHORT).show();
+            }
             return;
         }
 
         Utility.showAlertDialog(this,
+                false,
                 "Permission Error",
-                "Camera permission not granted. Application will close.",
+                "Camera permission not granted. Access functionality will not work properly.",
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         switch (i) {
                             case DialogInterface.BUTTON_POSITIVE:
-                                finish();
                                 break;
                         }
                     }
@@ -123,21 +120,7 @@ public class MainActivity extends AppCompatActivity
 
         if (!PlayServicesUtil.isPlayServicesAvailable(this, 69)) {
             //TODO: show dialog
-        }
-
-        // permission granted...?
-        if (!Utility.isCameraPermissionGranted(this)) {
-            //request the camera permission
-            Utility.requestCameraPermission(this);
-        }
-
-        //permission to draw over the app
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
-            //If the draw over permission is not available open the settings screen
-            //to grant the permission.
-            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    Uri.parse("package:" + getPackageName()));
-            startActivityForResult(intent, DRAW_OVER_OTHER_APP_PERMISSION_REQUEST_CODE);
+            Utility.showToast(this, "PlayServices is not available.");
         }
 
 
@@ -220,29 +203,6 @@ public class MainActivity extends AppCompatActivity
             //super.onBackPressed();
         }
     }
-//
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.main, menu);
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        // Handle action bar item clicks here. The action bar will
-//        // automatically handle clicks on the Home/Up button, so long
-//        // as you specify a parent activity in AndroidManifest.xml.
-//        int id = item.getItemId();
-//
-//        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_settings) {
-//            return true;
-//        }
-//
-//        return super.onOptionsItemSelected(item);
-//    }
-
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -291,23 +251,28 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    //TODO : BUG: multiple instances of app opens when application is clicked followed by clicking the notification
-    NotificationCompat.Builder notification;
-    private static final int uniqueID = 45612;
-
-
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.card_view_access:
                 if (Utility.isWifiConnected(MainActivity.this)) {
-                    if (!mShareService.isServerOpen()) {
-                        Intent i = new Intent(MainActivity.this, AccessActivity.class);
-                        startActivity(i);
+                    // permission granted...?
+                    if (!Utility.isCameraPermissionGranted(this)) {
+                        //request the camera permission
+                        Utility.requestCameraPermission(this);
                     } else {
-                        Toast.makeText(MainActivity.this,
-                                "Access is not available when Screen Mirroring is running.",
-                                Toast.LENGTH_SHORT).show();
+                        if (!Utility.isFaceAnalysisOperational(MainActivity.this)) {
+                            Utility.showToast(getApplicationContext(), "Face analysis not operational. ");
+                            return;
+                        }
+                        if (!mShareService.isServerOpen()) {
+                            Intent i = new Intent(MainActivity.this, AccessActivity.class);
+                            startActivity(i);
+                        } else {
+                            Toast.makeText(MainActivity.this,
+                                    "Access is not available when Screen Mirroring is running.",
+                                    Toast.LENGTH_SHORT).show();
+                        }
                     }
                 } else {
                     //open dialog box
@@ -315,7 +280,7 @@ public class MainActivity extends AppCompatActivity
                             .getString(R.string.screen_share_dialog_title);
                     String message = MainActivity.this.getResources()
                             .getString(R.string.screen_share_dialog_message);
-                    Utility.showAlertDialog(MainActivity.this, title, message,
+                    Utility.showAlertDialog(MainActivity.this, true, title, message,
                             new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
@@ -330,15 +295,41 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.card_view_share:
                 if (Utility.isWifiConnected(MainActivity.this)) {
-                    Intent i = new Intent(MainActivity.this, CreateActivity.class);
-                    startActivity(i);
+                    //permission to draw over the app
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
+                        //If the draw over permission is not available open the settings screen
+                        //to grant the permission.
+//                        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+//                                Uri.parse("package:" + getPackageName()));
+//                        startActivityForResult(intent, DRAW_OVER_OTHER_APP_PERMISSION_REQUEST_CODE);
+                        Utility.showAlertDialog(MainActivity.this, true,
+                                "Permission Error",
+                                "Draw over the app permission not granted. Would you like to enable it?",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        switch (i){
+                                            case DialogInterface.BUTTON_POSITIVE:
+                                                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                                        Uri.parse("package:" + getPackageName()));
+                                                startActivityForResult(intent, DRAW_OVER_OTHER_APP_PERMISSION_REQUEST_CODE);
+                                                break;
+                                                case DialogInterface.BUTTON_NEGATIVE:
+                                                    Utility.showToast(MainActivity.this, "Please allow necessary permissions.");
+                                        }
+                                    }
+                                });
+                    } else {
+                        Intent i = new Intent(MainActivity.this, CreateActivity.class);
+                        startActivity(i);
+                    }
                 } else {
                     //open dialog box
                     String title = MainActivity.this.getResources()
                             .getString(R.string.screen_share_dialog_title);
                     String message = MainActivity.this.getResources()
                             .getString(R.string.screen_share_dialog_message);
-                    Utility.showAlertDialog(MainActivity.this, title, message,
+                    Utility.showAlertDialog(MainActivity.this, true, title, message,
                             new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {

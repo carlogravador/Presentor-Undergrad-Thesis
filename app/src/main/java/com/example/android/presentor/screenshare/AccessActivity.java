@@ -15,8 +15,6 @@ import com.example.android.presentor.db.ServiceCursorAdapter;
 import com.example.android.presentor.db.ServicesContract.ServiceEntry;
 import com.example.android.presentor.networkservicediscovery.NsdHelper;
 
-import java.util.Timer;
-import java.util.TimerTask;
 
 import pl.bclogic.pulsator4droid.library.PulsatorLayout;
 

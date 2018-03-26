@@ -24,9 +24,7 @@ public class FaceAnalyzer {
         if (mCameraSource != null) {
             try {
                 mCameraSource.start();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (SecurityException e) {
+            } catch (IOException | SecurityException e) {
                 e.printStackTrace();
             }
         }

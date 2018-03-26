@@ -15,9 +15,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.example.android.presentor.R;
 import com.example.android.presentor.db.ServicesContract;
+import com.example.android.presentor.utils.Utility;
 
 
 public class ClientActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -53,8 +55,7 @@ public class ClientActivity extends AppCompatActivity implements LoaderManager.L
         if (isInLockTaskMode()) {
             return;
         }
-        //disconnects the client
-        mShareService.disconnectClient();
+
         super.onBackPressed();
     }
 
@@ -64,8 +65,6 @@ public class ClientActivity extends AppCompatActivity implements LoaderManager.L
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_client);
 
-        ImageView imageView = findViewById(R.id.image_view_screen_share);
-        imageView.setKeepScreenOn(true);
 
         mShareService = ShareService.getInstance();
 
@@ -79,6 +78,8 @@ public class ClientActivity extends AppCompatActivity implements LoaderManager.L
     @Override
     protected void onDestroy() {
         Log.e("ClientActivity", "onDestroy() callback");
+        //disconnects the client
+        mShareService.disconnectClient();
         super.onDestroy();
     }
 
@@ -100,6 +101,9 @@ public class ClientActivity extends AppCompatActivity implements LoaderManager.L
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         if (cursor == null || cursor.getCount() < 1) {
+            TextView tv = findViewById(R.id.message_tv);
+            tv.setText("Error connecting to the server.");
+            tv.setBackgroundColor(getResources().getColor(R.color.colorRed));
             return;
         }
         if (cursor.moveToFirst()) {
@@ -123,18 +127,5 @@ public class ClientActivity extends AppCompatActivity implements LoaderManager.L
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
     }
-
-    @Override
-    public void startLockTask() {
-        Log.e("ClientActivity", "startLockTask() called");
-        super.startLockTask();
-    }
-
-    @Override
-    public void stopLockTask() {
-        Log.e("ClientActivity", "stopLockTask() called");
-        super.stopLockTask();
-    }
-
 
 }

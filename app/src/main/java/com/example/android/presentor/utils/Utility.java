@@ -21,6 +21,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -32,6 +33,11 @@ import android.widget.Toast;
 
 
 import com.example.android.presentor.R;
+import com.example.android.presentor.faceanalysis.FaceTracker;
+import com.google.android.gms.vision.Tracker;
+import com.google.android.gms.vision.face.Face;
+import com.google.android.gms.vision.face.FaceDetector;
+import com.google.android.gms.vision.face.LargestFaceFocusingProcessor;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -45,14 +51,16 @@ public class Utility {
 
     public static final int REQUEST_CAMERA_PERM = 69;
 
-    public static void showAlertDialog(Context context, String title, String message,
+    public static void showAlertDialog(Context context, boolean hasNegativeButton, String title, String message,
                                        DialogInterface.OnClickListener listener) {
 
         AlertDialog.Builder adb = new AlertDialog.Builder(context);
         adb.setTitle(title);
         adb.setMessage(message);
         adb.setPositiveButton(R.string.yes, listener);
-        adb.setNegativeButton(R.string.no, listener);
+        if (hasNegativeButton) {
+            adb.setNegativeButton(R.string.no, listener);
+        }
         AlertDialog alertDialog = adb.create();
         alertDialog.show();
     }
@@ -248,5 +256,28 @@ public class Utility {
                 Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    public static boolean isFaceAnalysisOperational(Context c) {
+        boolean isOperational = false;
+
+        FaceDetector mFaceDetector;
+        mFaceDetector = new FaceDetector.Builder(c)
+                .setProminentFaceOnly(true) // optimize for single, relatively large face
+                .setTrackingEnabled(true) // enable face tracking
+                .setClassificationType(FaceDetector.ALL_CLASSIFICATIONS) /* eyes open and smile */
+                .setMode(FaceDetector.ACCURATE_MODE) // to get EulerY value
+                .build();
+
+        mFaceDetector.setProcessor(new LargestFaceFocusingProcessor(mFaceDetector, new Tracker<Face>()));
+
+        if (!mFaceDetector.isOperational()) {
+            isOperational = false;
+        } else {
+            isOperational = true;
+        }
+        mFaceDetector.release();
+
+        return isOperational;
     }
 }
