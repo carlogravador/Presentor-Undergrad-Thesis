@@ -90,6 +90,7 @@ public class MainActivity extends AppCompatActivity
 
         Utility.showAlertDialog(this,
                 false,
+                false,
                 "Permission Error",
                 "Camera permission not granted. Access functionality will not work properly.",
                 new DialogInterface.OnClickListener() {
@@ -153,7 +154,7 @@ public class MainActivity extends AppCompatActivity
                     mIntent = null;
                 } else if (turnOnBluetooth) {
                     Intent i = new Intent(MainActivity.this, DomoticsActivity.class);
-                    Utility.turnOnBluetooth(MainActivity.this, i);
+                    Utility.turnOnBluetooth(MainActivity.this, false, i);
                     turnOnBluetooth = false;
                 }
                 mNavigationView.setCheckedItem(R.id.nav_screen_mirroring);
@@ -280,7 +281,9 @@ public class MainActivity extends AppCompatActivity
                             .getString(R.string.screen_share_dialog_title);
                     String message = MainActivity.this.getResources()
                             .getString(R.string.screen_share_dialog_message);
-                    Utility.showAlertDialog(MainActivity.this, true, title, message,
+                    Utility.showAlertDialog(MainActivity.this, true,
+                            false,
+                            title, message,
                             new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
@@ -303,6 +306,7 @@ public class MainActivity extends AppCompatActivity
 //                                Uri.parse("package:" + getPackageName()));
 //                        startActivityForResult(intent, DRAW_OVER_OTHER_APP_PERMISSION_REQUEST_CODE);
                         Utility.showAlertDialog(MainActivity.this, true,
+                                false,
                                 "Permission Error",
                                 "Draw over the app permission not granted. Would you like to enable it?",
                                 new DialogInterface.OnClickListener() {
@@ -329,7 +333,8 @@ public class MainActivity extends AppCompatActivity
                             .getString(R.string.screen_share_dialog_title);
                     String message = MainActivity.this.getResources()
                             .getString(R.string.screen_share_dialog_message);
-                    Utility.showAlertDialog(MainActivity.this, true, title, message,
+                    Utility.showAlertDialog(MainActivity.this, true, false,
+                            title, message,
                             new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {

@@ -33,11 +33,9 @@ import java.util.UUID;
 public class DomoticsActivity extends AppCompatActivity
         implements CompoundButton.OnCheckedChangeListener, View.OnClickListener, View.OnLongClickListener {
 
-    private final static String LOG_TAG = DomoticsActivity.class.getSimpleName();
 
-    private static final int BT_REQUEST_STATE = 50;
-    private static final int BT_SWITCH_STATE_ON = 1;
-    private static final int BT_SWITCH_STATE_OFF = 2;
+
+    public static boolean isActivityOpen = false;
 
     private String[] applianceNameKey;
 
@@ -54,7 +52,6 @@ public class DomoticsActivity extends AppCompatActivity
     String address = "00:21:13:00:99:DA";      //temporary
 
     private Switch sMasterSwitch;
-    public static boolean[] sArduinoSwitchesState = new boolean[8];
 
     private void findViews() {
         mCardView[0] = findViewById(R.id.card_view_domotics_1);
@@ -311,6 +308,12 @@ public class DomoticsActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        isActivityOpen = true;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_domotics);
@@ -323,6 +326,12 @@ public class DomoticsActivity extends AppCompatActivity
         new BtConnectThread().start();
 
         //new BtConnectAsyncTask().execute();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        isActivityOpen = false;
     }
 
     @Override

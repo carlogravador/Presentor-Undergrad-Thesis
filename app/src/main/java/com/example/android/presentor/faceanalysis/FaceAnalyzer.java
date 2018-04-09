@@ -43,7 +43,7 @@ public class FaceAnalyzer {
 //        ((Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE)).cancel();
     }
 
-    public void createCameraSource() {
+    public void createCameraSource(boolean hasSound) {
         mFaceDetector = new FaceDetector.Builder(mContext)
                 .setProminentFaceOnly(true) // optimize for single, relatively large face
                 .setTrackingEnabled(true) // enable face tracking
@@ -51,7 +51,7 @@ public class FaceAnalyzer {
                 .setMode(FaceDetector.ACCURATE_MODE) // to get EulerY value
                 .build();
 
-        mFaceDetector.setProcessor(new LargestFaceFocusingProcessor(mFaceDetector, new FaceTracker(mContext)));
+        mFaceDetector.setProcessor(new LargestFaceFocusingProcessor(mFaceDetector, new FaceTracker(mContext, hasSound)));
 
         if (!mFaceDetector.isOperational()) {
             Log.w("FaceAnalyzer", "createCameraResources: detector NOT operational");

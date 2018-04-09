@@ -8,23 +8,23 @@ public class FaceAnalysisActivator {
     private FaceAnalysisObserver faceAnalysisObserver;
 
     public interface FaceAnalysisObserver {
-        void onFaceAnalysisRequestStateChanged(boolean isChanged);
+        void onFaceAnalysisRequestStateChanged(boolean isChanged, boolean hasSound);
     }
 
     public FaceAnalysisActivator() {
 
     }
 
-    public void setState(boolean b) {
-        notifyStateChanged(b);
+    public void setState(boolean b, boolean hasSound) {
+        notifyStateChanged(b, hasSound);
     }
 
     public void setFaceAnalysisObserver(FaceAnalysisObserver fao){
         this.faceAnalysisObserver = fao;
     }
 
-    private void notifyStateChanged(boolean state){
-        faceAnalysisObserver.onFaceAnalysisRequestStateChanged(state);
+    private void notifyStateChanged(boolean state, boolean hasSound){
+        faceAnalysisObserver.onFaceAnalysisRequestStateChanged(state, hasSound);
     }
 
 }

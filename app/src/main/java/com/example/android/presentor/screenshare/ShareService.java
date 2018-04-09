@@ -117,7 +117,7 @@ public class ShareService {
         private boolean isServerOpen = false;
         private boolean isPause = false;
         private boolean isOnScreenPinningMode = false;
-        private boolean isOnFaceAnalysisMode = false;
+        private int mFaceAnalysisMode = ScreenShareConstants.FACE_ANALYSIS_OFF;
 
 
         private Enumeration getSockets() {
@@ -126,7 +126,8 @@ public class ShareService {
 
         public void stopServer() {
             //cancel any state of the server to the client
-            if (isOnFaceAnalysisMode)
+            if (mFaceAnalysisMode == ScreenShareConstants.FACE_ANALYSIS_ON_NO_SOUNDS
+                    || mFaceAnalysisMode == ScreenShareConstants.FACE_ANALYSIS_ON_WITH_SOUNDS)
                 executeSendCommandToAll(ScreenShareConstants.FACE_ANALYSIS_OFF);
             if (isOnScreenPinningMode) executeSendCommandToAll(ScreenShareConstants.SCREEN_PIN_OFF);
             executeSendCommandToAll(ScreenShareConstants.ON_STOP);
@@ -175,14 +176,26 @@ public class ShareService {
             return this.isOnScreenPinningMode;
         }
 
-        public void setFaceAnalysisMode(boolean isOn) {
-            this.isOnFaceAnalysisMode = isOn;
-            if (isOn) executeSendCommandToAll(ScreenShareConstants.FACE_ANALYSIS_ON);
-            else executeSendCommandToAll(ScreenShareConstants.FACE_ANALYSIS_OFF);
+        public void setFaceAnalysisMode(int faceAnalysisMode) {
+            mFaceAnalysisMode = faceAnalysisMode;
+            switch (mFaceAnalysisMode) {
+                case ScreenShareConstants.FACE_ANALYSIS_ON_NO_SOUNDS:
+                    executeSendCommandToAll(ScreenShareConstants.FACE_ANALYSIS_ON_NO_SOUNDS);
+                    break;
+                case ScreenShareConstants.FACE_ANALYSIS_ON_WITH_SOUNDS:
+                    executeSendCommandToAll(ScreenShareConstants.FACE_ANALYSIS_ON_WITH_SOUNDS);
+                    break;
+                case ScreenShareConstants.FACE_ANALYSIS_OFF:
+                    executeSendCommandToAll(ScreenShareConstants.FACE_ANALYSIS_OFF);
+                    break;
+
+            }
+//            if (isOn) executeSendCommandToAll(ScreenShareConstants.FACE_ANALYSIS_ON);
+//            else executeSendCommandToAll(ScreenShareConstants.FACE_ANALYSIS_OFF);
         }
 
-        public boolean getFaceAnalysisMode() {
-            return this.isOnFaceAnalysisMode;
+        public int getFaceAnalysisMode() {
+            return this.mFaceAnalysisMode;
         }
 
         public void sendToAll(byte[] buffer) {
@@ -241,8 +254,10 @@ public class ShareService {
             if (isPause) {
                 sendCommand(dout, ScreenShareConstants.ON_PAUSE);
             }
-            if (isOnFaceAnalysisMode) {
-                sendCommand(dout, ScreenShareConstants.FACE_ANALYSIS_ON);
+            if (mFaceAnalysisMode == ScreenShareConstants.FACE_ANALYSIS_ON_WITH_SOUNDS) {
+                sendCommand(dout, ScreenShareConstants.FACE_ANALYSIS_ON_WITH_SOUNDS);
+            } else if (mFaceAnalysisMode == ScreenShareConstants.FACE_ANALYSIS_ON_NO_SOUNDS) {
+                sendCommand(dout, ScreenShareConstants.FACE_ANALYSIS_ON_NO_SOUNDS);
             }
             if (isOnScreenPinningMode) {
                 sendCommand(dout, ScreenShareConstants.SCREEN_PIN_ON);
@@ -363,7 +378,7 @@ public class ShareService {
             mDataOutputStream = new DataOutputStream(mOutputStream);
         }
 
-        private void showErrorMessage(final String message){
+        private void showErrorMessage(final String message) {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -433,6 +448,7 @@ public class ShareService {
                                 //TODO: Add string literals on strings.xml, use place holders.
                                 mTextView.setText("Please Enable Screen Pinning. Disconnecting in " + l / 1000 + " seconds.");
                             }
+
                             @Override
                             public void onFinish() {
                                 Log.d("CountDownTimer", "onFinish() callBack");
@@ -524,11 +540,14 @@ public class ShareService {
                 case ScreenShareConstants.SCREEN_PIN_OFF:
                     screenPinOff();
                     break;
-                case ScreenShareConstants.FACE_ANALYSIS_ON:
-                    faceAnalysisActivator.setState(true);
+                case ScreenShareConstants.FACE_ANALYSIS_ON_NO_SOUNDS:
+                    faceAnalysisActivator.setState(true, false);
+                    break;
+                case ScreenShareConstants.FACE_ANALYSIS_ON_WITH_SOUNDS:
+                    faceAnalysisActivator.setState(true, true);
                     break;
                 case ScreenShareConstants.FACE_ANALYSIS_OFF:
-                    faceAnalysisActivator.setState(false);
+                    faceAnalysisActivator.setState(false, false);
                     break;
                 case ScreenShareConstants.ON_RESUME:
                     mHandler.post(new Runnable() {
@@ -616,11 +635,11 @@ public class ShareService {
         //---------------------------FaceAnalysisObserver implementation-----------------------------//
 
         @Override
-        public void onFaceAnalysisRequestStateChanged(boolean isOn) {
+        public void onFaceAnalysisRequestStateChanged(boolean isOn, boolean hasSound) {
             if (isOn) {
                 Log.e("FaceAnalysis", "Status On");
                 faceAnalyzer = new FaceAnalyzer(activityContext);
-                faceAnalyzer.createCameraSource();
+                faceAnalyzer.createCameraSource(hasSound);
                 faceAnalyzer.start();
             } else {
                 Log.e("FaceAnalysis", "Status Off");
