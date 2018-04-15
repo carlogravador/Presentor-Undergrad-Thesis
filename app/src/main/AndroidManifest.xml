@@ -48,34 +48,54 @@
             android:name=".screenshare.CreateActivity"
             android:launchMode="singleInstance"
             android:parentActivityName=".MainActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:label="Share"/>
         <activity
             android:name=".screenshare.AccessActivity"
             android:parentActivityName=".MainActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:label="Access"/>
         <activity
             android:name=".domotics.DomoticsActivity"
             android:launchMode="singleInstance"
             android:parentActivityName=".MainActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:label="Domotics"/>
         <activity
             android:name=".screenshare.ClientActivity"
             android:parentActivityName=".screenshare.AccessActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity
-            android:name=".help.HelpActivity"
+            android:name=".help.ScreenMirroringSlide"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity
+            android:name=".help.DomoticsSlide"
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+            android:name=".help.WidgetButtonsSlide"
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+            android:name=".help.HelpActivity"
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait"
+            android:label="Help"/>
+        <activity
             android:name=".AboutActivity"
             android:parentActivityName=".MainActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:label="About"/>
         <activity
             android:name=".SettingsActivity"
             android:parentActivityName=".MainActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:label="Settings"/>
 
         <!-- Declare FloatingWidget Service over here and set enabled true -->
         <service

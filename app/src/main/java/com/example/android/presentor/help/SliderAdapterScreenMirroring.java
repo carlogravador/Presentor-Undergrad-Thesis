@@ -15,12 +15,12 @@ import com.example.android.presentor.R;
  * Created by villa on 16/03/2018.
  */
 
-public class SliderAdapter  extends PagerAdapter{
+public class SliderAdapterScreenMirroring extends PagerAdapter{
 
     Context context;
     LayoutInflater layoutInflater;
 
-    public SliderAdapter(Context context){
+    public SliderAdapterScreenMirroring(Context context){
         this.context = context;
     }
 

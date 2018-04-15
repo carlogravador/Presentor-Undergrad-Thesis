@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
-import android.support.v4.app.NotificationCompat;
 import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.View;
@@ -23,10 +22,11 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.example.android.presentor.domotics.DomoticsActivity;
+import com.example.android.presentor.help.HelpActivity;
 import com.example.android.presentor.screenshare.AccessActivity;
 import com.example.android.presentor.screenshare.CreateActivity;
 import com.example.android.presentor.screenshare.ShareService;
-import com.example.android.presentor.help.HelpActivity;
+import com.example.android.presentor.help.ScreenMirroringSlide;
 import com.example.android.presentor.utils.PlayServicesUtil;
 import com.example.android.presentor.utils.Utility;
 

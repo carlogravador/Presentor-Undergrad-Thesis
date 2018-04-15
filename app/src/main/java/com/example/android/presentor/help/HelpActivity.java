@@ -1,152 +1,51 @@
 package com.example.android.presentor.help;
 
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
+import android.content.Intent;
 import android.os.Bundle;
-import android.text.Html;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 
 import com.example.android.presentor.R;
 
 public class HelpActivity extends AppCompatActivity {
 
-    private ViewPager mSlideViewPager;
-    private LinearLayout mDotLayout;
-
-    private TextView[] mDots;
-
-    private SliderAdapter sliderAdapter;
-
-    private Button mNextBtn;
-    private Button mBackBtn;
-    private Button mSkipBtn;
-
-    private int mCurrentPage;
-
     @Override
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_help);
 
-        mSlideViewPager = (ViewPager) findViewById(R.id.slideViewPager);
-        mDotLayout = findViewById(R.id.dotsLayout);
+        String[] helpSlide = {"Screen Mirroring", "Widget Buttons", "Domotics"};
+        ListAdapter helpAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, helpSlide);
+        ListView helpListView = (ListView) findViewById(R.id.helpList);
+        helpListView.setAdapter(helpAdapter);
 
-        mBackBtn = findViewById(R.id.prevBtn);
-        mNextBtn = findViewById(R.id.nextBtn);
-        mSkipBtn = findViewById(R.id.skipBtn);
-
-        sliderAdapter = new SliderAdapter(this);
-
-        mSlideViewPager.setAdapter(sliderAdapter);
-
-        addDotsIndicator(0);
-
-        mSlideViewPager.addOnPageChangeListener(viewListener);
-
-
-        mNextBtn.setOnClickListener(new View.OnClickListener() {
+         helpListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onClick(View v) {
-                if(mNextBtn.getText().equals("Finish")){
-                    finish();
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                switch((int)id){
+                    case 0:
+                        Intent i = new Intent(HelpActivity.this, ScreenMirroringSlide.class);
+                        startActivity(i);
+                        break;
+                    case 1:
+                        Intent j = new Intent(HelpActivity.this, WidgetButtonsSlide.class);
+                        startActivity(j);
+                        break;
+
+                    case 2:
+                        Intent k = new Intent(HelpActivity.this, DomoticsSlide.class);
+                        startActivity(k);
+                        break;
                 }
-                mSlideViewPager.setCurrentItem(mCurrentPage + 1);
-
             }
         });
 
-        mBackBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                mSlideViewPager.setCurrentItem(mCurrentPage - 1);
-            }
-        });
-
-        mSkipBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                finish();
-
-            }
-        });
 
     }
-
-    public void addDotsIndicator(int position){
-
-        mDots = new TextView[3];
-        mDotLayout.removeAllViews();
-
-        for(int i = 0; i < mDots.length; i++){
-
-            mDots[i] = new TextView(this);
-            mDots[i].setText(Html.fromHtml("&#8226;"));
-            mDots[i].setTextSize(35);
-            mDots[i].setTextColor(getResources().getColor(R.color.colorTransparentWhite));
-
-            mDotLayout.addView(mDots[i]);
-
-        }
-
-        if (mDots.length > 0){
-
-            mDots[position].setTextColor(getResources().getColor(R.color.colorWhite));
-        }
-    }
-
-    ViewPager.OnPageChangeListener viewListener = new ViewPager.OnPageChangeListener() {
-        @Override
-        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-        }
-
-        @Override
-        public void onPageSelected(int i) {
-
-            addDotsIndicator(i);
-            mCurrentPage = i;
-
-            if (i == 0){
-
-                mNextBtn.setEnabled(true);
-                mBackBtn.setEnabled(false);
-                mBackBtn.setVisibility(View.INVISIBLE);
-
-                mNextBtn.setText("Next");
-                mBackBtn.setText("");
-
-            } else if (i == mDots.length - 1){
-
-                mNextBtn.setEnabled(true);
-                mBackBtn.setEnabled(true);
-                mBackBtn.setVisibility(View.VISIBLE);
-
-                mNextBtn.setText("Finish");
-                mBackBtn.setText("Back");
-
-            }   else {
-
-                mNextBtn.setEnabled(true);
-                mBackBtn.setEnabled(true);
-                mBackBtn.setVisibility(View.VISIBLE);
-
-                mNextBtn.setText("Next");
-                mBackBtn.setText("Back");
-
-            }
-
-        }
-
-        @Override
-        public void onPageScrollStateChanged(int state) {
-
-        }
-    };
 
 }
-
