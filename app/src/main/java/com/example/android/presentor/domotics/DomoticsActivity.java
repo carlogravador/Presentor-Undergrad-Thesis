@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -34,8 +35,11 @@ public class DomoticsActivity extends AppCompatActivity
         implements CompoundButton.OnCheckedChangeListener, View.OnClickListener, View.OnLongClickListener {
 
 
+    public static final String BT_ADDRESS = "address";
+    public static final String BT_DEVICE = "name";
 
     public static boolean isActivityOpen = false;
+
 
     private String[] applianceNameKey;
 
@@ -46,10 +50,11 @@ public class DomoticsActivity extends AppCompatActivity
     private Switch[] mSwitchView = new Switch[8];
 
     private BluetoothAdapter mBluetoothAdapter;
-    private static BluetoothSocket mBluetoothSocket;
+    private BluetoothSocket mBluetoothSocket;
 
-    public static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
-    String address = "00:21:13:00:99:DA";      //temporary
+    private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+    private String address;      //temporary
+    private String name;
 
     private Switch sMasterSwitch;
 
@@ -205,7 +210,7 @@ public class DomoticsActivity extends AppCompatActivity
 //    }
 
 
-    public static void turnOffLed(int switchNumber) {
+    public void turnOffLed(int switchNumber) {
         switchNumber = switchNumber * 11;
         if (mBluetoothSocket != null) {
             try {
@@ -216,7 +221,7 @@ public class DomoticsActivity extends AppCompatActivity
         }
     }
 
-    public static void turnOnLed(int switchNumber) {
+    public void turnOnLed(int switchNumber) {
         if (mBluetoothSocket != null) {
             try {
                 mBluetoothSocket.getOutputStream().write(switchNumber);
@@ -323,6 +328,14 @@ public class DomoticsActivity extends AppCompatActivity
         initListener();
         initMasterSwitch();
 
+        Intent i = getIntent();
+        address = i.getStringExtra(BT_ADDRESS);
+        name = i.getStringExtra(BT_DEVICE);
+        if (address == null) {
+            //it means that auto connect settings is enabled, so get the string btAddress from sharedPref;
+            address = Utility.getString(getApplicationContext(), getResources().getString(R.string.pref_bt_device_key));
+            name = Utility.getString(getApplicationContext(), BT_DEVICE);
+        }
         new BtConnectThread().start();
 
         //new BtConnectAsyncTask().execute();
@@ -338,7 +351,9 @@ public class DomoticsActivity extends AppCompatActivity
     protected void onDestroy() {
         Log.e("DomoticsActivity", "onDestroy() callback");
         try {
-            mBluetoothSocket.close();
+            if (mBluetoothSocket != null) {
+                mBluetoothSocket.close();
+            }
         } catch (IOException e) {
 
         }
@@ -465,13 +480,14 @@ public class DomoticsActivity extends AppCompatActivity
 
     class BtConnectThread extends Thread {
         private ProgressDialog mProgressDialog;
+        boolean connectSuccess = true;
 
         @Override
         public void run() {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    mProgressDialog = ProgressDialog.show(DomoticsActivity.this, null, "Connecting to Presentor");
+                    mProgressDialog = ProgressDialog.show(DomoticsActivity.this, null, "Connecting to " + name);
                 }
             });
             try {
@@ -488,21 +504,44 @@ public class DomoticsActivity extends AppCompatActivity
                     mBluetoothSocket.getOutputStream().write(0);
                 }
             } catch (IOException e) {
-                finish();
+//                Utility.showToast(getApplicationContext(),
+//                        "Error connecting to " + name + " .Make sure you're connecting to a valid Presentor BT module");
+                //finish();
+                e.printStackTrace();
+                connectSuccess = false;
             }
 
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     mProgressDialog.dismiss();
+                    if (!connectSuccess) {
+                        Utility.showDomoticsDialogDialog(DomoticsActivity.this,
+                                "OK",
+                                null,
+                                "Connection Error",
+                                "Error connecting to " + name + ". Make sure the bluetooth is on or you're connecting to a valid Presentor bluetooth module",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        switch (i) {
+                                            case DialogInterface.BUTTON_POSITIVE:
+                                                Utility.saveBoolean(getApplicationContext(),
+                                                        getResources().getString(R.string.pref_auto_connect_key),
+                                                        false);
+                                                finish();
+                                                break;
+                                        }
+                                    }
+                                }
+                        );
+                    }
                 }
             });
-
-
         }
     }
 
-    class BtReceiveStateThread extends Thread{
+    class BtReceiveStateThread extends Thread {
 
         boolean waitForMessage = true;
         StringBuilder sb = new StringBuilder();
@@ -510,20 +549,20 @@ public class DomoticsActivity extends AppCompatActivity
         int bytes;
         String finalMessage;
 
-        public char[] receivedState(){
+        public char[] receivedState() {
             return finalMessage.toCharArray();
         }
 
-        public void updateInterface(){
+        public void updateInterface() {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     char[] switchState = receivedState();
-                    for(int i = 0; i < 8; i++){
-                        if(switchState[i] == '1'){
+                    for (int i = 0; i < 8; i++) {
+                        if (switchState[i] == '1') {
                             //is on
                             mSwitchView[i].setChecked(true);
-                        }else{
+                        } else {
                             mSwitchView[i].setChecked(false);
                         }
                     }
@@ -540,10 +579,10 @@ public class DomoticsActivity extends AppCompatActivity
                     String incomingMessage = new String(buffer, 0, bytes);
                     sb.append(incomingMessage);
                     int endOfLineIndex = sb.indexOf(".");
-                    if (endOfLineIndex > 0 ) {
+                    if (endOfLineIndex > 0) {
                         finalMessage = sb.substring(0, endOfLineIndex);
                         sb.delete(0, sb.length());
-                        if(finalMessage.length() == 8){
+                        if (finalMessage.length() == 8) {
                             waitForMessage = false;
                         }
                     }
@@ -552,6 +591,7 @@ public class DomoticsActivity extends AppCompatActivity
                 updateInterface();
             } catch (IOException e) {
                 //TODO HANDLE ERRORS
+                e.printStackTrace();
             }
         }
     }

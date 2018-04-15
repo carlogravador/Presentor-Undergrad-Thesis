@@ -70,6 +70,22 @@ public class Utility {
         alertDialog.show();
     }
 
+    public static void showDomoticsDialogDialog(Context context, String pString, String nString,
+                                       String title, String message,
+                                       DialogInterface.OnClickListener listener) {
+
+        AlertDialog.Builder adb = new AlertDialog.Builder(context);
+        adb.setTitle(title);
+        adb.setMessage(message);
+        adb.setPositiveButton(pString, listener);
+        if(nString != null) {
+            adb.setNegativeButton(nString, listener);
+        }
+        AlertDialog alertDialog = adb.create();
+
+        alertDialog.show();
+    }
+
     public static void showFaceAnalysisModeDialog(Context context, String title, String message,
                                                   DialogInterface.OnClickListener listener) {
         AlertDialog.Builder adb = new AlertDialog.Builder(context);
@@ -172,7 +188,7 @@ public class Utility {
         return bluetoothAdapter != null && bluetoothAdapter.isEnabled();
     }
 
-    public static void turnOnBluetooth(final Context context, boolean openOnService, final Intent intent) {
+    public static void turnOnBluetooth(final Context context, String message, boolean openOnService, final Intent intent) {
         DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
@@ -180,15 +196,21 @@ public class Utility {
                     case DialogInterface.BUTTON_POSITIVE:
                         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
                         bluetoothAdapter.enable();
-                        context.startActivity(intent);
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                context.startActivity(intent);
+                            }
+                        }, 1000);
                 }
             }
         };
-        //TODO add hard coded strings to string.xml
+//        //TODO add hard coded strings to string.xml
         AlertDialog.Builder adb = new AlertDialog.Builder(context);
         adb.setTitle("Bluetooth is off");
-        adb.setMessage("Domotics requires bluetooth connection. \n\n" +
-                "Do you want to open bluetooth now?");
+//        Domotics requires bluetooth connection. \n\n" +
+//        "Do you want to open bluetooth now?"
+        adb.setMessage(message);
         adb.setPositiveButton(R.string.yes, listener);
         adb.setNegativeButton(R.string.no, listener);
         AlertDialog alertDialog = adb.create();
@@ -259,6 +281,13 @@ public class Utility {
                 getDefaultSharedPreferences(cxt.getApplicationContext()).edit();
         prefsEditor.putBoolean(key, value);
         prefsEditor.apply();
+    }
+
+    public static boolean getBoolean(Context cxt, String key) {
+        //SharedPreferences prefs = cxt.getSharedPreferences("presentor", Context.MODE_PRIVATE);
+        SharedPreferences prefs = PreferenceManager.
+                getDefaultSharedPreferences(cxt.getApplicationContext());
+        return prefs.getBoolean(key, false);
     }
 
     /***returns true if there is a special character on the String word***/

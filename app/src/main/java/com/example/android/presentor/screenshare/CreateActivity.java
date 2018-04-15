@@ -32,6 +32,7 @@ import android.transition.TransitionManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -81,7 +82,7 @@ public class CreateActivity extends AppCompatActivity implements CompoundButton.
 
 
     //Temporary
-    private String creatorName = "Carlo Gravador";
+    private String creatorName;
 
     private static final int REQUEST_CODE = 1000;
     private static final int DEVICE_LOADER = 0;
@@ -200,6 +201,8 @@ public class CreateActivity extends AppCompatActivity implements CompoundButton.
 
     private void stopScreenSharing() {
         //stop the service
+        mNsdHelper.stopRegisterService();
+        mShareService.stopServer();
         stopService(new Intent(CreateActivity.this, FloatingWidgetService.class));
     }
 
@@ -281,7 +284,18 @@ public class CreateActivity extends AppCompatActivity implements CompoundButton.
                 (Context.MEDIA_PROJECTION_SERVICE);
 
         mShareService = ShareService.getInstance();
-        mNsdHelper = new NsdHelper(getApplicationContext());
+        mNsdHelper = NsdHelper.getInstance();
+
+        if (mShareService.isServerOpen()) {
+            moveView(RelativeLayout.CENTER_HORIZONTAL, false);
+
+            lobbyNameEditText.setText(Utility.getString(this, this.getResources()
+                    .getString(R.string.lobby_name)));
+            passwordNameEditText.setText(Utility.getString(this, this.getResources()
+                    .getString(R.string.lobby_pass)));
+            startButton.setText(this.getResources().getString(R.string.screen_mirror_stop_session));
+            etSetEditable(false);
+        }
 
         connectedDeviceLv.setAdapter(mDevicesCursorAdapter);
 
@@ -336,20 +350,21 @@ public class CreateActivity extends AppCompatActivity implements CompoundButton.
 
     @Override
     protected void onDestroy() {
-        mNsdHelper.stopRegisterService();
-        mShareService.stopServer();
+//        mNsdHelper.stopRegisterService();
+//        mShareService.stopServer();
         Log.e("CreateActivity", "onDestroy() callback");
+        isActive = false;
         super.onDestroy();
     }
 
-    @Override
-    public void onBackPressed() {
-        if (mServer != null && mServer.getStatus()) {
-            moveTaskToBack(true);
-        } else {
-            super.onBackPressed();
-        }
-    }
+//    @Override
+//    public void onBackPressed() {
+//        if (mServer != null && mServer.getStatus()) {
+//            moveTaskToBack(true);
+//        } else {
+//            super.onBackPressed();
+//        }
+//    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -366,6 +381,15 @@ public class CreateActivity extends AppCompatActivity implements CompoundButton.
         startScreenSharing(resultCode, data);
     }
 
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        switch (item.getItemId()) {
+//            case android.R.id.home:
+//                onBackPressed();
+//                break;
+//        }
+//        return true;
+//    }
 
     //------------------------LoaderManger.LoaderCallbacks Implementation------------------------//
 

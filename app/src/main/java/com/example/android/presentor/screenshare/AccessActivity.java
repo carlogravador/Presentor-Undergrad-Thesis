@@ -41,7 +41,8 @@ public class AccessActivity extends AppCompatActivity
 
         //create new database;
         mServiceCursorAdapter = new ServiceCursorAdapter(this, null);
-        mNsdHelper = new NsdHelper(this);
+        mNsdHelper = NsdHelper.getInstance();
+        mNsdHelper.init(this);
 
 
         ListView lobbyListView = findViewById(R.id.list_view_lobby);

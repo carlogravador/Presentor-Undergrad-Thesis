@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.View;
@@ -22,11 +23,12 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.example.android.presentor.domotics.DomoticsActivity;
-import com.example.android.presentor.help.HelpActivity;
+import com.example.android.presentor.domotics.DomoticsSelectActivity;
+import com.example.android.presentor.networkservicediscovery.NsdHelper;
 import com.example.android.presentor.screenshare.AccessActivity;
 import com.example.android.presentor.screenshare.CreateActivity;
 import com.example.android.presentor.screenshare.ShareService;
-import com.example.android.presentor.help.ScreenMirroringSlide;
+import com.example.android.presentor.help.HelpActivity;
 import com.example.android.presentor.utils.PlayServicesUtil;
 import com.example.android.presentor.utils.Utility;
 
@@ -117,6 +119,7 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         ShareService.getInstance().init(getApplicationContext());
+        NsdHelper.getInstance().init(getApplicationContext());
         mShareService = ShareService.getInstance();
 
         if (!PlayServicesUtil.isPlayServicesAvailable(this, 69)) {
@@ -148,13 +151,33 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onDrawerClosed(View drawerView) {
                 //Set your new fragment here
-                if (mIntent != null) {
+                if (mIntent != null && !turnOnBluetooth) {
                     startActivity(mIntent);
                     //added
                     mIntent = null;
                 } else if (turnOnBluetooth) {
-                    Intent i = new Intent(MainActivity.this, DomoticsActivity.class);
-                    Utility.turnOnBluetooth(MainActivity.this, false, i);
+                    Intent i;
+                    String message = "Settings needs to open the bluetooth to have access to all paired bluetooth devices. \n\n" +
+                            "Do you want to open bluetooth now?";
+                    if(mIntent != null){
+                        Utility.turnOnBluetooth(MainActivity.this,
+                                message,
+                                false, mIntent);
+                        turnOnBluetooth = false;
+                    }
+                    else if(Utility.getBoolean(getApplicationContext(), getResources().getString(R.string.pref_auto_connect_key))) {
+                        i = new Intent(MainActivity.this, DomoticsActivity.class);
+                        Utility.turnOnBluetooth(MainActivity.this,
+                                "Domotics requires bluetooth connection. \n\n" +
+                                        "Do you want to open bluetooth now?",
+                                false, i);
+                    }else{
+                        i = new Intent(MainActivity.this, DomoticsSelectActivity.class);
+                        Utility.turnOnBluetooth(MainActivity.this,
+                                "Domotics requires bluetooth connection. \n\n" +
+                                        "Do you want to open bluetooth now?",
+                                false, i);
+                    }
                     turnOnBluetooth = false;
                 }
                 mNavigationView.setCheckedItem(R.id.nav_screen_mirroring);
@@ -173,6 +196,7 @@ public class MainActivity extends AppCompatActivity
     protected void onDestroy() {
         Log.e("MainActivity", "onDestroy() callback");
         mShareService.stop();
+        NsdHelper.getInstance().releaseNsdHelper();
         super.onDestroy();
     }
 
@@ -217,14 +241,21 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.nav_domotics:
                 if (Utility.isBluetoothOn()) {
-                    mIntent = new Intent(MainActivity.this, DomoticsActivity.class);
-//                    new BtConnectAsyncTask(this).execute();
+                    if(Utility.getBoolean(getApplicationContext(), getResources().getString(R.string.pref_auto_connect_key))) {
+                        mIntent = new Intent(MainActivity.this, DomoticsActivity.class);
+                    }else{
+                        mIntent = new Intent(MainActivity.this, DomoticsSelectActivity.class);
+                    }
                 } else {
                     turnOnBluetooth = true;
                 }
                 break;
             case R.id.nav_settings:
                 mIntent = new Intent(MainActivity.this, SettingsActivity.class);
+                if (!Utility.isBluetoothOn()) {
+                    turnOnBluetooth = true;
+                    break;
+                }
                 break;
             case R.id.nav_help:
                 mIntent = new Intent(MainActivity.this, HelpActivity.class);

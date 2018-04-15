@@ -93,27 +93,18 @@
     <!--TEMP TO BE DELETED-->
 
     <string-array name="pref_sync_frequency_titles">
-        <item>15 minutes</item>
-        <item>30 minutes</item>
-        <item>1 hour</item>
-        <item>3 hours</item>
-        <item>6 hours</item>
-        <item>Never</item>
+        <item>Presentor</item>
+
     </string-array>
 
     <string-array name="pref_sync_frequency_values">
-        <item>15</item>
-        <item>30</item>
-        <item>60</item>
-        <item>180</item>
-        <item>360</item>
-        <item>-1</item>
+        <item>presentor</item>
     </string-array>
 
 
     <!--Settings String-->
     <string name="pref_player_key">player_key</string>
-    <string name="pref_display_name_title">player_key</string>
+    <string name="pref_display_name_title">Player name</string>
     <string name="settings_default_player_name">Player</string>
 
     <string name="pref_auto_connect_key">auto_connect_key</string>

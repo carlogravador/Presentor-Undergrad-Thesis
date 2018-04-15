@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".domotics.DomoticsSelectActivity">
+
+    <RelativeLayout
+        android:id="@+id/title_parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp">
+
+        <TextView
+            android:id="@+id/lobby_header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:text="Paired Devices"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+            android:textColor="@color/colorAccent"
+            android:textStyle="bold"
+            />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/lobby_header"
+            android:background="@color/colorAccent"/>
+
+    </RelativeLayout>
+
+    <ListView
+        android:layout_marginTop="8dp"
+        android:layout_below="@+id/title_parent"
+        android:id="@+id/list_view_paired_devices"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:animateLayoutChanges="true"
+        tools:listitem="@layout/list_item_paired_devices"
+        >
+    </ListView>
+
+    <ProgressBar
+        android:id="@+id/loading_indicator"
+        android:layout_centerInParent="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+
+
+</RelativeLayout>

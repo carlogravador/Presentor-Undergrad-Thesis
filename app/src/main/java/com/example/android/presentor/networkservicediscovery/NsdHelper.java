@@ -8,6 +8,8 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.android.presentor.db.DatabaseUtility;
+import com.example.android.presentor.screenshare.ShareService;
+
 /**
  * Created by Carlo on 17/11/2017.
  */
@@ -16,6 +18,7 @@ public class NsdHelper {
 
     private Context mContext;
 
+    private static NsdHelper ourInstance;
 
     private NsdManager mNsdManager;
     private NsdManager.DiscoveryListener mDiscoveryListener;
@@ -34,9 +37,25 @@ public class NsdHelper {
 
     private String mServiceName;
 
-    public NsdHelper(Context context) {
+    private NsdHelper() {
+
+    }
+
+    public static NsdHelper getInstance(){
+        if (ourInstance == null) {
+            ourInstance = new NsdHelper();
+        }
+        return ourInstance;
+    }
+
+    public void init(Context context){
         this.mContext = context.getApplicationContext();
         this.mNsdManager = (NsdManager) context.getSystemService(Context.NSD_SERVICE);
+    }
+
+    public void releaseNsdHelper(){
+        mContext = null;
+        ourInstance = null;
     }
 
     public void setServiceName(String serviceName, String serviceCreator, String servicePassword) {

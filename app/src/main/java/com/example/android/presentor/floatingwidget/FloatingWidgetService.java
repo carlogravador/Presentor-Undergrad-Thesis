@@ -13,6 +13,7 @@ import android.widget.ImageButton;
 import com.example.android.presentor.MainActivity;
 import com.example.android.presentor.R;
 import com.example.android.presentor.domotics.DomoticsActivity;
+import com.example.android.presentor.domotics.DomoticsSelectActivity;
 import com.example.android.presentor.screenshare.CreateActivity;
 import com.example.android.presentor.screenshare.ScreenShareConstants;
 import com.example.android.presentor.screenshare.ShareService;
@@ -128,15 +129,27 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
                 break;
             case R.id.circleIv5:    //Domotics Button
                 if (Utility.isBluetoothOn()) {
-                    if(!DomoticsActivity.isActivityOpen){
-                        Intent i = new Intent(this, DomoticsActivity.class);
-                        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(i);
+                    if(Utility.getBoolean(getApplicationContext(), getResources().getString(R.string.pref_auto_connect_key))) {
+                        if(!DomoticsActivity.isActivityOpen){
+                            Intent i = new Intent(this, DomoticsActivity.class);
+                            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(i);
+                        }
+                    }else{
+                        if(!DomoticsSelectActivity.isActivityOpen){
+                            Intent i = new Intent(this, DomoticsSelectActivity.class);
+                            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(i);
+                        }
                     }
                 } else {
                     Intent i = new Intent(this, DomoticsActivity.class);
                     i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    Utility.turnOnBluetooth(this, true, i);
+                    Utility.turnOnBluetooth(this ,
+                            "Domotics requires bluetooth connection. \n\n" +
+                            "Do you want to open bluetooth now?",
+                            true,
+                            i);
                 }
                 break;
             case R.id.circleIv6:    //Share Button
