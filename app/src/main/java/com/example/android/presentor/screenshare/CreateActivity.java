@@ -219,7 +219,7 @@ public class CreateActivity extends AppCompatActivity implements CompoundButton.
         moveView(RelativeLayout.CENTER_IN_PARENT, true);
         connectedDeviceLv.setVisibility(View.INVISIBLE);
         //TODO: add string literals to strings.xml use placeholder
-        deviceCountTv.setText("Client connected: " + DatabaseUtility.getDeviceCount(this));
+        deviceCountTv.setText("Clients connected: " + DatabaseUtility.getDeviceCount(this));
         etSetEditable(true);
     }
 
