@@ -103,6 +103,8 @@ public class CreateActivity extends AppCompatActivity implements CompoundButton.
     private NsdHelper mNsdHelper;
     private DevicesCursorAdapter mDevicesCursorAdapter;
 
+    private ImageAvailableListener mImageGenerator;
+
 
     private BroadcastReceiver mBroadCastReceiver = new BroadcastReceiver() {
         @Override
@@ -493,6 +495,8 @@ public class CreateActivity extends AppCompatActivity implements CompoundButton.
 
     private class ImageAvailableListener implements ImageReader.OnImageAvailableListener {
 
+        Bitmap reusableBitmap = null;
+
         private Bitmap resizeBitmap(Bitmap cleanBitmap, float ratio) {
             int origWidth = cleanBitmap.getWidth();
             int origHeight = cleanBitmap.getHeight();
@@ -509,6 +513,7 @@ public class CreateActivity extends AppCompatActivity implements CompoundButton.
 
             //conditions are satisfied, proceed to create bitmap and send.
             Image image = null;
+
             Bitmap cleanBitmap = null;
             Bitmap resizeBitmap = null;
 
@@ -528,11 +533,24 @@ public class CreateActivity extends AppCompatActivity implements CompoundButton.
                     int width = (mDisplayWidth + rowPadding / pixelStride);
                     int height = mDisplayHeight;
 
-                    //create bitmap
-                    cleanBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-                    //or
-                    //cleanBitmap = Bitmap.createBitmap(image.getWidth(), image.getHeight(), Bitmap.Config.ARGB_8888);
-                    cleanBitmap.copyPixelsFromBuffer(buffer);
+                    if(width > image.getWidth()){
+                        if(reusableBitmap == null){
+                            reusableBitmap = Bitmap.createBitmap(width, image.getHeight(), Bitmap.Config.ARGB_8888);
+                        }
+                        reusableBitmap.copyPixelsFromBuffer(buffer);
+                        cleanBitmap = Bitmap.createBitmap(reusableBitmap, 0, 0 , image.getWidth(), image.getHeight());
+                    }else{
+                        cleanBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+                        //or
+                        //cleanBitmap = Bitmap.createBitmap(image.getWidth(), image.getHeight(), Bitmap.Config.ARGB_8888);
+                        cleanBitmap.copyPixelsFromBuffer(buffer);
+                    }
+//
+//                    //create bitmap
+//                    cleanBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+//                    //or
+//                    //cleanBitmap = Bitmap.createBitmap(image.getWidth(), image.getHeight(), Bitmap.Config.ARGB_8888);
+//                    cleanBitmap.copyPixelsFromBuffer(buffer);
 
                     //try only
                     if (mResizeRatio == 1) {
