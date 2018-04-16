@@ -33,11 +33,11 @@ public class WidgetButtonsSlide extends AppCompatActivity {
         setContentView(R.layout.activity_slide_widget_buttons);
 
         mSlideViewPager = (ViewPager) findViewById(R.id.slideViewPager);
-        mDotLayout = findViewById(R.id.dotsLayout);
+        mDotLayout = (LinearLayout) findViewById(R.id.dotsLayout);
 
-        mBackBtn = findViewById(R.id.prevBtn);
-        mNextBtn = findViewById(R.id.nextBtn);
-        mSkipBtn = findViewById(R.id.skipBtn);
+        mBackBtn = (Button) findViewById(R.id.prevBtn);
+        mNextBtn = (Button) findViewById(R.id.nextBtn);
+        mSkipBtn = (Button) findViewById(R.id.skipBtn);
 
         sliderAdapterWidgetButtons = new SliderAdapterWidgetButtons(this);
 

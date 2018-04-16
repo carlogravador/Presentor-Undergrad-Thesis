@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -59,14 +60,14 @@ public class DomoticsActivity extends AppCompatActivity
     private Switch sMasterSwitch;
 
     private void findViews() {
-        mCardView[0] = findViewById(R.id.card_view_domotics_1);
-        mCardView[1] = findViewById(R.id.card_view_domotics_2);
-        mCardView[2] = findViewById(R.id.card_view_domotics_3);
-        mCardView[3] = findViewById(R.id.card_view_domotics_4);
-        mCardView[4] = findViewById(R.id.card_view_domotics_5);
-        mCardView[5] = findViewById(R.id.card_view_domotics_6);
-        mCardView[6] = findViewById(R.id.card_view_domotics_7);
-        mCardView[7] = findViewById(R.id.card_view_domotics_8);
+        mCardView[0] = (CardView) findViewById(R.id.card_view_domotics_1);
+        mCardView[1] = (CardView) findViewById(R.id.card_view_domotics_2);
+        mCardView[2] = (CardView) findViewById(R.id.card_view_domotics_3);
+        mCardView[3] = (CardView) findViewById(R.id.card_view_domotics_4);
+        mCardView[4] = (CardView) findViewById(R.id.card_view_domotics_5);
+        mCardView[5] = (CardView) findViewById(R.id.card_view_domotics_6);
+        mCardView[6] = (CardView) findViewById(R.id.card_view_domotics_7);
+        mCardView[7] = (CardView) findViewById(R.id.card_view_domotics_8);
         //Bg find view
         mBgImageView[0] = mCardView[0].findViewById(R.id.image_view_appliance_status_1);
         mBgImageView[1] = mCardView[1].findViewById(R.id.image_view_appliance_status_2);
@@ -339,6 +340,16 @@ public class DomoticsActivity extends AppCompatActivity
         new BtConnectThread().start();
 
         //new BtConnectAsyncTask().execute();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                break;
+        }
+        return true;
     }
 
     @Override

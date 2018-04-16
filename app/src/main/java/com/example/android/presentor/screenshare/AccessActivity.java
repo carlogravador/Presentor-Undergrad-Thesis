@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.widget.ListView;
 
 import com.example.android.presentor.R;
@@ -34,7 +35,7 @@ public class AccessActivity extends AppCompatActivity
         setContentView(R.layout.activity_access);
 
 
-        pulsator = findViewById(R.id.pulsator);
+        pulsator = (PulsatorLayout) findViewById(R.id.pulsator);
 
         //delete first existing database every time activity is created
         DatabaseUtility.clearServiceList(this);
@@ -45,7 +46,7 @@ public class AccessActivity extends AppCompatActivity
         mNsdHelper.init(this);
 
 
-        ListView lobbyListView = findViewById(R.id.list_view_lobby);
+        ListView lobbyListView = (ListView) findViewById(R.id.list_view_lobby);
         lobbyListView.setAdapter(mServiceCursorAdapter);
         lobbyListView.setEmptyView(pulsator);
 
@@ -65,6 +66,16 @@ public class AccessActivity extends AppCompatActivity
         mNsdHelper.stopDiscovery();
         mNsdHelper = null;
         super.onDestroy();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                break;
+        }
+        return true;
     }
 
     @Override

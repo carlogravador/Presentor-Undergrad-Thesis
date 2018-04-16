@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity
         //notification();
         Log.e("MainActivity", "onCreate() callback");
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         ShareService.getInstance().init(getApplicationContext());
@@ -128,13 +128,13 @@ public class MainActivity extends AppCompatActivity
         }
 
 
-        CardView shareCardView = findViewById(R.id.card_view_share);
+        CardView shareCardView = (CardView) findViewById(R.id.card_view_share);
         shareCardView.setOnClickListener(this);
 
-        CardView accessCardView = findViewById(R.id.card_view_access);
+        CardView accessCardView = (CardView) findViewById(R.id.card_view_access);
         accessCardView.setOnClickListener(this);
 
-        mDrawer = findViewById(R.id.drawer_layout);
+        mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawer.addDrawerListener(new DrawerLayout.DrawerListener() {
             @Override
             public void onDrawerSlide(View drawerView, float slideOffset) {
@@ -159,19 +159,18 @@ public class MainActivity extends AppCompatActivity
                     Intent i;
                     String message = "Settings needs to open the bluetooth to have access to all paired bluetooth devices. \n\n" +
                             "Do you want to open bluetooth now?";
-                    if(mIntent != null){
+                    if (mIntent != null) {
                         Utility.turnOnBluetooth(MainActivity.this,
                                 message,
                                 false, mIntent);
                         turnOnBluetooth = false;
-                    }
-                    else if(Utility.getBoolean(getApplicationContext(), getResources().getString(R.string.pref_auto_connect_key))) {
+                    } else if (Utility.getBoolean(getApplicationContext(), getResources().getString(R.string.pref_auto_connect_key))) {
                         i = new Intent(MainActivity.this, DomoticsActivity.class);
                         Utility.turnOnBluetooth(MainActivity.this,
                                 "Domotics requires bluetooth connection. \n\n" +
                                         "Do you want to open bluetooth now?",
                                 false, i);
-                    }else{
+                    } else {
                         i = new Intent(MainActivity.this, DomoticsSelectActivity.class);
                         Utility.turnOnBluetooth(MainActivity.this,
                                 "Domotics requires bluetooth connection. \n\n" +
@@ -188,7 +187,7 @@ public class MainActivity extends AppCompatActivity
         mDrawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        mNavigationView = findViewById(R.id.nav_view);
+        mNavigationView = (NavigationView) findViewById(R.id.nav_view);
         mNavigationView.setNavigationItemSelectedListener(this);
     }
 
@@ -202,7 +201,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        mDrawer = findViewById(R.id.drawer_layout);
+        mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (mDrawer.isDrawerOpen(GravityCompat.START)) {
             mDrawer.closeDrawer(GravityCompat.START);
         } else {
@@ -241,9 +240,9 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.nav_domotics:
                 if (Utility.isBluetoothOn()) {
-                    if(Utility.getBoolean(getApplicationContext(), getResources().getString(R.string.pref_auto_connect_key))) {
+                    if (Utility.getBoolean(getApplicationContext(), getResources().getString(R.string.pref_auto_connect_key))) {
                         mIntent = new Intent(MainActivity.this, DomoticsActivity.class);
-                    }else{
+                    } else {
                         mIntent = new Intent(MainActivity.this, DomoticsSelectActivity.class);
                     }
                 } else {
@@ -266,7 +265,7 @@ public class MainActivity extends AppCompatActivity
         }
 
 
-        mDrawer = findViewById(R.id.drawer_layout);
+        mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
         mDrawer.closeDrawer(GravityCompat.START);
         return true;
@@ -343,14 +342,14 @@ public class MainActivity extends AppCompatActivity
                                 new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
-                                        switch (i){
+                                        switch (i) {
                                             case DialogInterface.BUTTON_POSITIVE:
                                                 Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                                                         Uri.parse("package:" + getPackageName()));
                                                 startActivityForResult(intent, DRAW_OVER_OTHER_APP_PERMISSION_REQUEST_CODE);
                                                 break;
-                                                case DialogInterface.BUTTON_NEGATIVE:
-                                                    Utility.showToast(MainActivity.this, "Please allow necessary permissions.");
+                                            case DialogInterface.BUTTON_NEGATIVE:
+                                                Utility.showToast(MainActivity.this, "Please allow necessary permissions.");
                                         }
                                     }
                                 });
