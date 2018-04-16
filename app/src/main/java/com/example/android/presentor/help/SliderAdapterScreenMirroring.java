@@ -26,17 +26,26 @@ public class SliderAdapterScreenMirroring extends PagerAdapter{
 
     public  int[] slide_images = {
 
-            R.drawable.screenshare,
-            R.drawable.home_automation,
-            R.drawable.notification
+            R.drawable.screenmirroringslide1,
+            R.drawable.screenmirroringslide2,
+            R.drawable.screenmirroringslide3,
+            R.drawable.screenmirroringslide4,
+            R.drawable.screenmirroringslide5,
+            R.drawable.screenmirroringslide6,
+            R.drawable.screenmirroringslide7,
+            R.drawable.screenmirroringslide8,
+            R.drawable.screenmirroringslide9,
+            R.drawable.screenmirroringslide10,
+            R.drawable.screenmirroringslide11
+
     };
 
     public String[] slide_headings = {
-            " ", " ", " "
+            " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "
     };
 
     public String [] slide_descs = {
-            " ", " ", " "
+            " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "
     };
 
 
