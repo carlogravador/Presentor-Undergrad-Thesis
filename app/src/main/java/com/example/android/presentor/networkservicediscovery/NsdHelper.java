@@ -65,6 +65,7 @@ public class NsdHelper {
 
 
     private void initializeDiscoveryListener() {
+        mServiceName = "discoverymode";
         mDiscoveryListener = new NsdManager.DiscoveryListener() {
             @Override
             public void onDiscoveryStarted(String regType) {

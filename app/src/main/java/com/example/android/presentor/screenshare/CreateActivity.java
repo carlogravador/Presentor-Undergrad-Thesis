@@ -103,8 +103,6 @@ public class CreateActivity extends AppCompatActivity implements CompoundButton.
     private NsdHelper mNsdHelper;
     private DevicesCursorAdapter mDevicesCursorAdapter;
 
-    private ImageAvailableListener mImageGenerator;
-
 
     private BroadcastReceiver mBroadCastReceiver = new BroadcastReceiver() {
         @Override
