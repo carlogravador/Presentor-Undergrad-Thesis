@@ -26,21 +26,18 @@ public class SliderAdapterWidgetButtons extends PagerAdapter{
 
     public  int[] slide_images = {
 
-            R.drawable.screenshare,
-            R.drawable.home_automation,
-            R.drawable.notification
+            R.drawable.widgetslide1,
+            R.drawable.widgetslide2,
+            R.drawable.widgetslide3,
+            R.drawable.widgetslide4
     };
 
     public String[] slide_headings = {
-            "Screen Mirroring",
-            "Home Automation",
-            "Notification"
+            " ", " ", " ", " "
     };
 
     public String [] slide_descs = {
-            "Display your android phone's screen display on other device’s screen wirelessly in real time",
-            "Control your electrical appliances with your android smartphone",
-            "Notify your audience with face analysis"
+            " ", " ", " ", " "
     };
 
 

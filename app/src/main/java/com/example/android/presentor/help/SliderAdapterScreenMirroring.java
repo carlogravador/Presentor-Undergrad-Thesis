@@ -32,15 +32,11 @@ public class SliderAdapterScreenMirroring extends PagerAdapter{
     };
 
     public String[] slide_headings = {
-            "Screen Mirroring",
-            "Home Automation",
-            "Notification"
+            " ", " ", " "
     };
 
     public String [] slide_descs = {
-            "Display your android phone's screen display on other device’s screen wirelessly in real time",
-            "Control your electrical appliances with your android smartphone",
-            "Notify your audience with face analysis"
+            " ", " ", " "
     };
 
 

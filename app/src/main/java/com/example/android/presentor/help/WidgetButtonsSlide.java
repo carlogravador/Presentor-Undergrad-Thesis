@@ -80,7 +80,7 @@ public class WidgetButtonsSlide extends AppCompatActivity {
 
     public void addDotsIndicator(int position){
 
-        mDots = new TextView[3];
+        mDots = new TextView[4];
         mDotLayout.removeAllViews();
 
         for(int i = 0; i < mDots.length; i++){
