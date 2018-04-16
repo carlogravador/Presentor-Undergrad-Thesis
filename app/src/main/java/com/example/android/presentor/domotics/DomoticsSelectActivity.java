@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -35,6 +36,16 @@ public class DomoticsSelectActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                break;
+        }
+        return true;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_domotics_select);
@@ -42,8 +53,8 @@ public class DomoticsSelectActivity extends AppCompatActivity {
         final ArrayList<String> btDevice = new ArrayList<>();
         final ArrayList<String> btAddress = new ArrayList<>();
 
-        final ListView pairedDeviceListView = findViewById(R.id.list_view_paired_devices);
-        ProgressBar progressBar = findViewById(R.id.loading_indicator);
+        final ListView pairedDeviceListView = (ListView) findViewById(R.id.list_view_paired_devices);
+        ProgressBar progressBar = (ProgressBar) findViewById(R.id.loading_indicator);
         pairedDeviceListView.setEmptyView(progressBar);
 
         final PairedDevicesAdapter pda = new PairedDevicesAdapter(this, 0, btDevice);
@@ -111,6 +122,6 @@ public class DomoticsSelectActivity extends AppCompatActivity {
                 }
                 pairedDeviceListView.setAdapter(pda);
             }
-        },1000);
+        },1200);
     }
 }

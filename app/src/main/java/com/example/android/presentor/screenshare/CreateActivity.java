@@ -268,15 +268,15 @@ public class CreateActivity extends AppCompatActivity implements CompoundButton.
 
         Log.e("CreateActivity", "onCreate() callback");
 
-        rl = findViewById(R.id.rl);
+        rl = (ViewGroup) findViewById(R.id.rl);
 
-        CheckBox showPassCheckBox = findViewById(R.id.cb_show_pass);
+        CheckBox showPassCheckBox = (CheckBox) findViewById(R.id.cb_show_pass);
 
-        lobbyNameEditText = findViewById(R.id.edit_text_lobby);
-        passwordNameEditText = findViewById(R.id.edit_text_password);
-        startButton = findViewById(R.id.button_start_sharing);
-        deviceCountTv = findViewById(R.id.tv_connected_count);
-        connectedDeviceLv = findViewById(R.id.list_view_devices);
+        lobbyNameEditText = (EditText) findViewById(R.id.edit_text_lobby);
+        passwordNameEditText = (EditText) findViewById(R.id.edit_text_password);
+        startButton = (Button) findViewById(R.id.button_start_sharing);
+        deviceCountTv = (TextView) findViewById(R.id.tv_connected_count);
+        connectedDeviceLv = (ListView) findViewById(R.id.list_view_devices);
 
         mDevicesCursorAdapter = new DevicesCursorAdapter(this, null);
 
@@ -381,15 +381,15 @@ public class CreateActivity extends AppCompatActivity implements CompoundButton.
         startScreenSharing(resultCode, data);
     }
 
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        switch (item.getItemId()) {
-//            case android.R.id.home:
-//                onBackPressed();
-//                break;
-//        }
-//        return true;
-//    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                break;
+        }
+        return true;
+    }
 
     //------------------------LoaderManger.LoaderCallbacks Implementation------------------------//
 

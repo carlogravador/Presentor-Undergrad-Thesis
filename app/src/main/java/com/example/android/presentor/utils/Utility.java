@@ -201,7 +201,7 @@ public class Utility {
                             public void run() {
                                 context.startActivity(intent);
                             }
-                        }, 1000);
+                        }, 1200);
                 }
             }
         };

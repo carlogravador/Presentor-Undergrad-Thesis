@@ -54,6 +54,7 @@ public class NsdHelper {
     }
 
     public void releaseNsdHelper(){
+        stopRegisterService();
         mContext = null;
         ourInstance = null;
     }

@@ -14,6 +14,7 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -84,6 +85,16 @@ public class ClientActivity extends AppCompatActivity implements LoaderManager.L
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                break;
+        }
+        return true;
+    }
+
+    @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
         String[] projection = {
                 ServicesContract.ServiceEntry._ID,
@@ -101,7 +112,7 @@ public class ClientActivity extends AppCompatActivity implements LoaderManager.L
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         if (cursor == null || cursor.getCount() < 1) {
-            TextView tv = findViewById(R.id.message_tv);
+            TextView tv = (TextView) findViewById(R.id.message_tv);
             tv.setText("Error connecting to the server.");
             tv.setBackgroundColor(getResources().getColor(R.color.colorRed));
             return;

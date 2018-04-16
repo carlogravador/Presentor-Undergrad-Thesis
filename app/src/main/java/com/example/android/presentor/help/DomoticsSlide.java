@@ -33,11 +33,11 @@ public class DomoticsSlide extends AppCompatActivity {
         setContentView(R.layout.activity_slide_domotics);
 
         mSlideViewPager = (ViewPager) findViewById(R.id.slideViewPager);
-        mDotLayout = findViewById(R.id.dotsLayout);
+        mDotLayout = (LinearLayout) findViewById(R.id.dotsLayout);
 
-        mBackBtn = findViewById(R.id.prevBtn);
-        mNextBtn = findViewById(R.id.nextBtn);
-        mSkipBtn = findViewById(R.id.skipBtn);
+        mBackBtn = (Button) findViewById(R.id.prevBtn);
+        mNextBtn = (Button) findViewById(R.id.nextBtn);
+        mSkipBtn = (Button) findViewById(R.id.skipBtn);
 
         sliderAdapterDomotics = new SliderAdapterDomotics(this);
 
@@ -51,7 +51,7 @@ public class DomoticsSlide extends AppCompatActivity {
         mNextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mNextBtn.getText().equals("Finish")){
+                if (mNextBtn.getText().equals("Finish")) {
                     finish();
                 }
                 mSlideViewPager.setCurrentItem(mCurrentPage + 1);
@@ -78,12 +78,12 @@ public class DomoticsSlide extends AppCompatActivity {
 
     }
 
-    public void addDotsIndicator(int position){
+    public void addDotsIndicator(int position) {
 
         mDots = new TextView[9];
         mDotLayout.removeAllViews();
 
-        for(int i = 0; i < mDots.length; i++){
+        for (int i = 0; i < mDots.length; i++) {
 
             mDots[i] = new TextView(this);
             mDots[i].setText(Html.fromHtml("&#8226;"));
@@ -94,7 +94,7 @@ public class DomoticsSlide extends AppCompatActivity {
 
         }
 
-        if (mDots.length > 0){
+        if (mDots.length > 0) {
 
             mDots[position].setTextColor(getResources().getColor(R.color.colorWhite));
         }
@@ -112,7 +112,7 @@ public class DomoticsSlide extends AppCompatActivity {
             addDotsIndicator(i);
             mCurrentPage = i;
 
-            if (i == 0){
+            if (i == 0) {
 
                 mNextBtn.setEnabled(true);
                 mBackBtn.setEnabled(false);
@@ -121,7 +121,7 @@ public class DomoticsSlide extends AppCompatActivity {
                 mNextBtn.setText("Next");
                 mBackBtn.setText("");
 
-            } else if (i == mDots.length - 1){
+            } else if (i == mDots.length - 1) {
 
                 mNextBtn.setEnabled(true);
                 mBackBtn.setEnabled(true);
@@ -130,7 +130,7 @@ public class DomoticsSlide extends AppCompatActivity {
                 mNextBtn.setText("Finish");
                 mBackBtn.setText("Back");
 
-            }   else {
+            } else {
 
                 mNextBtn.setEnabled(true);
                 mBackBtn.setEnabled(true);
