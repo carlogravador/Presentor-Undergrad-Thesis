@@ -16,6 +16,8 @@ import com.example.android.presentor.R;
 
 public class DomoticsSlide extends AppCompatActivity {
 
+    public static final String SPAWN_BY_THIS_ACTIVITY = "domoticsSlide";
+
     private ViewPager mSlideViewPager;
     private LinearLayout mDotLayout;
 
@@ -29,11 +31,16 @@ public class DomoticsSlide extends AppCompatActivity {
 
     private int mCurrentPage;
     private boolean mSpawnOnMainActivity;
+    private boolean mSpawnOnPreviousHelp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_slide_domotics);
+
+        Intent i = getIntent();
+        mSpawnOnMainActivity = i.getBooleanExtra(MainActivity.SPAWN_ON_MAIN_ACTIVITY, false);
+        mSpawnOnPreviousHelp = i.getBooleanExtra(DomoticsSlide.SPAWN_BY_THIS_ACTIVITY, false);
 
         mSlideViewPager = (ViewPager) findViewById(R.id.slideViewPager);
         mDotLayout = (LinearLayout) findViewById(R.id.dotsLayout);
@@ -45,11 +52,20 @@ public class DomoticsSlide extends AppCompatActivity {
         sliderAdapterDomotics = new SliderAdapterDomotics(this);
 
         mSlideViewPager.setAdapter(sliderAdapterDomotics);
-
-        addDotsIndicator(0);
-
         mSlideViewPager.addOnPageChangeListener(viewListener);
 
+
+        mDots = new TextView[9];
+        if (mSpawnOnPreviousHelp) {
+            mCurrentPage = mDots.length - 1;
+        }
+        if(mSpawnOnMainActivity){
+            mBackBtn.setText("Back");
+            mBackBtn.setEnabled(true);
+            mBackBtn.setVisibility(View.VISIBLE);
+        }
+        addDotsIndicator(mCurrentPage);
+        mSlideViewPager.setCurrentItem(mCurrentPage);
 
         mNextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,9 +81,10 @@ public class DomoticsSlide extends AppCompatActivity {
         mBackBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mSpawnOnMainActivity && mCurrentPage == 0){
+                if (mSpawnOnMainActivity && mCurrentPage == 0) {
                     Intent i = new Intent(DomoticsSlide.this, WidgetButtonsSlide.class);
                     i.putExtra(MainActivity.SPAWN_ON_MAIN_ACTIVITY, mSpawnOnMainActivity);
+                    i.putExtra(SPAWN_BY_THIS_ACTIVITY, true);
                     startActivity(i);
                     finish();
                 }
@@ -88,7 +105,6 @@ public class DomoticsSlide extends AppCompatActivity {
 
     public void addDotsIndicator(int position) {
 
-        mDots = new TextView[9];
         mDotLayout.removeAllViews();
 
         for (int i = 0; i < mDots.length; i++) {
@@ -106,6 +122,7 @@ public class DomoticsSlide extends AppCompatActivity {
 
             mDots[position].setTextColor(getResources().getColor(R.color.colorWhite));
         }
+        mDotLayout.bringToFront();
     }
 
     ViewPager.OnPageChangeListener viewListener = new ViewPager.OnPageChangeListener() {
@@ -123,11 +140,11 @@ public class DomoticsSlide extends AppCompatActivity {
             if (i == 0) {
                 mNextBtn.setEnabled(true);
                 mNextBtn.setText("Next");
-
-                if(mSpawnOnMainActivity){
-                    mBackBtn.setText("Widget Buttons");
+                if (mSpawnOnMainActivity) {
+                    mBackBtn.setText("Back");
+                    mBackBtn.setVisibility(View.VISIBLE);
                     mBackBtn.setEnabled(true);
-                }else{
+                } else {
                     mBackBtn.setText("");
                     mBackBtn.setEnabled(false);
                     mBackBtn.setVisibility(View.INVISIBLE);

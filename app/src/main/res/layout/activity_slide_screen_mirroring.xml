@@ -1,67 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/colorPrimary"
-    tools:context="com.example.android.presentor.help.ScreenMirroringSlide">
-
-    <android.support.v4.view.ViewPager
-        android:id="@+id/slideViewPager"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/dotsLayout"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="20dp">
-
-
-
-    </android.support.v4.view.ViewPager>
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/colorPrimary"
+                tools:context="com.example.android.presentor.help.ScreenMirroringSlide">
 
     <LinearLayout
         android:id="@+id/dotsLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:layout_alignParentBottom="true"
-        android:padding="20dp"
-        android:layout_centerHorizontal="true">
-
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="16dp"
+        android:orientation="horizontal">
     </LinearLayout>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/slideViewPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/dotsLayout">
+    </android.support.v4.view.ViewPager>
 
     <Button
         android:id="@+id/prevBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/slideViewPager"
-        android:text="Back"
-        android:background="#00ffffff"
-        android:textColor="@color/colorWhite"
+        android:layout_marginBottom="16dp"
         android:layout_marginLeft="16dp"
+        android:background="#00ffffff"
+        android:text="Back"
+        android:textColor="@color/colorWhite"
         android:visibility="invisible"/>
 
     <Button
         android:id="@+id/nextBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:layout_below="@+id/slideViewPager"
+        android:layout_marginBottom="16dp"
         android:layout_marginRight="16dp"
-        android:text="Next"
         android:background="#00ffffff"
+        android:text="Next"
         android:textColor="@color/colorWhite"/>
 
     <Button
         android:id="@+id/skipBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
         android:layout_marginRight="16dp"
-        android:text="Skip"
         android:background="#00ffffff"
+        android:text="Skip"
         android:textColor="@color/colorWhite"/>
+
+
+
 
 
 </RelativeLayout>

@@ -5,6 +5,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Html;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -26,8 +27,9 @@ public class ScreenMirroringSlide extends AppCompatActivity {
     private Button mBackBtn;
     private Button mSkipBtn;
 
-    private int mCurrentPage;
+    private int mCurrentPage = 0;
     private boolean mSpawnOnMainActivity;
+    private boolean mSpawnOnPreviousHelp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +38,7 @@ public class ScreenMirroringSlide extends AppCompatActivity {
 
         Intent i = getIntent();
         mSpawnOnMainActivity = i.getBooleanExtra(MainActivity.SPAWN_ON_MAIN_ACTIVITY, false);
+        mSpawnOnPreviousHelp = i.getBooleanExtra(WidgetButtonsSlide.SPAWN_BY_THIS_ACTIVITY, false);
 
 
         mSlideViewPager = (ViewPager) findViewById(R.id.slideViewPager);
@@ -49,7 +52,16 @@ public class ScreenMirroringSlide extends AppCompatActivity {
 
         mSlideViewPager.setAdapter(sliderAdapterScreenMirroring);
 
-        addDotsIndicator(0);
+        mDots = new TextView[11];
+        if(mSpawnOnPreviousHelp){
+            mCurrentPage = mDots.length - 1;
+            mBackBtn.setVisibility(View.VISIBLE);
+        }
+        Log.e("Screen Mirroring Help", "Current Page: " + mCurrentPage);
+        addDotsIndicator(mCurrentPage);
+        mSlideViewPager.setCurrentItem(mCurrentPage);
+
+//        addDotsIndicator(0);
 
         mSlideViewPager.addOnPageChangeListener(viewListener);
 
@@ -73,7 +85,6 @@ public class ScreenMirroringSlide extends AppCompatActivity {
         mBackBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 mSlideViewPager.setCurrentItem(mCurrentPage - 1);
             }
         });
@@ -81,9 +92,12 @@ public class ScreenMirroringSlide extends AppCompatActivity {
         mSkipBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                if (mSpawnOnMainActivity) {
+                    Intent i = new Intent(ScreenMirroringSlide.this, WidgetButtonsSlide.class);
+                    i.putExtra(MainActivity.SPAWN_ON_MAIN_ACTIVITY, mSpawnOnMainActivity);
+                    startActivity(i);
+                }
                 finish();
-
             }
         });
 
@@ -91,7 +105,6 @@ public class ScreenMirroringSlide extends AppCompatActivity {
 
     public void addDotsIndicator(int position){
 
-        mDots = new TextView[11];
         mDotLayout.removeAllViews();
 
         for(int i = 0; i < mDots.length; i++){
@@ -102,13 +115,12 @@ public class ScreenMirroringSlide extends AppCompatActivity {
             mDots[i].setTextColor(getResources().getColor(R.color.colorTransparentWhite));
 
             mDotLayout.addView(mDots[i]);
-
         }
 
         if (mDots.length > 0){
-
             mDots[position].setTextColor(getResources().getColor(R.color.colorWhite));
         }
+        mDotLayout.bringToFront();
     }
 
     ViewPager.OnPageChangeListener viewListener = new ViewPager.OnPageChangeListener() {
@@ -139,7 +151,7 @@ public class ScreenMirroringSlide extends AppCompatActivity {
                 mBackBtn.setVisibility(View.VISIBLE);
 
                 if(mSpawnOnMainActivity){
-                    mNextBtn.setText("Widget Buttons");
+                    mNextBtn.setText("Next");
                 }else {
                     mNextBtn.setText("Finish");
                 }

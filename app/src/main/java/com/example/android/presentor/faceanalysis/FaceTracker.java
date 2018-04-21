@@ -91,6 +91,7 @@ public class FaceTracker extends Tracker<Face> {
         vibrateIndefinitelyThread = new Thread() {
             @Override
             public void run() {
+                Utility.showToast(mContext, "Please pay attention to the presentation.");
                 if (mHasSound) {
                     playSound();
                 }
@@ -100,6 +101,7 @@ public class FaceTracker extends Tracker<Face> {
                         isVibrateStarted = true;
                     }
                 }
+                releaseMediaPlayer();
                 vibrator.cancel();
                 isVibrateStarted = false;
             }
