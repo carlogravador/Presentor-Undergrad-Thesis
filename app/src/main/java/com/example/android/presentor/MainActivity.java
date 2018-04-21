@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import com.example.android.presentor.domotics.DomoticsActivity;
 import com.example.android.presentor.domotics.DomoticsSelectActivity;
+import com.example.android.presentor.help.ScreenMirroringSlide;
 import com.example.android.presentor.networkservicediscovery.NsdHelper;
 import com.example.android.presentor.screenshare.AccessActivity;
 import com.example.android.presentor.screenshare.CreateActivity;
@@ -39,6 +40,8 @@ public class MainActivity extends AppCompatActivity
 
     /*  Permission request code to draw over other apps  */
     private static final int DRAW_OVER_OTHER_APP_PERMISSION_REQUEST_CODE = 1222;
+    private static final String ON_FIRST_RUN = "first_run";
+    public static final String SPAWN_ON_MAIN_ACTIVITY = "spawn_on_main_activity";
 
     private NavigationView mNavigationView;
     private DrawerLayout mDrawer;
@@ -189,6 +192,19 @@ public class MainActivity extends AppCompatActivity
 
         mNavigationView = (NavigationView) findViewById(R.id.nav_view);
         mNavigationView.setNavigationItemSelectedListener(this);
+
+        //if ON_FIRST_RUN preference is empty, will return false, means that it is on first run so do the opposite
+        if(!Utility.getBoolean(getApplicationContext(), ON_FIRST_RUN)){
+            //ON_FIRST_RUN now will always be true,
+            Utility.saveBoolean(getApplicationContext(), ON_FIRST_RUN, true);
+            Intent i = new Intent(MainActivity.this, ScreenMirroringSlide.class);
+            i.putExtra(SPAWN_ON_MAIN_ACTIVITY, true);
+            startActivity(i);
+        }else if(Utility.getBoolean(getApplicationContext(), getResources().getString(R.string.pref_help_key))){
+            Intent i = new Intent(MainActivity.this, ScreenMirroringSlide.class);
+            i.putExtra(SPAWN_ON_MAIN_ACTIVITY, true);
+            startActivity(i);
+        }
     }
 
     @Override

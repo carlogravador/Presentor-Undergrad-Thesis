@@ -38,9 +38,11 @@
         android:text="Back"
         android:background="#00ffffff"
         android:textColor="@color/colorWhite"
+        android:layout_marginLeft="16dp"
         android:visibility="invisible"/>
 
     <Button
+        android:layout_marginRight="16dp"
         android:id="@+id/nextBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -55,7 +57,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_alignStart="@+id/nextBtn"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="16dp"
         android:text="Skip"
         android:background="#00ffffff"
         android:textColor="@color/colorWhite"/>

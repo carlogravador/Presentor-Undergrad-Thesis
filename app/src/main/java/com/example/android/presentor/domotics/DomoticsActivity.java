@@ -8,6 +8,7 @@ import android.bluetooth.BluetoothSocket;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
@@ -40,6 +41,7 @@ public class DomoticsActivity extends AppCompatActivity
     public static final String BT_DEVICE = "name";
 
     public static boolean isActivityOpen = false;
+    private boolean turnFromMasterSwitch;
 
 
     private String[] applianceNameKey;
@@ -158,6 +160,12 @@ public class DomoticsActivity extends AppCompatActivity
 
     private void turnMasterSwitch(boolean state) {
 
+        turnFromMasterSwitch = true;
+        turnAllSwitch(state);
+
+
+
+
         TextView masterSwitchStatusText = (TextView) findViewById(R.id.text_view_master_switch_status);
         ImageView masterSwitchStatus = (ImageView) findViewById(R.id.image_view_master_switch_status);
         Drawable d;
@@ -165,6 +173,8 @@ public class DomoticsActivity extends AppCompatActivity
         for (Switch sw : mSwitchView) {
             sw.setChecked(state);
         }
+
+        turnFromMasterSwitch = false;
 
         if (state) {
             //turn on
@@ -180,13 +190,33 @@ public class DomoticsActivity extends AppCompatActivity
         masterSwitchStatus.setBackground(d);
     }
 
-//    private void turnAllSwitch(boolean b) {
+    private void turnAllSwitch(final boolean b) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for (int i = 0; i < 8; i++) {
+                    if (b) {
+                        turnOnLed(i + 1);
+                    } else {
+                        turnOffLed(i + 1);
+                    }
+                    try {
+                        Thread.sleep(300);
+                    }catch (InterruptedException e){
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
 //        for (int i = 0; i < 8; i++) {
-//            mSwitchView[i].setChecked(b);
-//            turnOnArduinoSwitch(i, b);
+//            if (b) {
+//                turnOnLed(i + 1);
+//            } else {
+//                turnOffLed(i + 1);
+//            }
 //        }
-//        //mDsAdapter.notifyDataSetChanged();
-//    }
+        //mDsAdapter.notifyDataSetChanged();
+    }
 //
 //    //this function avoids redundant sending of data to arduino
 //    public static void turnOnArduinoSwitch(int i, boolean turnOn) {
@@ -212,23 +242,47 @@ public class DomoticsActivity extends AppCompatActivity
 
 
     public void turnOffLed(int switchNumber) {
-        switchNumber = switchNumber * 11;
+        final int switchNumberOff = switchNumber * 11;
         if (mBluetoothSocket != null) {
             try {
-                mBluetoothSocket.getOutputStream().write(switchNumber);
+                Log.e("Domotics", "Write on Switch:" + switchNumber);
+                mBluetoothSocket.getOutputStream().write(switchNumberOff);
             } catch (IOException e) {
                 //msg("Error");
             }
+//            new Handler().postDelayed(new Runnable() {
+//                @Override
+//                public void run() {
+//                    try {
+//                        Log.e("Domotics", "Write on Switch:" + switchNumberOff);
+//                        mBluetoothSocket.getOutputStream().write(switchNumberOff);
+//                    } catch (IOException e) {
+//                        Utility.showToast(DomoticsActivity.this, "Error turning on switch");
+//                    }
+//                }
+//            }, 200);
         }
     }
 
-    public void turnOnLed(int switchNumber) {
+    public void turnOnLed(final int switchNumber) {
         if (mBluetoothSocket != null) {
             try {
+                Log.e("Domotics", "Write on Switch:" + switchNumber);
                 mBluetoothSocket.getOutputStream().write(switchNumber);
             } catch (IOException e) {
                 //msg("Error");
             }
+            //            new Handler().postDelayed(new Runnable() {
+//                @Override
+//                public void run() {
+//                    try {
+//                        Log.e("Domotics", "Write on Switch:" + switchNumber);
+//                        mBluetoothSocket.getOutputStream().write(switchNumber);
+//                    } catch (IOException e) {
+//                        Utility.showToast(DomoticsActivity.this, "Error turning on switch");
+//                    }
+//                }
+//            }, 200);
         }
     }
 
@@ -404,14 +458,19 @@ public class DomoticsActivity extends AppCompatActivity
         }
         if (position != -1) {
             if (mSwitchView[position].isChecked()) {
-                turnOnLed(position + 1);
+                if (!turnFromMasterSwitch) {
+                    turnOnLed(position + 1);
+                }
+
                 if (isAllSwitchOpen()) {
                     sMasterSwitch.setChecked(true);
                 }
                 mStateTextView[position].setText("On");
                 mBgImageView[position].setBackground(getResources().getDrawable(R.drawable.ic_power_bg_on));
             } else {
-                turnOffLed(position + 1);
+                if (!turnFromMasterSwitch) {
+                    turnOffLed(position + 1);
+                }
                 if (isAllSwitchOff()) {
                     sMasterSwitch.setChecked(false);
                 }

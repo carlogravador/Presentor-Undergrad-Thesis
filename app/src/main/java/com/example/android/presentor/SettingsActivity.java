@@ -71,6 +71,9 @@ public class SettingsActivity extends AppCompatActivity {
 
             Preference qualityImagePref = findPreference(getResources().getString(R.string.pref_mirroring_quality_key));
             bindPreferenceSummaryToValue(qualityImagePref);
+
+            Preference helpPreference = findPreference(getResources().getString(R.string.pref_help_key));
+            bindPreferenceSummaryToValue(helpPreference);
         }
 
         //------------implment onPreferenceChangeListener------------------//

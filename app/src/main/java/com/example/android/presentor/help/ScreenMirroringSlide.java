@@ -1,5 +1,6 @@
 package com.example.android.presentor.help;
 
+import android.content.Intent;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.android.presentor.MainActivity;
 import com.example.android.presentor.R;
 
 public class ScreenMirroringSlide extends AppCompatActivity {
@@ -25,11 +27,16 @@ public class ScreenMirroringSlide extends AppCompatActivity {
     private Button mSkipBtn;
 
     private int mCurrentPage;
+    private boolean mSpawnOnMainActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_slide_screen_mirroring);
+
+        Intent i = getIntent();
+        mSpawnOnMainActivity = i.getBooleanExtra(MainActivity.SPAWN_ON_MAIN_ACTIVITY, false);
+
 
         mSlideViewPager = (ViewPager) findViewById(R.id.slideViewPager);
         mDotLayout = (LinearLayout) findViewById(R.id.dotsLayout);
@@ -51,6 +58,11 @@ public class ScreenMirroringSlide extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(mNextBtn.getText().equals("Finish")){
+                    finish();
+                }else if(mSpawnOnMainActivity && mCurrentPage == mDots.length - 1){
+                    Intent i = new Intent(ScreenMirroringSlide.this, WidgetButtonsSlide.class);
+                    i.putExtra(MainActivity.SPAWN_ON_MAIN_ACTIVITY, mSpawnOnMainActivity);
+                    startActivity(i);
                     finish();
                 }
                 mSlideViewPager.setCurrentItem(mCurrentPage + 1);
@@ -126,7 +138,11 @@ public class ScreenMirroringSlide extends AppCompatActivity {
                 mBackBtn.setEnabled(true);
                 mBackBtn.setVisibility(View.VISIBLE);
 
-                mNextBtn.setText("Finish");
+                if(mSpawnOnMainActivity){
+                    mNextBtn.setText("Widget Buttons");
+                }else {
+                    mNextBtn.setText("Finish");
+                }
                 mBackBtn.setText("Back");
 
             }   else {

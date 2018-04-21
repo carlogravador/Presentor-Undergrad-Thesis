@@ -1,5 +1,6 @@
 package com.example.android.presentor.help;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -9,6 +10,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.android.presentor.MainActivity;
 import com.example.android.presentor.R;
 
 
@@ -26,6 +28,7 @@ public class DomoticsSlide extends AppCompatActivity {
     private Button mSkipBtn;
 
     private int mCurrentPage;
+    private boolean mSpawnOnMainActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +65,12 @@ public class DomoticsSlide extends AppCompatActivity {
         mBackBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                if(mSpawnOnMainActivity && mCurrentPage == 0){
+                    Intent i = new Intent(DomoticsSlide.this, WidgetButtonsSlide.class);
+                    i.putExtra(MainActivity.SPAWN_ON_MAIN_ACTIVITY, mSpawnOnMainActivity);
+                    startActivity(i);
+                    finish();
+                }
                 mSlideViewPager.setCurrentItem(mCurrentPage - 1);
             }
         });
@@ -113,14 +121,17 @@ public class DomoticsSlide extends AppCompatActivity {
             mCurrentPage = i;
 
             if (i == 0) {
-
                 mNextBtn.setEnabled(true);
-                mBackBtn.setEnabled(false);
-                mBackBtn.setVisibility(View.INVISIBLE);
-
                 mNextBtn.setText("Next");
-                mBackBtn.setText("");
 
+                if(mSpawnOnMainActivity){
+                    mBackBtn.setText("Widget Buttons");
+                    mBackBtn.setEnabled(true);
+                }else{
+                    mBackBtn.setText("");
+                    mBackBtn.setEnabled(false);
+                    mBackBtn.setVisibility(View.INVISIBLE);
+                }
             } else if (i == mDots.length - 1) {
 
                 mNextBtn.setEnabled(true);

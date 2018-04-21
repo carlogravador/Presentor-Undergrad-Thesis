@@ -1,5 +1,6 @@
 package com.example.android.presentor.help;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -9,6 +10,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.android.presentor.MainActivity;
 import com.example.android.presentor.R;
 
 
@@ -26,11 +28,15 @@ public class WidgetButtonsSlide extends AppCompatActivity {
     private Button mSkipBtn;
 
     private int mCurrentPage;
+    private boolean mSpawnOnMainActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_slide_widget_buttons);
+
+        Intent i = getIntent();
+        mSpawnOnMainActivity = i.getBooleanExtra(MainActivity.SPAWN_ON_MAIN_ACTIVITY, false);
 
         mSlideViewPager = (ViewPager) findViewById(R.id.slideViewPager);
         mDotLayout = (LinearLayout) findViewById(R.id.dotsLayout);
@@ -53,6 +59,11 @@ public class WidgetButtonsSlide extends AppCompatActivity {
             public void onClick(View v) {
                 if(mNextBtn.getText().equals("Finish")){
                     finish();
+                }else if(mSpawnOnMainActivity && mCurrentPage == mDots.length - 1){
+                    Intent i = new Intent(WidgetButtonsSlide.this, DomoticsSlide.class);
+                    i.putExtra(MainActivity.SPAWN_ON_MAIN_ACTIVITY, mSpawnOnMainActivity);
+                    startActivity(i);
+                    finish();
                 }
                 mSlideViewPager.setCurrentItem(mCurrentPage + 1);
 
@@ -62,8 +73,14 @@ public class WidgetButtonsSlide extends AppCompatActivity {
         mBackBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                if(mSpawnOnMainActivity && mCurrentPage == 0){
+                    Intent i = new Intent(WidgetButtonsSlide.this, ScreenMirroringSlide.class);
+                    i.putExtra(MainActivity.SPAWN_ON_MAIN_ACTIVITY, mSpawnOnMainActivity);
+                    startActivity(i);
+                    finish();
+                }
                 mSlideViewPager.setCurrentItem(mCurrentPage - 1);
+
             }
         });
 
@@ -114,12 +131,18 @@ public class WidgetButtonsSlide extends AppCompatActivity {
 
             if (i == 0){
 
-                mNextBtn.setEnabled(true);
-                mBackBtn.setEnabled(false);
-                mBackBtn.setVisibility(View.INVISIBLE);
-
                 mNextBtn.setText("Next");
-                mBackBtn.setText("");
+                mNextBtn.setEnabled(true);
+
+                if(mSpawnOnMainActivity){
+                    mBackBtn.setText("Screen Mirroring");
+                    mBackBtn.setEnabled(true);
+                }else{
+                    mBackBtn.setText("");
+                    mBackBtn.setEnabled(false);
+                    mBackBtn.setVisibility(View.INVISIBLE);
+                }
+
 
             } else if (i == mDots.length - 1){
 
@@ -127,7 +150,11 @@ public class WidgetButtonsSlide extends AppCompatActivity {
                 mBackBtn.setEnabled(true);
                 mBackBtn.setVisibility(View.VISIBLE);
 
-                mNextBtn.setText("Finish");
+                if(mSpawnOnMainActivity){
+                    mNextBtn.setText("Domotics");
+                }else {
+                    mNextBtn.setText("Finish");
+                }
                 mBackBtn.setText("Back");
 
             }   else {
