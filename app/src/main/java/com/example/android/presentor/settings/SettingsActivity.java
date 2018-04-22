@@ -1,4 +1,4 @@
-package com.example.android.presentor;
+package com.example.android.presentor.settings;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -13,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 
+import com.example.android.presentor.R;
 import com.example.android.presentor.domotics.DomoticsActivity;
 import com.example.android.presentor.utils.Utility;
 

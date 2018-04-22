@@ -29,7 +29,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory android:title="Screen Mirroring">
-        <EditTextPreference
+        <com.example.android.presentor.settings.CustomEditTextPreference
             android:capitalize="words"
             android:defaultValue="@string/settings_default_resize"
             android:inputType="numberDecimal"
@@ -40,7 +40,7 @@
             android:singleLine="true"
             android:title="Resize image ratio"/>
 
-        <EditTextPreference
+        <com.example.android.presentor.settings.CustomEditTextPreference
             android:capitalize="words"
             android:defaultValue="@string/settings_default_quality"
             android:inputType="numberDecimal"

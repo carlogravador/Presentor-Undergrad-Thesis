@@ -96,7 +96,7 @@
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".SettingsActivity"
+            android:name=".settings.SettingsActivity"
             android:label="Settings"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"/>
