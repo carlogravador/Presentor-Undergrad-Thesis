@@ -2,7 +2,7 @@
 
 
     <PreferenceCategory android:title="General">
-        <EditTextPreference
+        <com.example.android.presentor.settings.ValidatingEditTextPreference
             android:capitalize="words"
             android:defaultValue="@string/settings_default_player_name"
             android:inputType="textCapWords"

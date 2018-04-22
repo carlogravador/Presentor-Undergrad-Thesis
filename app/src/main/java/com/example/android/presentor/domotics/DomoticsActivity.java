@@ -24,6 +24,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.android.presentor.R;
 import com.example.android.presentor.utils.Utility;
@@ -42,7 +43,7 @@ public class DomoticsActivity extends AppCompatActivity
 
     public static boolean isActivityOpen = false;
     private boolean turnFromMasterSwitch;
-
+    private boolean doubleBackToExitPressedOnce;
 
     private String[] applianceNameKey;
 
@@ -60,6 +61,27 @@ public class DomoticsActivity extends AppCompatActivity
     private String name;
 
     private Switch sMasterSwitch;
+
+
+
+    @Override
+    public void onBackPressed() {
+        if (doubleBackToExitPressedOnce) {
+            super.onBackPressed();
+            return;
+        }
+
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce = false;
+            }
+        }, 2000);
+    }
 
     private void findViews() {
         mCardView[0] = (CardView) findViewById(R.id.card_view_domotics_1);

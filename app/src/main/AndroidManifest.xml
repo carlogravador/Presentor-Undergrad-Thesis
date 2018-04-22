@@ -47,6 +47,7 @@
             android:name=".screenshare.CreateActivity"
             android:label="Share"
             android:parentActivityName=".MainActivity"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait"/>
         <activity
             android:name=".screenshare.AccessActivity"
@@ -57,12 +58,14 @@
         <activity
             android:name=".domotics.DomoticsSelectActivity"
             android:label="Domotics"
+            android:launchMode="singleTask"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"/>
 
         <activity
             android:name=".domotics.DomoticsActivity"
             android:label="Domotics"
+            android:launchMode="singleTask"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"/>
         <activity

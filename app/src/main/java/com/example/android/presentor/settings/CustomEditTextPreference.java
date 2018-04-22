@@ -10,6 +10,9 @@ import android.view.View;
 
 public class CustomEditTextPreference extends EditTextPreference {
 
+    private String errorMessage;
+    private boolean bool;
+
     public CustomEditTextPreference(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
@@ -38,26 +41,38 @@ public class CustomEditTextPreference extends EditTextPreference {
                 onPositiveButtonClick(v);
             }
         });
-
     }
 
     private void onPositiveButtonClick(View v) {
-        boolean hasError = parseInteger(getEditText().getText().toString()) < 1 ||
-                parseInteger(getEditText().getText().toString()) > 100;
+        boolean hasError = validateText(getEditText().getText().toString()) < 1 ||
+                validateText(getEditText().getText().toString()) > 100;
 
         if (hasError) {
             //somethings wrong
-            getEditText().setError("Value must be an integer from 1 - 100.");
+            getEditText().setError(errorMessage);
             return;
         }
-        String value = Integer.toString(parseInteger(getEditText().getText().toString()));
-        getEditText().setText(value);
+        if (bool) {
+            String value = Integer.toString(validateText(getEditText().getText().toString()));
+            getEditText().setText(value);
+        }
         getEditText().setError(null);
         onClick(getDialog(), DialogInterface.BUTTON_POSITIVE);
         getDialog().dismiss();
     }
 
-    private int parseInteger(String text) {
+
+    protected void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
+
+    protected void setBool(boolean b) {
+        this.bool = b;
+    }
+
+    protected int validateText(String text) {
+        setErrorMessage("Value must be an integer from 1 - 100.");
+        setBool(true);
         int val = -1;
         try {
             val = Integer.parseInt(text);
