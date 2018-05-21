@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Vibrator;
 import android.util.Log;
 
+import com.example.android.presentor.luminosity.LuminosityDetector;
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.face.FaceDetector;
 import com.google.android.gms.vision.face.LargestFaceFocusingProcessor;
@@ -19,6 +20,7 @@ public class FaceAnalyzer {
     private Context mContext;
     private FaceDetector mFaceDetector;
     private CameraSource mCameraSource;
+    private LuminosityDetector mLuminosityDetector;
 
     public void start() {
         if (mCameraSource != null) {
@@ -39,6 +41,9 @@ public class FaceAnalyzer {
         if (mFaceDetector != null) {
             mFaceDetector.release();
         }
+        if(mLuminosityDetector != null){
+            mLuminosityDetector.releaseDetector();
+        }
 
 //        ((Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE)).cancel();
     }
@@ -51,7 +56,9 @@ public class FaceAnalyzer {
                 .setMode(FaceDetector.ACCURATE_MODE) // to get EulerY value
                 .build();
 
-        mFaceDetector.setProcessor(new LargestFaceFocusingProcessor(mFaceDetector, new FaceTracker(mContext, hasSound)));
+        mLuminosityDetector = new LuminosityDetector(mContext);
+        mFaceDetector.setProcessor(new LargestFaceFocusingProcessor(mFaceDetector,
+                new FaceTracker(mContext, mLuminosityDetector, hasSound)));
 
         if (!mFaceDetector.isOperational()) {
             Log.w("FaceAnalyzer", "createCameraResources: detector NOT operational");

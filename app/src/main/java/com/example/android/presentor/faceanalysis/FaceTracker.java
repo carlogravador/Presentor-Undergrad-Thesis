@@ -9,6 +9,7 @@ import android.os.Vibrator;
 import android.util.Log;
 
 import com.example.android.presentor.R;
+import com.example.android.presentor.luminosity.LuminosityDetector;
 import com.example.android.presentor.utils.Utility;
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.Tracker;
@@ -26,6 +27,7 @@ public class FaceTracker extends Tracker<Face> {
     private boolean handlerStarting;
     private boolean isVibrateStarted;
     private boolean mHasSound;
+    private boolean tooDark;
 
     private MediaPlayer mMediaPlayer;
     private AudioManager mAudioManager;
@@ -38,6 +40,7 @@ public class FaceTracker extends Tracker<Face> {
     private Thread vibrateIndefinitelyThread;
 
     private Runnable vibrateEvent;
+    private LuminosityDetector mLuminosityDetector;
 
     AudioManager.OnAudioFocusChangeListener mOnAudioFocusChangeListener = new AudioManager.OnAudioFocusChangeListener() {
         @Override
@@ -61,11 +64,12 @@ public class FaceTracker extends Tracker<Face> {
         }
     };
 
-    public FaceTracker(Context context, boolean hasSound) {
+    public FaceTracker(Context context, LuminosityDetector lm, boolean hasSound) {
         mContext = context;
         vibrator = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
         mAudioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
         mHasSound = hasSound;
+        mLuminosityDetector = lm;
         prepareVibrateEvent();
     }
 
@@ -219,12 +223,29 @@ public class FaceTracker extends Tracker<Face> {
 
     @Override
     public void onMissing(Detector.Detections<Face> detections) {
-        //Log.e("FaceTracker", "onMissing() callback");
-        hasFace = false;
-        if (!handlerStarting) {
-            startHandler();
-            attentionLost = true;
+        Log.e("FaceTracker", "onMissing() callback \n Luminosity: "
+                + mLuminosityDetector.getLuminosityValue() + "lx");
+
+//        if(tooDark) return;
+
+        if (mLuminosityDetector.getLuminosityValue() == 0.0f) {
+            //room is too dark, face analysis will not function properly
+            if (handlerStarting) stopHandler();
+            if (tooDark) return;
+            Utility.showToast(mContext,
+                    "Room is too dark for face analysis. Please inform the presentor.");
+            tooDark = true;
+
+        } else {
+            hasFace = false;
+            tooDark = false;
+            if (!handlerStarting) {
+                startHandler();
+                attentionLost = true;
+            }
         }
+        attentionLost = true;
+
     }
 
     @Override
