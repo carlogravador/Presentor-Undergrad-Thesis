@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.Vibrator;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
@@ -21,6 +22,7 @@ import com.example.android.presentor.db.DatabaseUtility;
 import com.example.android.presentor.faceanalysis.FaceAnalysisActivator;
 import com.example.android.presentor.faceanalysis.FaceAnalyzer;
 import com.example.android.presentor.screenpinning.ScreenPinningObservable;
+import com.example.android.presentor.utils.Utility;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -150,6 +152,10 @@ public class ShareService {
 
         public boolean hasClients() {
             return !mOutputStreamsHashtable.isEmpty();
+        }
+
+        public void sendAttentionCommand(){
+            executeSendCommandToAll(ScreenShareConstants.ATTENTION);
         }
 
         public void pauseScreenMirroring() {
@@ -579,6 +585,10 @@ public class ShareService {
                             mImageView.setVisibility(View.GONE);
                         }
                     });
+                    break;
+                case ScreenShareConstants.ATTENTION:
+                    ((Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE)).vibrate(1000);
+                    Utility.showToast(mContext, "ATTENTION!");
                     break;
                 default:
                     break;

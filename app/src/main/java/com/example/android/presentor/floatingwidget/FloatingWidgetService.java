@@ -50,9 +50,6 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
     public void onClick(View view) {
         final ImageButton b;
         switch (view.getId()) {
-            case R.id.floating_widget_image_view:
-                mFloatingWidgetView.onViewCollapsed();
-                break;
             case R.id.circleIv1:    //Stop Button
                 //TODO: to do send notification to clients that mirroring is stop
 //                new Thread(new Runnable() {
@@ -158,6 +155,9 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
                     i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(i);
                 }
+                break;
+            case R.id.circleIv7: //attention button
+                mServer.sendAttentionCommand();
                 break;
         }
     }

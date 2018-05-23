@@ -292,7 +292,7 @@ public class Utility {
 
     /***returns true if there is a special character on the String word***/
     public static boolean checkForSpecialCharacter(String word) {
-        Pattern p = Pattern.compile("[^A-Za-z0-9]");
+        Pattern p = Pattern.compile("[^A-Za-z0-9\\s]");
         Matcher m = p.matcher(word);
 
         return m.find();

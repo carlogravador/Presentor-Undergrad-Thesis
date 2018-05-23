@@ -40,7 +40,7 @@ public class FloatingWidgetView implements View.OnTouchListener {
 
     private long time_start = 0;
 
-    public ImageButton getImageButton(int position){
+    public ImageButton getImageButton(int position) {
         return arrayImageButton[position];
     }
 
@@ -64,10 +64,11 @@ public class FloatingWidgetView implements View.OnTouchListener {
 
     private void setTouchListener() {
         mFloatingWidgetView.findViewById(R.id.root_container).setOnTouchListener(this);
+        mFloatingWidgetView.findViewById(R.id.floating_widget_image_view).setOnTouchListener(this);
     }
 
     private void setClickListener(View.OnClickListener listener) {
-        mFloatingWidgetView.findViewById(R.id.floating_widget_image_view).setOnClickListener(listener);
+        // mFloatingWidgetView.findViewById(R.id.floating_widget_image_view).setOnClickListener(listener);
         for (ImageButton imageButton : arrayImageButton) {
             imageButton.setOnClickListener(listener);
         }
@@ -106,13 +107,15 @@ public class FloatingWidgetView implements View.OnTouchListener {
         //find id of the expanded view layout
         expandedView = mFloatingWidgetView.findViewById(R.id.expanded_container);
         //find the buttons of expanded view
-        arrayImageButton = new ImageButton[6];
+        arrayImageButton = new ImageButton[7];
         arrayImageButton[0] = expandedView.findViewById(R.id.circleIv1);    //stop
         arrayImageButton[1] = expandedView.findViewById(R.id.circleIv2);    //play/pause
         arrayImageButton[2] = expandedView.findViewById(R.id.circleIv3);    //pin
         arrayImageButton[3] = expandedView.findViewById(R.id.circleIv4);    //face
-        arrayImageButton[4] = expandedView.findViewById(R.id.circleIv5);    //domotics
-        arrayImageButton[5] = expandedView.findViewById(R.id.circleIv6);    //screen share
+        arrayImageButton[4] = expandedView.findViewById(R.id.circleIv7);    //attention
+        arrayImageButton[5] = expandedView.findViewById(R.id.circleIv5);    //domotics
+        arrayImageButton[6] = expandedView.findViewById(R.id.circleIv6);    //screen share
+
     }
 
     /***Get the screen resolution of the current device***/
@@ -288,6 +291,8 @@ public class FloatingWidgetView implements View.OnTouchListener {
                     showButtons();
                 }
             }, 10);
+        } else {
+            onViewCollapsed();
         }
     }
 

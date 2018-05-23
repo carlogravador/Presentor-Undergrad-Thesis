@@ -17,5 +17,6 @@ public interface ScreenShareConstants {
     int ON_PAUSE = -7;
     int ON_RESUME = -8;
     int ON_STOP = -9;
+    int ATTENTION = -10;
 
 }

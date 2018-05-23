@@ -89,6 +89,18 @@
                 android:src="@drawable/widget_button_icon_face_analysis"
                 tools:ignore="ContentDescription"/>
 
+            <!--Attention Button-->
+            <ImageButton
+                android:id="@+id/circleIv7"
+                android:layout_width="@dimen/widget_button_dimen"
+                android:layout_height="@dimen/widget_button_dimen"
+                android:layout_centerVertical="true"
+                android:layout_margin="10dp"
+                android:background="@drawable/background_widget_button"
+                android:elevation="5dp"
+                android:src="@drawable/ic_notifications_active_black_24dp"
+                tools:ignore="ContentDescription"/>
+
             <!--Domotics button-->
             <ImageButton
                 android:id="@+id/circleIv5"
@@ -113,17 +125,7 @@
                 android:src="@drawable/widget_button_icon_show_main_layout"
                 tools:ignore="ContentDescription"/>
 
-            <!--Move/Drag button-->
-            <ImageView
-                android:id="@+id/holder_iv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="12dp"
-                android:elevation="5dp"
-                android:src="@drawable/widget_button_icon_drag"
-                tools:ignore="ContentDescription"/>
+
 
 
             <ImageView
