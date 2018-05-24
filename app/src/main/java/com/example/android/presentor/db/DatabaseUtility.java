@@ -163,7 +163,7 @@ public class DatabaseUtility {
         dbHelper.close();
 
         //TODO: Get the name of the device to be removed.
-        Utility.showToast(context.getApplicationContext(), name + " leave the room.");
+        Utility.showToast(context.getApplicationContext(), name + " left the room.");
 
         int rowsDeleted = context.getContentResolver().delete(DeviceEntry.CONTENT_URI_DEVICE,
                 selection, selectionArgs);
