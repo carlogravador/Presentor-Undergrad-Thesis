@@ -64,7 +64,9 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/title_team"
                 android:layout_centerHorizontal="true"
-                android:text="An Android-based screen mirroring with face analysis and domotics application.Generally, this application is designed as an overall application package for presentations. It offers screen mirroring, face analysis and domotics features. However, it can also function using only one of the three (3) features. "
+                android:text="An Android-based screen mirroring with face analysis and domotics application.
+                Generally, this application is designed as an overall application package for presentations.
+                It offers screen mirroring, face analysis and domotics features."
                 android:textAlignment="center"
                 android:textSize="20sp"
 
